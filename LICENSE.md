@@ -2,16 +2,18 @@ Copyright © TimidScript, All Rights Reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction for commercial software, including 
+in the Software without restriction for non-commercial usage, including 
 without limitation the rights to use, copy, modify, merge, publish and 
 distribute copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the same liscense presented here. 
+furnished to do so, subject to the same license presented here. 
 
-No right is given for commercial redistrubtion as part or complete package, this
-includes any type of monetary gain. Any derived works must remain free, open source 
-and carry the same license.
+No right is given for commercial redistribution as part or complete package, this
+includes any type of monetary gain. Software, can be used "as is" within a 
+commercial environment. 
 
-Notifiying the author (TimidScript) of modified redistribution is appreciated but not 
+Any derived works must remain free, open source and carry the same license.
+
+Notifying the author (TimidScript) of modified redistribution is appreciated but not 
 necessary.
 
 The above copyright notice and this permission notice shall be included in
