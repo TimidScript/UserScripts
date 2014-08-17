@@ -1,9 +1,11 @@
 Copyright © TimidScript, All Rights Reserved.
 
-Permission is needed from author for redistribution or modification for public
-usage. No right is given for commercial usage or any type of monetary gain. 
-Cannot be used as part of a commercial product package. Any derived  works must remain 
-free and carry the same license.
+Right is given for modified redistribution. No right is given for commercial usage or 
+any type of monetary gain. Cannot be used as part of a commercial product package. 
+Any derived works must remain free, open source and carry the same license.
+
+Notifiying the author (TimidScript) of modified redistribution is appreciated but not 
+necessary.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
