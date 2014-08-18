@@ -6,7 +6,7 @@
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 https://github.com/TimidScript/GreasyMonkey/blob/master/LICENSE.md
+// @license                 GPLv3 Plus notifying me of usage :)
 
 // @version                 1.0.4
 // ==/UserScript==  
