@@ -6,9 +6,9 @@
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 https://github.com/TimidScript/GreasyMonkey/blob/master/LICENSE.md
+// @license                 GNU GPLv3 + Please notify me if distributing
 
-// @version                 1.0.22
+// @version                 1.0.22b
 // @icon                    http://i.imgur.com/E2wQ6Xm.gif
 
 // @include                 *//www.youtube.*
