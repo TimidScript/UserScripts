@@ -8,12 +8,11 @@
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
 
-// @version         1.0.12
+// @version         1.0.13
 // @icon            http://i.imgur.com/1KiUR7g.png?1
 
 // @include         http://www.deviantart.com/messages/*
 // ==/UserScript==
-
 
 /* Information
 **************************************************************************************************
@@ -31,6 +30,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.13 (2013-08-19)
+ - Cleaned up header
+ - Saved in Unicode
 1.0.12 (2013-05-06)
  - Added empty deviations
 1.0.11
