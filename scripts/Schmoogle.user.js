@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            [TS] Schmoogle Beta
+// @name            [TS] Schmoogle
 // @namespace       TimidScript
 // @description     Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
 
