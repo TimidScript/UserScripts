@@ -13,7 +13,9 @@ commercial environment.
 
 Any derived works must remain free, open source and carry the same license.
 
-Notifying the author (TimidScript) of modified redistribution is appreciated but not 
+A link to the original file or file included in the package must be provided.
+
+Notifying the author (TimidScript) of modified redistribution is appreciated but not
 necessary.
 
 The above copyright notice and this permission notice shall be included in
