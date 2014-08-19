@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            [TS] deviantArt Download Link
+// @name            [TS] deviantART Download Link
 // @namespace       TimidScript
 // @description     Adds the Download Link on illustration page if missing and also removes open in new tab
 
