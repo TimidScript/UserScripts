@@ -1,15 +1,17 @@
 // ==UserScript==
 // @name                    [TS] Youtube Translate
 // @namespace               TimidScript
-// @include                 http*://*.youtube.*/watch?*
-// @version                 1.0.3
-// @icon                    http://i.imgur.com/E2wQ6Xm.gif
 // @description             Adds translate button for video's title  and "About" description. Works in most cases
 
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
+
+// @version                 1.0.3
+// @icon                    http://i.imgur.com/E2wQ6Xm.gif
+
+// @include                 http*://*.youtube.*/watch?*
 
 // @grant                   GM_xmlhttpRequest
 // ==/UserScript==
@@ -29,6 +31,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.4 (2014-08-19)
+ - Cleaned up header for OUJS
 1.0.3 (2014/08/14)
  - Bug Fix in handling lines that only contain url or email
 1.0.2 (2014/08/05)
@@ -181,3 +185,4 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         });
     }
 })();
+
