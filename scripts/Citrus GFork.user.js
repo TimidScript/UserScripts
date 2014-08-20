@@ -6,7 +6,7 @@
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-// @version         1.0.3
+// @version         1.0.4
 // @icon            http://i.imgur.com/YKtX7ph.png
 // @include         https://greasyfork.org/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
@@ -31,6 +31,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.4 (2014-08-20)
+ - Bug Fix: Author not being displayed
+ - Bug Fix: Handle missing elements in user profile
 1.0.3 (2014-08-20)
  - Link to my homepage
  - By default deleted scripts are hidden now
@@ -106,11 +109,11 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
     }
     else if (document.URL.match(/greasyfork\.org\/scripts/)) //Script Listing
     {
-        getScripts();
+        document.body.setAttribute("PageType", "ListingPage");
+        getScripts();        
         createScriptTable();
         populateScriptTable();
-
-        document.body.setAttribute("PageType", "ListingPage");
+        
         document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
 
         selectSortOrder("ListingPage");
@@ -210,7 +213,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         TSL.removeNode(name);
 
         var el = document.getElementById("user-script-sets");
-        el.parentElement.className = "white-panel";
+        if (el) el.parentElement.className = "white-panel";
 
         el = document.getElementById("user-script-list");
         if (el) TSL.removeNode(el.parentElement);
@@ -370,7 +373,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
 
             row = tbody.insertRow(-1);
             row.className = "";
-
+            
             cell = row.insertCell();
             var el = document.createElement("div");
             el.style.marginBottom = "5px";
@@ -391,8 +394,16 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                 el.innerHTML += '<span class="type-deleted" />';
                 row.className += "scriptD ";
             }
-
             cell.appendChild(el);
+            
+            if (document.body.getAttribute("PageType") == "ListingPage")
+            {
+                
+                el = document.createElement("div");
+                el.style.fontSize = "small";
+                el.innerHTML = 'by <a href="https://greasyfork.org/users/' + script.authorID + '">' + script.author + '</a>';
+                cell.appendChild(el);
+            }
 
             el = document.createElement("div");
             el.textContent = script.description;
