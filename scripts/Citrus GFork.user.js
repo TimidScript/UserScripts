@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork 
 // @namespace       TimidScript
-// @description     Alters the interface of Greasy Fork to become more friendly for authors and users alike. Stores sort order, provides text icon to distinguish between Library, Unlisted and Deleted script. Works on Sets also.
+// @description     Changes the appearance of Greasy Fork. It remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-// @version         1.0.2
+// @version         1.0.3
 // @icon            http://i.imgur.com/YKtX7ph.png
 // @include         https://greasyfork.org/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
@@ -31,6 +31,12 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.3 (2014-08-20)
+ - Link to my homepage
+ - By default deleted scripts are hidden now
+ - Stole some CSS from OUJS ^_^
+ - Added a frame around images and max-width
+ - Few small bug fixes
 1.0.2 (2014-08-19)
  - Changes to CSS, including smaller font 
  - Changed the interface
@@ -104,10 +110,10 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         createScriptTable();
         populateScriptTable();
 
-        document.body.setAttribute("PageType", "ScriptPage");
+        document.body.setAttribute("PageType", "ListingPage");
         document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
 
-        selectSortOrder("ScriptPage");
+        selectSortOrder("ListingPage");
 
         TSL.removeNode("browse-script-list");
     }
@@ -121,7 +127,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         createScriptTable();
         populateScriptTable();
 
-        selectSortOrder(pageType);        
+        selectSortOrder(pageType);
     }
 
 
@@ -129,7 +135,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
     /* Base CSS styling
     ---------------------------------------------------------------------------*/
     function OrangifyPage()
-    {
+    {        
         if (document.URL.indexOf("greasyfork.org/forum/") > 0)
         {
             TSL.addStyle("CitrusGF_Forum", "body:not(.Settings) a:not(.Button) { color: #F19E06; }"
@@ -138,33 +144,41 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                     + ".SiteTitle img {height: 60px; border-radius: 20px; margin-top: -10px;}"
                     + "#Head a {color: yellow;}"
                     + ".SiteMenu {margin-left: 220px !important;}"
+                    + "#TS-Link {position: absolute; transform: rotate(-90deg); font-size:10px; top: 25px; color: yellow; font-weight: 700;}"
                 );
             var img = document.querySelector(".SiteTitle img");
             img.src = "https://i.imgur.com/RqikjW1.jpg";
+            var ts = document.createElement("a");
+            ts.href = "https://openuserjs.org/users/TimidScript";
+            ts.id = "TS-Link";
+            ts.textContent = "TimidScript";
+            document.body.appendChild(ts);
         }
         else
         {
-            var sname = document.getElementById("site-name");
-            sname.innerHTML = "";
-
-            var link = document.createElement("a");
-            link.href = "/";
-            link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
-                            + '<span id="title-text">Greasy Fork&nbsp;</span>'
-                            + '<span id="title-subtext">100% Citrusy Goodness</span>';
-            sname.appendChild(link);
-
-            TSL.removeNode("script-list-option-groups");
-
             //#region Adding CSS Styles E3E2E2
             TSL.addStyle("CitrusGF_Main", "body {font-size: 14px;}"
                           + "#main-header {background-color: orange;} #site-nav a {color: yellow !important;}"
                           + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
                           + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; margin: 0 10px;}"
-                          + "#title-subtext {color: yellow; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 60px;}"
+                          + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 60px;}"
                           + "#nav-user-info {top: 3px;}"
                           );
+
+            TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 6px ridge #DF0404; box-shadow: 5px 5px 2px #888888; margin-bottom: 5px;}");
             //#endregion
+
+            var sname = document.getElementById("site-name");
+            sname.innerHTML = "";
+            
+            var link = document.createElement("a");
+            link.href = "/";
+            link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
+                            + '<span id="title-text">Greasy Fork&nbsp;</span>'
+                            + '<a id="title-subtext" href="https://openuserjs.org/users/TimidScript">100% Citrusy Goodness by <b style="text-decoration: underline;">TimidScript</b></span>';
+            sname.appendChild(link);
+
+            TSL.removeNode("script-list-option-groups");            
         }
     }
 
@@ -172,11 +186,13 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
     /* Styling for user page
     ---------------------------------------------------------------------------*/
     function OrangifyUserPage()
-    {
+    {        
         TSL.addStyle("CitrusGF_Shared", ".white-panel, #control-panel, #user-profile, #user-discussions-on-scripts-written {margin: 5px; border-radius: 8px; padding: 10px; }");
-        TSL.addStyle("CitrusGF_Profile", ".white-panel, #user-discussions-on-scripts-written, #control-panel, #user-profile {background-color: white; }");
+        TSL.addStyle("CitrusGF_Profile", ".white-panel, #user-discussions-on-scripts-written, #control-panel, #user-profile {background-color: white; }");                
         TSL.addStyle("", "#user-control-panel, #control-panel h3 {margin: 0; padding: 0;}  #user-control-panel > li { display: inline-block; margin: 0 5px; padding: 2px 5px; border-radius: 5px; background-color: #F5F2F2; border: 1px solid #404040; box-shadow: 3px 3px 2px #888888;} #user-control-panel a {text-decoration: none;} #user-control-panel li:hover {background-color: #FBEACA;}");
         TSL.addStyle("", ".white-panel *, #user-discussions-on-scripts-written * {margin: 0;}");
+        TSL.addStyle("CitrusGF_OUJS", 'code {padding: 2px 4px;font-size: 90%;color: #C7254E;background-color: #F9F2F4;white-space: nowrap;border-radius: 4px;font-family: Menlo,Monaco,Consolas,"Courier New",monospace; }');
+        
 
         var author = document.createElement("h1");
         var name = document.getElementsByTagName("h2")[0];
@@ -285,7 +301,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         scriptTable.createTBody();
         document.body.appendChild(scriptTable);
 
-        TSL.addStyle("CitrusGS_Table", "#script-table {display: block; margin: 5px;} body {background-color: #EFEFB1; margin: 0;}"
+        TSL.addStyle("CitrusGS_Table", "#script-table {display: block; margin: 0 5px 5px 5px;} body {background-color: #EFEFB1; margin: 0;}"
             + "#script-table thead td {background-color: orange; border-radius: 0 0 5px 5px; box-shadow: 3px 3px 2px #888888;}"
             + "#script-table thead td:hover {cursor:pointer; background-color: yellow;}"
             + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"
@@ -306,9 +322,21 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             + ".type-unlisted:before {content: 'Unlisted';}"
             + ".filterL, .filterD, .filterU {float: left; margin: 2px 3px 0 0; padding: 0 15px;}"
             + ".filterL:hover, .filterD:hover, .filterU:hover {cursor: default;}"
+            + "#notice {margin:5px 5px 0 5px; background-color: #FDBB45;padding: 3px 5px; color: blue;}"            
+            + "#notice .filterD { background-color: #C0BEBE; float: none; color: black;}"
         );
-    }
 
+        if (document.body.getAttribute("PageType") == "PersonalProfile")
+        {
+            var notice = document.createElement("div");
+            notice.id = "notice";            
+            notice.innerHTML = 'By default deleted scripts are hidden now. Click on <span class="filterD">D</span> to view them. Can be disabled by adding <code>GM_setValue("DisplayDeleted",true)</code> to the script.';
+            document.body.insertBefore(notice, scriptTable);
+
+            //GM_setValue("DisplayDeleted", false);            
+            if (!GM_getValue("DisplayDeleted")) document.querySelector("#script-table thead .filterD").click();
+        }        
+    }
 
     /* Populate the table with scripts
     ---------------------------------------------------------------------------*/
@@ -348,7 +376,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             el.style.marginBottom = "5px";
             el.innerHTML = "<a href='https://greasyfork.org/scripts/"
                             + script.id + "' style='margin-right: 10px;'><b>" + script.name + "</b></a>";
-            if (script.type == "library") 
+            if (script.type == "library")
             {
                 el.innerHTML += '<span class="type-library" />';
                 row.className += "scriptL ";
@@ -360,7 +388,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             }
             if (script.deleted)
             {
-                el.innerHTML += '<span class="type-deleted" />';                
+                el.innerHTML += '<span class="type-deleted" />';
                 row.className += "scriptD ";
             }
 
@@ -368,7 +396,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
 
             el = document.createElement("div");
             el.textContent = script.description;
-            cell.appendChild(el);                      
+            cell.appendChild(el);
 
             row.insertCell().textContent = script.fans;
             row.insertCell().textContent = script.installsDaily;
@@ -376,9 +404,22 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             row.insertCell().textContent = script.dateCreated;
             row.insertCell().textContent = script.dateUpdated;
         }
+
+        filterTable();
     }
 
 
+    /* Apply Table filter
+    ---------------------------------------------------------------------------*/
+    function filterTable()
+    {
+        var css = "";
+        var btns = document.querySelectorAll("#script-table thead td span");
+        for (var i = 0; i < btns.length; i++)
+            if (btns[i].style.backgroundColor) css += btns[i].className.replace("filter", ".script") + ", ";
+
+        if (css) TSL.addStyle("ScriptFilter", css.replace(/,\s$/, "") + "{display: none;}");
+    }
 
     /*  Filter the script table
     ---------------------------------------------------------------------------*/
@@ -388,15 +429,9 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         e.stopImmediatePropagation();
         this.style.backgroundColor = (this.style.backgroundColor) ? null : "#C0BEBE";
 
-        var css = "";
-        var btns = this.parentElement.getElementsByTagName("span");        
-        for (var i = 0; i < btns.length; i++)
-            if (btns[i].style.backgroundColor) css += btns[i].className.replace("filter", ".script") + ", ";
-               
-        if (css) TSL.addStyle("ScriptFilter", css.replace(/,\s$/,"") + "{display: none;}");
-        console.log(document.getElementById("ScriptFilter"));
+        filterTable();
     }
-   
+
 
 
     /*  Filter the script table
@@ -420,28 +455,31 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         if (this.className || this.parentElement.getAttribute("busy")) return;
         this.parentElement.setAttribute("busy", true);
         this.className = "loadingSort";        
-        
-        getScriptPage(this.getAttribute("tag"), true);
+
+        getScriptListing(this.getAttribute("tag"), true);
     }
 
 
 
     /*   Get script page 
     ---------------------------------------------------------------------------*/
-    function getScriptPage(tag, firstPage)
-    {                        
-        url = document.URL.match(/https:\/\/greasyfork.org\/scripts(\/search)?/)[0] + "?per_page=100";
-                
+    function getScriptListing(tag, firstPage)
+    {
+        var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
+          
+        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/scripts(\/search)?/)[0] + "?per_page=100";
+        else url = document.URL;
+
         var m = document.URL.match("[^=\?&]+=[^&]+");
         if (m)
             for (var i = 0; i < m.length; i++)
             {
                 if (!m[i].match(/^(per_page|sort)/) && !(firstPage && m[i].match(/^page/))) url += "&" + m[i];
             }
-        
+
         if (tag) url += "&sort=" + tag;
-        
-        console.warn("getScriptPage IN: " + url)        
+
+        console.warn("getScriptListing IN: " + url)
         GM_xmlhttpRequest({
             url: url,
             method: "GET",
@@ -462,7 +500,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                     //Highlight right column header                    
                     var els = document.querySelectorAll("#script-table thead td");
                     for (var i = 0; i < els.length; i++) els[i].removeAttribute("class");
-                    
+
                     header.className = "currentSort";
 
                     //stackoverflow.com/questions/19193335/change-the-url-in-browser-bar-without-reloading-page
@@ -490,9 +528,9 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                 }
 
                 header.parentElement.removeAttribute("busy");
-                console.log("getScriptPage OUT: " + url)
+                console.log("getScriptListing OUT: " + url)
 
             }
         })();
-    }    
+    }
 })();
