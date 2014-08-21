@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                    [TS] Voltaire Network Language Picker
 // @namespace               TimidScript
-// @description             **Depreciated** Check Language(s) to display in "this weeks articles" box (Default English only). Depreciated: Use "Linx Amender" instead.
 // @version                 1.0.2 DEFUNCT
+// @description             **Depreciated** Check Language(s) to display in "this weeks articles" box (Default English only). Depreciated: Use "Linx Amender" instead.
 // @icon                    http://i.imgur.com/aqb4avb.png?1
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
