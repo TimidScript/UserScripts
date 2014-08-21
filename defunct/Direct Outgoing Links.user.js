@@ -722,7 +722,7 @@ var content =
 '            <div style="background-color: #9DF789; border: 1px black solid; padding: 5px;">' +
 '                <b>This script is defunct, depreciated, dated, OSBSOLETE! Use the "Copy Rules"' +
 '                 button to copy to clipboard the rules and then import them into "Linx Amender". Go to my' +
-'                 <a href="https://openuserjs.org/users/TimidScript">homepage</a> to get it.</b>' +
+'                 <a href="https://openuserjs.org/scripts/TimidScript/%5BTS%5D_Linx_Amender">homepage</a> to get it.</b>' +
 '            </div>' +
 '        </div>';
 
