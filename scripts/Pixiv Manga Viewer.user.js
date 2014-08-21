@@ -7,7 +7,7 @@
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         GNU GPLv3 + Please notify me if distributing
+// @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @grant           GM_getValue
