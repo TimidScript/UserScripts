@@ -5,7 +5,7 @@
 // @description             **Depreciated** Allows you to alter titles of websites by trimming, adding and replacing text. Depreciated: Use "Linx Amender" instead.
 // @icon                    http://i.imgur.com/aqb4avb.png
 // @author                  TimidScript
-// @homepageURL             https://greasyfork.org/users/1455-timidscript
+// @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
 // @include                 *
