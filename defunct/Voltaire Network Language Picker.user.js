@@ -2,11 +2,11 @@
 // @name                    [TS] Voltaire Network Language Picker
 // @namespace               TimidScript
 // @description             **Depreciated** Check Language(s) to display in "this weeks articles" box (Default English only). Depreciated: Use "Linx Amender" instead.
+// @version                 1.0.2 DEFUNCT
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-// @version                 1.0.2 DEFUNCT
 // @icon                    http://i.imgur.com/aqb4avb.png?1
 // @include                 http://www.voltairenet.org/*
 // @grant                   GM_getValue
@@ -24,7 +24,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/TimidScript
-
+                                
+Initial release date: Apr 24, 2014 10:07 
 ----------------------------------------------
     Version History
 ----------------------------------------------
