@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
+// @version         2.1.18
 // @description     A more Powerful Pixiv Manga Viewer. Works with Pixiv++ & Generic Image Viewer
+// @icon            http://i.imgur.com/ZNBlNzI.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-// @version         2.1.18
-// @icon            http://i.imgur.com/ZNBlNzI.png
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @grant           GM_getValue
