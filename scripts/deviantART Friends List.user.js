@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name            [TS] deviantART Friends List
-// @namespace       TimidScript
-// @version         1.0.2
-// @description     Friends List - Direct Links to root Gallery instead of Profile Page
-// @icon            http://i.imgur.com/1KiUR7g.png?1
-// @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         GNU GPLv3 + Please notify me if distributing
-// @include         http://www.deviantart.com/deviants/
+// @name                [TS] deviantART Friends List
+// @namespace           TimidScript
+// @version             1.0.2
+// @description         Friends List - Direct Links to root Gallery instead of Profile Page
+// @icon                http://i.imgur.com/1KiUR7g.png
+// @author              TimidScript
+// @homepageURL         https://openuserjs.org/users/TimidScript
+// @copyright           © 2014 TimidScript, All Rights Reserved.
+// @license             GNU GPLv3 + Please notify me if distributing
+// @include             http://www.deviantart.com/deviants/
 // ==/UserScript==
 
 
@@ -29,9 +29,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
-1.0.2 (2013-08-19)
+1.0.2 (2014-08-19)
  - Cleaned up header for OUJS
-1.0.1 (30/09/2013)
+1.0.1 (2013-09-30)
  - Initial Release
 **************************************************************************************************/
 
