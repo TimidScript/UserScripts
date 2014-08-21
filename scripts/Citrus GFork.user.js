@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork 
 // @namespace       TimidScript
+// @version         1.0.5
 // @description     Changes the appearance of Greasy Fork. It remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
+// @icon            http://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-// @version         1.0.4
-// @icon            http://i.imgur.com/YKtX7ph.png
 // @include         https://greasyfork.org/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @grant           GM_getValue
@@ -31,6 +31,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.5 (2014-08-21)
+ - Small CSS fix provided by decembre (https://greasyfork.org/forum/discussion/comment/4182)
 1.0.4 (2014-08-20)
  - Bug Fix: Author not being displayed
  - Bug Fix: Handle missing elements in user profile
@@ -148,6 +150,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                     + "#Head a {color: yellow;}"
                     + ".SiteMenu {margin-left: 220px !important;}"
                     + "#TS-Link {position: absolute; transform: rotate(-90deg); font-size:10px; top: 25px; color: yellow; font-weight: 700;}"
+                    + "#Head .SiteSearch { float: right; margin-top: -25px !important; }"        
                 );
             var img = document.querySelector(".SiteTitle img");
             img.src = "https://i.imgur.com/RqikjW1.jpg";
