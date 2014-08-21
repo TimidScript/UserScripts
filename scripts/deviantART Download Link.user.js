@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            [TS] deviantART Download Link
+// @name            [TS] deviantArt Download Link
 // @namespace       TimidScript
 // @version         1.0.7
 // @description     Adds the Download Link on illustration page if missing and also removes open in new tab
@@ -28,24 +28,24 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
-1.0.7 (2013-08-19)
- - Cleaned up header
-1.0.6 (2014/08/06)
+1.0.7 (2014-08-19)
+ - Cleaned up header for OUJS
+1.0.6 (2014-08-06)
  - Bug fix on direct link beside the title. It does not link to the largest format of the image. Removed
  it for now.
-1.0.5 (2014/07/11)
+1.0.5 (2014-07-11)
  - Bug Fix on direct links 
  - Optimised code
-1.0.4 (2014/07/03)
+1.0.4 (2014-07-03)
  - Added direct link without button next to the title
-1.0.3 (2013/12/07)
+1.0.3 (2013-12-07)
  - Need MutationObserver on all the site. (*//*.deviantart.com/*)
-1.0.2 (2013/12/07)
+1.0.2 (2013-12-07)
  - Support of flash download added
  - BugFix: the illustration page contains hidden elements that we need to check for, as we
  are trying to only change the visible one.
  - Not using TimidScript Library so remove requirement
-1.0.1 (2013/10/07)
+1.0.1 (2013-10-07)
  - Initial Release 
  - Add Missing download link
  - Stopped download from opening in new tab
