@@ -2,15 +2,15 @@
 // @name                    [TS] Blogger NCR
 // @namespace               TimidScript
 // @description             **Depreciated** Redirects blogspot to COM TLD + Skips Content Warning. Depreciated: Use "Linx Amender" instead.
-// @run-at                  document-start
+// @version                 1.0.8 DEFUNCT
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-// @version                 1.0.8 DEFUNCT
 // @icon                    http://i.imgur.com/aqb4avb.png
 // @include                 http://*.blogspot.*/*
 // @include                 *//www.blogger.com/*
+// @run-at                  document-start
 // ==/UserScript==
 
 /* Information
@@ -25,6 +25,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/TimidScript
 
+Initial release date: Dec 5, 2012 22:09
 ----------------------------------------------
     Version History
 ----------------------------------------------
