@@ -3,11 +3,11 @@
 // @namespace       TimidScript
 // @description     **Depreciated** Removes Tracker/Redirects from links. Depreciated: Use "Linx Amender" instead.
 // @version         2.0.10 DEFUNCT
+// @icon            http://i.imgur.com/aqb4avb.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-// @icon            http://i.imgur.com/aqb4avb.png
 // @include         *//www.youtube.*
 // ==/UserScript==
 
