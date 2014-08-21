@@ -2,11 +2,11 @@
 // @name                    [TS] Title Amender
 // @namespace               TimidScript
 // @description             **Depreciated** Allows you to alter titles of websites by trimming, adding and replacing text. Depreciated: Use "Linx Amender" instead.
+// @version                 2.1.12 DEFUNCT
 // @author                  TimidScript
 // @homepageURL             https://greasyfork.org/users/1455-timidscript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-// @version                 2.1.12 DEFUNCT
 // @icon                    http://i.imgur.com/aqb4avb.png
 // @include                 *
 // @grant                   GM_registerMenuCommand
