@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name          [TS] Youtube Secure
 // @namespace     TimidScript
-// @description   **Depreciated** Redirects to Secure (https) Youtube. Depreciated: Use "Linx Amender" instead.
 // @version       1.0.1 DEFUNCT
+// @description   **Depreciated** Redirects to Secure (https) Youtube. Depreciated: Use "Linx Amender" instead.
 // @icon          http://i.imgur.com/aqb4avb.png
 // @author        TimidScript
 // @homepageURL   https://openuserjs.org/users/TimidScript
