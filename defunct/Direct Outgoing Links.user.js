@@ -5,7 +5,7 @@
 // @description             **Depreciated** Removes outgoing links tracking/redirection parts/open-in-new-tab. Depreciated: Use "Linx Amender" instead.
 // @icon                    http://i.imgur.com/aqb4avb.png
 // @author                  TimidScript
-// @homepageURL             https://greasyfork.org/users/1455-timidscript
+// @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
 // @include                 *
@@ -21,9 +21,10 @@
 Copyright © 2014 TimidScript, All Rights Reserved.
 Script's Homepage:              Check homepages below
 
-TimidScript's Homepage:         https://greasyfork.org/users/1455-timidscript
+TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
+				https://greasyfork.org/users/1455-timidscript
                                 https://monkeyguts.com/author.php?un=timidscript
-                                https://openuserjs.org/users/TimidScript
+                                
 
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
