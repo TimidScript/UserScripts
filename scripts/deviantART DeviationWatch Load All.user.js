@@ -1,17 +1,14 @@
 // ==UserScript==
-// @name            [TS] deviantART DeviationWatch Load All
-// @namespace       TimidScript
-// @description     Loads all deviations in Inbox DeviantWatch
-
-// @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         GNU GPLv3 + Please notify me if distributing
-
-// @version         1.0.13
-// @icon            http://i.imgur.com/1KiUR7g.png?1
-
-// @include         http://www.deviantart.com/messages/*
+// @name                [TS] deviantART DeviationWatch Load All
+// @namespace           TimidScript
+// @version             1.0.13
+// @description         Loads all deviations in Inbox DeviantWatch
+// @icon                http://i.imgur.com/1KiUR7g.png
+// @author              TimidScript
+// @homepageURL         https://openuserjs.org/users/TimidScript
+// @copyright           © 2014 TimidScript, All Rights Reserved.
+// @license             GNU GPLv3 + Please notify me if distributing
+// @include             http://www.deviantart.com/messages/*
 // ==/UserScript==
 
 /* Information
@@ -30,8 +27,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
-1.0.13 (2013-08-19)
- - Cleaned up header
+1.0.14 (2014-08-19)
+ - Cleaned up header for OUJS
  - Saved in Unicode
 1.0.12 (2013-05-06)
  - Added empty deviations
@@ -56,16 +53,16 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     something from the inbox menu then back to "Deviations", after you press the button all 
     deviations will load on the table.
  -Small fix, displays a error log if deviations are not all loaded as error is captured now.
-1.0.5 (05/03/2013)
+1.0.5 (05-03-2013)
  -Changed the way it gets the thumbnails. It now waits for the nav link bar to be added
     before it tries to load all thumbnails in once go into the table.         
  -OffSet is set according to the first time the button pressed. Had a mechanism where it was 
     used but decided to remove it. It is still in place for future assurance. 
  -Increased the time wait between each load to 1000ms    
-1.0.3 (26/02/2013)
+1.0.3 (26-02-2013)
  -Added 500ms timeout between each page fetch.
  -Added summary box at the bottom.
-1.0.2 (25/02/2013)
+1.0.2 (25-02-2013)
  -Changed the behaviour. You now need to press the button
     to get a table of all images.     
  -No need to set offset. It no longer uses it
