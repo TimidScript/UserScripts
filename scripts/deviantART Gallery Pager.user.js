@@ -1,16 +1,13 @@
 // ==UserScript==
 // @name                    [TS] deviantART Gallery Pager
 // @namespace               TimidScript
+// @version                 1.0.2
 // @description             Auto-pager for DeviantArt gallery/favourites
-
+// @icon                    http://i.imgur.com/1KiUR7g.png
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-
-// @version                 1.0.2
-// @icon                    http://i.imgur.com/1KiUR7g.png?1
-
 // @include                 http://*.deviantart.com/gallery/*
 // @include                 http://*.deviantart.com/favourites/*
 // ==/UserScript==
