@@ -1,21 +1,17 @@
 // ==UserScript==
 // @name            [TS] Schmoogle
 // @namespace       TimidScript
+// @version         2.1.41d
 // @description     Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
-
+// @icon            http://i.imgur.com/Kvb2Ili.png?1
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-
-// @version         2.1.41d
-// @icon            http://i.imgur.com/Kvb2Ili.png?1
-
 // @include         *//www.google.*
 // @include         *//encrypted.google.*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_jsColorGM.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-
 // @grant           GM_setValue
 // @grant           GM_getValue
 // @grant           GM_listValues
