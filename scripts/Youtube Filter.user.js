@@ -1,19 +1,15 @@
 // ==UserScript==
 // @name                    [TS] Youtube Filter
 // @namespace               TimidScript
+// @version                 1.0.23
 // @description             Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
-
+// @icon                    http://i.imgur.com/E2wQ6Xm.gif
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-
-// @version                 1.0.22b
-// @icon                    http://i.imgur.com/E2wQ6Xm.gif
-
 // @include                 *//www.youtube.*
 // @exclude                 *//www.youtube.*/embed/*
-
 // @grant                   GM_xmlhttpRequest
 // @grant                   GM_setValue
 // @grant                   GM_getValue
@@ -37,44 +33,46 @@ Future Updates:
 ----------------------------------------------
     Version History
 ----------------------------------------------
-1.0.22 (2014/07/16)
+1.0.23 (2014-08-19)
+ - Cleaned up header for OUJS
+1.0.22 (2014-07-16)
  - @exclude iframe embed videos
-1.0.21 (2014/07/15)
+1.0.21 (2014-07-15)
  - Added image link to channel videos
  - Added necessary @grant header
  - Altered the CSS
  - Remove MutationObserver from most page types
-1.0.20 (2014/07/03)
+1.0.20 (2014-07-03)
  - Bug Fix: Fixed issues caused by change in youtube layout
  - Added option to turn off auto-paging
  - Removed img.youtube include 
-1.0.19 (2014/06/14)
+1.0.19 (2014-06-14)
  - Scrollable FilterWindow
  - Use port 8080 for require on userscripts.org
-1.0.18 (2014/06/07)
+1.0.18 (2014-06-07)
  - Bug fix on pager when spelling correction is applied
-1.0.17 (2014/05/31)
+1.0.17 (2014-05-31)
  - Updated so main page includes "Recommended" in the filter
-1.0.16 (2014/05/30)
+1.0.16 (2014-05-30)
  - Modified CSS and link text
-1.0.15 (2014/05/25)
+1.0.15 (2014-05-25)
  - Moved options button beside upload button if it exists.
-1.0.14 (2014/05/21)
+1.0.14 (2014-05-21)
  - Bug Fix: Not checking for maxresdefault.jpg.
-1.0.13 (2014/05/20)
+1.0.13 (2014-05-20)
  - Video screenshot link now points to "hqdefault.jpg" by default. 
  Checks if "maxresdefault.jpg" and re-links if necessary
-1.0.12 (2014/05/17)
+1.0.12 (2014-05-17)
  - Added link to max res screenshot
-1.0.11 (2014/05/09)
+1.0.11 (2014-05-09)
  - Made options button invisible unless you hover over top, right corner. 
-1.0.10 (2014/03/28)
+1.0.10 (2014-03-28)
  - Updated broken script due to changes in youtube
-1.0.9 (2014/01/16)
+1.0.9 (2014-01-16)
  - Bug not getting page type when type changes. 
-1.0.8 (2014/01/01)
+1.0.8 (2014-01-01)
  - Option button alternates filter window display
-1.0.7b (2013/12/21)
+1.0.7b (2013-12-21)
  - Removed redundant code
  - Highlights blocked users and options buttonQ
  - Button now is an Icon
@@ -82,19 +80,20 @@ Future Updates:
  - Captures changes in URL
 1.0.6
  - Added block button on all thumbnails
- - Information stored now only contains the name of the user/channel and nothing else
+ - Information stored now only contains the name of the user-channel and nothing else
 1.0.5
  - Main X button now also removes filter
 1.0.4
  - Colours added
-1.0.3 (2013/10/16)
+1.0.3 (2013-10-16)
  - Extended the filter to work on main page
-1.0.2 (2013/08/25)
+1.0.2 (2013-08-25)
  - Bug Fix: Filter observer added
-1.0.1 (2013/08/24)
+1.0.1 (2013-08-24)
  - Initial Release
-
 ********************************************************************************************/
+
+
 if (window.self !== window.top) return;
 console.info("Youtube Filter");
 var ShowAll = false;
