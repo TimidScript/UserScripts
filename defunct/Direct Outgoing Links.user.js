@@ -5,7 +5,7 @@
 // @author                  TimidScript
 // @homepageURL             https://greasyfork.org/users/1455-timidscript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 https://github.com/TimidScript/GreasyMonkey/blob/master/LICENSE.md
+// @license                 GNU GPLv3 + Please notify me if distributing
 // @version                 2.0.14 DEFUNCT
 // @icon                    http://i.imgur.com/aqb4avb.png
 // @include                 *
