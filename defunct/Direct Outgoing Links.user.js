@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name                    [TS] Direct Outgoing Links
 // @namespace               TimidScript
+// @version                 2.0.14 DEFUNCT
 // @description             **Depreciated** Removes outgoing links tracking/redirection parts/open-in-new-tab. Depreciated: Use "Linx Amender" instead.
+// @icon                    http://i.imgur.com/aqb4avb.png
 // @author                  TimidScript
 // @homepageURL             https://greasyfork.org/users/1455-timidscript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-// @version                 2.0.14 DEFUNCT
-// @icon                    http://i.imgur.com/aqb4avb.png
 // @include                 *
 // @grant                   GM_setClipboard
 // @grant                   GM_registerMenuCommand
