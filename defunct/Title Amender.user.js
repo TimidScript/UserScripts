@@ -31,7 +31,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
 
-
+Initial release date: Sep 18, 2010 17:10
 ------------------------------------
  Version History
 ------------------------------------
