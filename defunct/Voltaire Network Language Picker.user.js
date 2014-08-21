@@ -6,7 +6,7 @@
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-// @version                 1.0.2
+// @version                 1.0.2 DEFUNCT
 // @icon                    http://i.imgur.com/aqb4avb.png?1
 // @include                 http://www.voltairenet.org/*
 // @grant                   GM_getValue
