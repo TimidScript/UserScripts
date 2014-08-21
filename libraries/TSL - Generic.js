@@ -6,7 +6,7 @@
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 Creative Commons BY-NC-SA Plus notifying me of usage :)
+// @license                 Creative Commons BY-NC-SA + Please notify me if distributing
 
 // @version                 1.0.4
 // ==/UserScript==  
