@@ -7,7 +7,7 @@
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         GNU GPLv3 + Please notify me if distributing
+// @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @include         *//www.google.*
 // @include         *//encrypted.google.*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_jsColorGM.js
