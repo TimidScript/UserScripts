@@ -27,7 +27,8 @@ TimidScript's Homepage:         https://greasyfork.org/users/1455-timidscript
 
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
-
+                                
+Initial release date: Feb 5, 2013 19:17
 ------------------------------------
  Version History
 ------------------------------------
