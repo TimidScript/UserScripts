@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
+// @version             3.1.59
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | Custom views for page types | Link Caching and other features. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer".
+// @icon                http://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
 // @license             GNU GPLv3 + Please notify me if distributing
-// @version             3.1.59
-// @icon                http://i.imgur.com/ZNBlNzI.png
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=big&illust_id*
@@ -35,25 +35,25 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
-3.1.59 (2014/08/19)
+3.1.59 (2014-08-19)
  - Cleaned up header for OUJS
  - Removed old history
-3.1.58 (2014/08/17)
+3.1.58 (2014-08-17)
  - Full support for Ugoira links
  - Removed header data @versioninfo as there is no personalised updater 
-3.1.57 (2014/07/09)
+3.1.57 (2014-07-09)
  - Bug Fix for Pixiv layout changes
-3.1.56 (2014/07/03)
+3.1.56 (2014-07-03)
  - Bug Fix: Links on Illustration page not working
  - Bug Fix in SetMethod2 document.evalute variable fix
-3.1.55 (2014/07/03)
+3.1.55 (2014-07-03)
  - Partial support for Ugoira animated files. More information found:
     http://www.pixiv.net/info.php?id=2476&lang=en
     http://danbooru.donmai.us/forum_topics/10712
     https://github.com/r888888888/danbooru/issues/2212
-3.1.54 (2014/05/28)
+3.1.54 (2014-05-28)
  - Fix IQDB links captured as images
-3.1.53 (2014/05/19)
+3.1.53 (2014-05-19)
  - Small changes
 *************************************************************************************************/
 
@@ -2997,3 +2997,19 @@ if (window.self === window.top)
             PaginatorHQ.intialise();
         }
     }());
+
+
+/*
+<script>
+pixiv.context.illustId         = '44305721';
+pixiv.context.illustTitle      = 'フランスパンこいしちゃんgif';
+pixiv.context.userId           = '42949';
+pixiv.context.userName         = 'ゆぬき うた';
+pixiv.context.hasQuestionnaire = false;
+pixiv.context.embedId          = '44305721_0286523bc768bf54bbc69e3163d75256';
+pixiv.context.explicit         = false;
+pixiv.context.illustSize       = [514, 487];
+pixiv.context.ugokuIllustData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira600x600.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
+pixiv.context.ugokuIllustFullscreenData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira1920x1080.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
+</script>
+*/
