@@ -1,16 +1,13 @@
 // ==UserScript==
 // @name                    [TS] Youtube Load More Channel Videos
 // @namespace               TimidScript
+// @version                 1.0.3
 // @description             Auto loads more videos in channel
-
+// @icon                    http://i.imgur.com/E2wQ6Xm.gif
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 GNU GPLv3 + Please notify me if distributing
-
-// @version                 1.0.3
-// @icon                    http://i.imgur.com/E2wQ6Xm.gif
-
 // @include                 http://www.youtube.*/user/*
 // @include                 https://www.youtube.*/user/*
 // @include                 http://www.youtube.*/channel/*
