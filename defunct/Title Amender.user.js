@@ -7,7 +7,7 @@
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 https://github.com/TimidScript/GreasyMonkey/blob/master/LICENSE.md
 // @version                 2.1.12 DEFUNCT
-// @icon                    http://i.imgur.com/RH2zYvB.png
+// @icon                    http://i.imgur.com/aqb4avb.png
 // @include                 *
 // @grant                   GM_registerMenuCommand
 // @grant                   GM_getValue
