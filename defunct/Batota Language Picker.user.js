@@ -3,11 +3,11 @@
 // @namespace           TimidScript
 // @version             1.0.2 DEFUNCT
 // @description         **Depreciated** Only displays one language (Default English). Depreciated: Use "Linx Amender" instead.
+// @icon                http://i.imgur.com/aqb4avb.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
 // @license             GNU GPLv3 + Please notify me if distributing
-// @icon                http://i.imgur.com/aqb4avb.png
 // @include             http://www.batoto.net/comic/*
 // @grant               GM_getValue
 // @grant               GM_setValue
