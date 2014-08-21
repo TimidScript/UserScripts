@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork 
 // @namespace       TimidScript
-// @version         1.0.5
+// @version         1.0.6
 // @description     Changes the appearance of Greasy Fork. It remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            http://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -31,6 +31,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.6 (2014-08-21)
+ - Bug Fix for sorting
 1.0.5 (2014-08-21)
  - Small CSS fix provided by decembre (https://greasyfork.org/forum/discussion/comment/4182)
 1.0.4 (2014-08-20)
@@ -491,7 +493,8 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                 if (!m[i].match(/^(per_page|sort)/) && !(firstPage && m[i].match(/^page/))) url += "&" + m[i];
             }
 
-        if (tag) url += "&sort=" + tag;
+
+        if (tag) url += ((url.indexOf("?") > 0) ? "&" : "?") + "sort=" + tag;
 
         console.warn("getScriptListing IN: " + url)
         GM_xmlhttpRequest({
