@@ -1,16 +1,13 @@
 // ==UserScript==
 // @name            [TS] deviantART Friends List
 // @namespace       TimidScript
+// @version         1.0.2
 // @description     Friends List - Direct Links to root Gallery instead of Profile Page
-
+// @icon            http://i.imgur.com/1KiUR7g.png?1
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         GNU GPLv3 + Please notify me if distributing
-
-// @version         1.0.2
-// @icon            http://i.imgur.com/1KiUR7g.png?1
-
 // @include         http://www.deviantart.com/deviants/
 // ==/UserScript==
 
