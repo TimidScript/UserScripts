@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                TSL - GM_update
 // @namespace           TimidScript
-// @version             1.0.2
+// @version             1.0.3
 // @description         An advance user-script updater library that supports OpenUserJS, GreasyFork, MonkeyGuts and any other site that provides meta.js support. Should work with GreaseMonkey v2+ (FireFox), Scriptish v0.1.12+ (FireFox), TamperMonkey (Chrome) and ViolentMonkey (Opera).
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -91,10 +91,10 @@ community and have checks and balances.
 ----------------------------------------------
  Version History
 ----------------------------------------------
-1.0.2 (2014/08/23)
+1.0.3 (2014/08/23)
+ - Bug with GM2.1, FF31 and iframe. Temporary checking for window top is delayed. 
+ - Support for html changelog added
  - Small bug fix, dialog appears when CoolingPeriod is not set.
-1.0.1 (2014/08/23)
-- Bug with GM2.1, FF31 and iframe. Temporary checking for window top is delayed. 
 
 ********************************************************************************************/
 
@@ -299,8 +299,38 @@ var GM_update =
                     var sup = doc.getElementById("stimeL").parentElement;
                     sup.innerHTML = sup.innerHTML.replace(/\[(<time .+)\]$/i, "$1");
                 }
-
-                if (online.changelog) doc.getElementById("changelog").textContent = online.changelog;
+                
+                online.changelog = "<html><html><b name='adasdas'>asdasdasdas</b><s></s><Div name='adasdas' style='background-color:red'>adadaasdasd<b>adad</b></diV>";
+                if (online.changelog)
+                {
+                    var log = doc.getElementById("changelog");
+                    log.innerHTML = online.changelog;
+                    var nodes = doc.querySelectorAll('div[id="changelog"] *');                    
+                    for (var i = 0; i < nodes.length; i++)
+                    {
+                        var node = nodes[i];                        
+                        if (!node.tagName.match(/uo|ol|li|b|strong|i|div|br/i))
+                        {
+                            node.parentElement.removeChild(node);
+                        }
+                        else if (node.attributes)
+                        {
+                            try
+                            {                                
+                                for (var j = 0; j < node.attributes.length; j++)
+                                {                                    
+                                    var attrib = node.attributes[j];
+                                    if (attrib.name.toLowerCase() != "style")                                 
+                                    {
+                                        node.removeAttribute(attrib.name);
+                                        j--;
+                                    }
+                                }
+                            }
+                            catch (e) { console.log(e);}
+                        }
+                    }
+                }
                 else doc.getElementById("logsection").style.display = "none";
             }
             else
