@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                TSL - GM_update
 // @namespace           TimidScript
-// @version             1.0.1
+// @version             1.0.2
 // @description         An advance user-script updater library that supports OpenUserJS, GreasyFork, MonkeyGuts and any other site that provides meta.js support. Should work with GreaseMonkey v2+ (FireFox), Scriptish v0.1.12+ (FireFox), TamperMonkey (Chrome) and ViolentMonkey (Opera).
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -91,6 +91,8 @@ community and have checks and balances.
 ----------------------------------------------
  Version History
 ----------------------------------------------
+1.0.2 (2014/08/23)
+ - Small bug fix, dialog appears when CoolingPeriod is not set.
 1.0.1 (2014/08/23)
 - Bug with GM2.1, FF31 and iframe. Temporary checking for window top is delayed. 
 
@@ -100,22 +102,30 @@ community and have checks and balances.
 
 var GM_update =
 {
-    installed:  {name : "", homeURL : "", version: "", description: "", metaURL: "", enabled : ""},
-    online:  {name : "", version: "", description: "", changelog: "", date : "", userURL : "" },    
+    installed: { name: "", homeURL: "", version: "", description: "", metaURL: "", enabled: "" },
+    online: { name: "", version: "", description: "", changelog: "", date: "", userURL: "" },
 
-    checkTimestamp: function()
-    {              
+    checkTimestamp: function ()
+    {
         var days = GM_update.getDaysSinceLastCheck();
         var cp = GM_getValue("GMU-CoolingPeriod", 5);
-               
-        if (cp > 0 && (days < 0 || days >= cp)) GM_update.isThereANewVersion();
-    },
 
+        if (cp > 0 && (days < 0 || days >= cp))
+        {
+            var url = (GM_update.installed.metaURL) ? GM_update.installed.metaURL : GM_update.installed.homeURL
+            GM_update.isThereANewVersion(url, checkCallback);
+        }
+
+        function checkCallback(success)
+        {            
+            if (success && GM_update.installed.version != GM_update.online.version) GM_update.showUpdateDialog();
+        }
+    },
 
     /* Returns the number of days since last check. If it is the first check,
        it returns -1.     
     =====================================================================================*/
-    getDaysSinceLastCheck: function()
+    getDaysSinceLastCheck: function ()
     {
         var timestamp = GM_getValue("GMU-Timestamp", null);
 
@@ -128,13 +138,13 @@ var GM_update =
     },
 
     /* url is url to the scripts OUJS/GF/MG homepage or to the meta.js file.
-    updateCallback is function that takes in one parameter that returns true
+    checkCallback is function that takes in one parameter that returns true
     if version check is done successfully.
-    updateCallback(success). 
+    checkCallback(success). 
     =====================================================================================*/
-    isThereANewVersion: function (url, updateCallback)
-    {           
-        if (!url && GM_update.installed.metaURL ) url = GM_update.installed.metaURL;
+    isThereANewVersion: function (url, checkCallback)
+    {
+        if (!url && GM_update.installed.metaURL) url = GM_update.installed.metaURL;
         else if (!url) url = GM_update.installed.homeURL;
 
         console.info("GM_update: " + url);
@@ -152,8 +162,8 @@ var GM_update =
                 if (xhr.status == 200)
                 {
                     GM_setValue("GMU-Timestamp", new Date().getTime());
-                    
-                    var online;                    
+
+                    var online;
                     if (url.search(/meta\.js$/) > 0) online = GM_update.parseMeta(xhr.responseText);
                     else
                     {
@@ -165,26 +175,26 @@ var GM_update =
                         doc.appendChild(documentElement);
                         online = GM_update.parseDocument(url, doc);
                     }
-                                     
-                    if (updateCallback && online.version) updateCallback(true);
-                    else if (updateCallback) updateCallback(false);
+
+                    if (checkCallback && online.version) checkCallback(true);
+                    else if (checkCallback) checkCallback(false);
                     else if (!online.version || !online.name) console.error("GM_update xhr.status: " + xhr.status);
                     else if (online.version != GM_update.version) GM_update.showUpdateDialog();
-                                        
+
                 }
-                else console.error("GM_update xhr.status: " + xhr.status); 
+                else console.error("GM_update xhr.status: " + xhr.status);
             },
-            ontimeout: function (response) 
-            { 
-                console.error("GM_Update: Unable to access script homepage due to timeout error. URL: " + url); 
+            ontimeout: function (response)
+            {
+                console.error("GM_Update: Unable to access script homepage due to timeout error. URL: " + url);
                 console.warn(response);
-                updateCallback(false);
+                checkCallback(false);
             },
-            onerror: function (response) 
-            { 
-                console.error("GM_Update: Error trying to access script homepage URL: " + url); 
-                console.warn(response); 
-                updateCallback(false);
+            onerror: function (response)
+            {
+                console.error("GM_Update: Error trying to access script homepage URL: " + url);
+                console.warn(response);
+                checkCallback(false);
             }
         });
     },
@@ -194,14 +204,14 @@ var GM_update =
     =====================================================================================*/
     parseDocument: function (url, doc)
     {
-        var online = GM_update.online;        
+        var online = GM_update.online;
         if (url.match(/greasyfork\.org\//i))
         {
             online.name = doc.querySelector("#script-info h2").textContent;
             online.description = doc.querySelector("#script-info p").textContent;
             online.version = doc.querySelector("dd.script-show-version span").textContent;
             online.date = doc.querySelector("dd.script-show-updated-date time").getAttribute("datetime");
-            online.userURL = "https://greasyfork.org" + doc.querySelector(".install-link").href;                        
+            online.userURL = "https://greasyfork.org" + doc.querySelector(".install-link").href;
 
         }
         else if (url.match(/monkeyguts\.com\//i))
@@ -231,11 +241,12 @@ var GM_update =
         var online = GM_update.online;
         var lines = raw.split('\n');
         var metadata = {};
-        for (var i = 0; i < lines.length; i++) 
+        for (var i = 0; i < lines.length; i++)
         {
-            lines[i].replace(/\s*\/\/\s*@([^ ]+)\s+(.+)/, function (all, key, value) {
+            lines[i].replace(/\s*\/\/\s*@([^ ]+)\s+(.+)/, function (all, key, value)
+            {
                 key = key.toLowerCase();
-                metadata[key] = value.trim();               
+                metadata[key] = value.trim();
             });
         }
 
@@ -250,10 +261,10 @@ var GM_update =
 
     /* Shows update window
     =====================================================================================*/
-    showUpdateDialog: function(installed, online)
+    showUpdateDialog: function (installed, online)
     {
         if (!installed) installed = GM_update.installed;
-        if (!online) online = GM_update.online;        
+        if (!online) online = GM_update.online;
 
         var iframe = document.createElement("iframe");
         iframe.id = "GM_UpdateWindow";
@@ -261,12 +272,12 @@ var GM_update =
         iframe.setAttribute("style", "border: none; background-color: transparent; position:fixed; right: 15px; bottom: 15px; z-index: 9999999999999999999999999;");
         iframe.onload = function ()
         {
-            var doc = iframe.contentDocument || iframe.contentWindow.document;            
+            var doc = iframe.contentDocument || iframe.contentWindow.document;
             var css = doc.createElement("style");
             css.type = "text/css";
             css.textContent = "#smain{width: 600px;max-width: 600px;background-color: #E9E9F9;border: 2px ridge blue;font-size: 15px;}header{text-align: center;padding: 2px 0;font-size: 17px;color: black;border-bottom: 1px solid;}header, footer{border-color: navy;background-color: #CFCFF5;}footer{padding: 4px 5px 2px 5px;height: 25px;border-top: 1px solid;}#sdetail{margin: 5px;}#sname, #sversion{font-weight: bolder;}#sname{color: blue;}#sversion{color: blue;}article{background-color: white;padding: 5px;border-radius: 3px;}#info{padding: 2px 5px;border-radius: 3px;margin-bottom: 3px;border: 1px ridge gray;}.matched msg{background-color: #EFF1F1;color: black;}.matched #newversion, .matched #logsection{display: none;}.unmatched #info{background-color: white;}.unmatched #msg{font-size: 12px;display: inline-block;padding: 2px 5px;background-color: #F7E1E5;border: 1px solid #CA3952;color: #CA3952;border-radius: 5px;}.unmatched #newversion{display: inline-block;}#newversion{font-weight: bolder;margin-left: 5px;}#snameL{color: #33AC4A;}#sversionL{color: red;}#gohome, #cancel{font-family: 'Times New Roman';float: right;padding: 2px 6px;border: 1px solid;border-radius: 5px;text-decoration: none;font-size: 14px;margin-left: 3px;background-color: lightgray;}.unmatched #gohome{text-decoration: underline;text-decoration-color: red;-moz-text-decoration-color: red;color: green;background-color: #BDF1BD;}#cancel:hover, #gohome:hover{cursor: pointer;background-color: lightblue;}";
-            doc.head.appendChild(css);            
-            
+            doc.head.appendChild(css);
+
             doc.body.innerHTML = '<div id="smain"><header><span>Update Check: </span><span id="sname"></span><sup>v.<span id="sversion"></span></sup></header><section id="sdetail"><div id="info"><div id="msg"></div><div id="newversion"><span id="snameL"></span><sup>v.<span id="sversionL"></span> [<time id="stimeL"></time>]</sup></div></div><article><div style="font-weight: bolder;">Summary:</div><div id="description"></div><div id="logsection"><hr /><div style="font-weight: bolder;">Changelog:</div><div id="changelog"></div></div></article></section><footer><label>Update check: </label><select id="intervalLength"><option>never</option><option>everyday</option><option>every 2 days</option><option>every 3 days</option><option>every 4 days</option><option>every 5 days</option><option>every 6 days</option><option>every 7 days</option></select><div id="cancel">Cancel</div><a id="gohome" target="_blank">Download Page</a></footer></div>';
 
             doc.getElementById("sname").textContent = installed.name;
@@ -275,20 +286,20 @@ var GM_update =
             doc.getElementById("gohome").href = installed.homeURL;
 
             if (installed.version != online.version)
-            {                
+            {
                 doc.getElementById("smain").className = "unmatched";
                 doc.getElementById("msg").textContent = "New version released";
 
-                doc.getElementById("snameL").textContent = online.name ;
+                doc.getElementById("snameL").textContent = online.name;
                 doc.getElementById("sversionL").textContent = online.version;
 
                 if (online.date) doc.getElementById("stimeL").textContent = online.date;
                 else
                 {
                     var sup = doc.getElementById("stimeL").parentElement;
-                    sup.innerHTML = sup.innerHTML.replace(/\[(<time .+)\]$/i, "$1");                    
+                    sup.innerHTML = sup.innerHTML.replace(/\[(<time .+)\]$/i, "$1");
                 }
-                
+
                 if (online.changelog) doc.getElementById("changelog").textContent = online.changelog;
                 else doc.getElementById("logsection").style.display = "none";
             }
@@ -299,8 +310,8 @@ var GM_update =
             }
 
             var cp = GM_getValue("GMU-CoolingPeriod", 5);
-            doc.getElementById("intervalLength").selectedIndex  = cp;
-            doc.getElementById("intervalLength").onchange = function()
+            doc.getElementById("intervalLength").selectedIndex = cp;
+            doc.getElementById("intervalLength").onchange = function ()
             {
                 GM_setValue("GMU-CoolingPeriod", doc.getElementById("intervalLength").selectedIndex);
             }
@@ -309,13 +320,14 @@ var GM_update =
 
 
             //Resize iframe
-            var intervalID = setInterval(function (iframe, doc) {                
-                iframe.style.width = (doc.body.firstElementChild.offsetWidth + 35) + "px";                
-                iframe.style.height = (doc.body.scrollHeight) +"px";
+            var intervalID = setInterval(function (iframe, doc)
+            {
+                iframe.style.width = (doc.body.firstElementChild.offsetWidth + 35) + "px";
+                iframe.style.height = (doc.body.scrollHeight) + "px";
                 Counter++;
-                if (Counter == 20) 
+                if (Counter == 20)
                 {
-                    clearInterval(intervalID);                    
+                    clearInterval(intervalID);
                 }
             }, 50, iframe, doc);
 
@@ -327,18 +339,18 @@ var GM_update =
 };
 
 
-(function()
+(function ()
 {
     var installed = GM_update.installed;
 
     if (typeof GM_info !== "undefined")
     {
         installed.name = TrimValue(GM_info.script.name);
-        installed.version = TrimValue(GM_info.script.version);        
+        installed.version = TrimValue(GM_info.script.version);
         installed.description = TrimValue(GM_info.script.description);
-        
+
         var str = GM_info.scriptMetaStr;
-        
+
         m = GM_info.scriptMetaStr.match(/\/\/ @homeurl\s+(.+)/i);
         if (m) installed.homeURL = TrimValue(m[1]);
 
@@ -347,28 +359,27 @@ var GM_update =
 
         m = GM_info.scriptMetaStr.match(/\/\/ @gm_update\s+(.+)/i);
         if (m) installed.enabled = TrimValue(m[1]) != "manual";
-        else installed.enabled = true;                 
+        else installed.enabled = true;
     }
     else if (typeof GM_getMetadata !== "undefined")
-    {   
+    {
         installed.name = TrimValue(GM_getMetadata("name"));
         installed.version = TrimValue(GM_getMetadata("version"));
         installed.description = TrimValue(GM_getMetadata("description"));
 
         installed.homeURL = TrimValue(GM_getMetadata("homeurl"));
         installed.metaURL = TrimValue(GM_getMetadata("metaurl"));
-        installed.enabled  = (TrimValue(GM_getMetadata("gm_update")) != "manual");
-    }    
+        installed.enabled = (TrimValue(GM_getMetadata("gm_update")) != "manual");
+    }
 
     if (installed.enabled && installed.version && installed.homeURL && installed.name)
     {
         if (window.self !== window.top) return;
         console.info("Register GM_update menu for: " + installed.name);
-        GM_registerMenuCommand("GM_update: " + installed.name, function()
-        {             
-            if (document.querySelector("#GM_UpdateWindow[name='" + installed.name + "']")) document.body.removeChild(document.querySelector("#GM_UpdateWindow[name='" + installed.name + "']"));
-            else GM_update.isThereANewVersion();
-        });                   
+        GM_registerMenuCommand("GM_update: " + installed.name, function ()
+        {
+            GM_update.isThereANewVersion();
+        });
 
         GM_update.checkTimestamp();
     }
