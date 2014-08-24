@@ -3,7 +3,7 @@
 // @namespace               TimidScript
 // @version                 1.0.2 DEFUNCT
 // @description             **Depreciated** Check Language(s) to display in "this weeks articles" box (Default English only). Depreciated: Use "Linx Amender" instead.
-// @icon                    http://i.imgur.com/aqb4avb.png?1
+// @icon                    https://i.imgur.com/aqb4avb.png?1
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
