@@ -3,7 +3,7 @@
 // @namespace               TimidScript
 // @version                 2.0.14 DEFUNCT
 // @description             **Depreciated** Removes outgoing links tracking/redirection parts/open-in-new-tab. Depreciated: Use "Linx Amender" instead.
-// @icon                    http://i.imgur.com/aqb4avb.png
+// @icon                    https://i.imgur.com/aqb4avb.png
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
