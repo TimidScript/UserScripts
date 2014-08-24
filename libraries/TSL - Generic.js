@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.4
+// @version                 1.0.5
 // @description             A resource JS library file providing common useful functions to be used by other scripts  
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -28,6 +28,8 @@ object is commented out.
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.5 (2014-08-24)
+ - TSL part no longer commented out
 1.0.4
  - Added new functions createElement, createElementHTML function
  - Partial support for non-main document
@@ -174,47 +176,46 @@ var TimidScriptLibrary =
 
 //#region TimidScript Library Functions
 /* 
-Copy and paste the commented out code underneath into your script for quick reference 
+Copy and paste the code underneath into your script for quick reference 
 and auto-complete feature if available. 
 *********************************************************************************/
 
-//var TSL = new Object();
+var TSL = new Object();
 
-////Remove node from document. Accepts id or node object
-//TSL.removeNode = function (node, doc) { TimidScriptLibrary.removeNode(node, doc); };
+//Remove node from document. Accepts id or node object
+TSL.removeNode = function (node, doc) { TimidScriptLibrary.removeNode(node, doc); };
 
-//// Creates document element. Default doc value is the document.
-//TSL.createElement = function (tag, attributes, doc) { return TimidScriptLibrary.createElement(tag, attributes, doc) };
+// Creates document element. Default doc value is the document.
+TSL.createElement = function (tag, attributes, doc) { return TimidScriptLibrary.createElement(tag, attributes, doc) };
 
-//// Creates document element using html code. Default doc value is the document.
-//TSL.createElementHTML = function (html, doc) { return TimidScriptLibrary.createElementHTML(html, doc) };
+// Creates document element using html code. Default doc value is the document.
+TSL.createElementHTML = function (html, doc) { return TimidScriptLibrary.createElementHTML(html, doc) };
 
-////Add CSS styles to document header. Document can be left empty.
-//TSL.addStyle = function (id, CSS, doc) { TimidScriptLibrary.addSyle(id, CSS, doc); };
+//Add CSS styles to document header. Document can be left empty.
+TSL.addStyle = function (id, CSS, doc) { TimidScriptLibrary.addSyle(id, CSS, doc); };
 
-////General Functions
-//TSL.makeStruct = function (names) { return TimidScriptLibrary.makeStruct(names); };
+//General Functions
+TSL.makeStruct = function (names) { return TimidScriptLibrary.makeStruct(names); };
 
-//// Checks if mouse event is within an elements client area
-//TSL.isMouseEventInClientArea = function (event, element) { return TimidScriptLibrary.isMouseEventInClientArea(event, element); };
+// Checks if mouse event is within an elements client area
+TSL.isMouseEventInClientArea = function (event, element) { return TimidScriptLibrary.isMouseEventInClientArea(event, element); };
 
-////Returns the thickness of the scrollbar
-//TSL.getScrollBarThickness = function () { return TimidScriptLibrary.getScrollBarThickness(); };
+//Returns the thickness of the scrollbar
+TSL.getScrollBarThickness = function () { return TimidScriptLibrary.getScrollBarThickness(); };
 
-////Array containing NTFS illegal characters alternatives
-//TSL.ALTNTFSChars = [["<", "〉"], [">", "〈"], [":", "："], ['"', "‟"], ["/", "∕"], ["\\", ""], ["?", ""], ["*", "✳"], ];
-//TSL.replaceNTFSIllegals = function (str) { return TimidScriptLibrary.replaceNTFSIllegals(str); };
+//Array containing NTFS illegal characters alternatives
+TSL.ALTNTFSChars = [["<", "〉"], [">", "〈"], [":", "："], ['"', "‟"], ["/", "∕"], ["\\", ""], ["?", ""], ["*", "✳"], ];
+TSL.replaceNTFSIllegals = function (str) { return TimidScriptLibrary.replaceNTFSIllegals(str); };
 
-//TSL.escapeRegExp = function (str) { return TimidScriptLibrary.escapeRegExp(str);};
+TSL.escapeRegExp = function (str) { return TimidScriptLibrary.escapeRegExp(str);};
 
-////String Padding
-//String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); };
-//String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); };
+//String Padding
+String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); };
+String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); };
 
 /*
 *********************************************************************************/
 //#endregion
-
 
 
 /* Functions you might want to copy completely for auto-complete on returns
