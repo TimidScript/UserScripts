@@ -1,21 +1,28 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.1.18
+// @version         2.1.19
 // @description     A more Powerful Pixiv Manga Viewer. Works with Pixiv++ & Generic Image Viewer
-// @icon            http://i.imgur.com/ZNBlNzI.png
+// @icon            https://i.imgur.com/ZNBlNzI.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv_Manga_Viewer
+// @grant           GM_xmlhttpRequest
+// @grant           GM_listValues
+// @grant           GM_info
+// @grant           GM_getMetadata
 // @grant           GM_getValue
 // @grant           GM_setValue
-// @grant           GM_listValues
 // @grant           GM_deleteValue
-// @grant           GM_xmlhttpRequest
+// @grant           GM_registerMenuCommand
 // ==/UserScript==
+
+
 
 /* Information
 ********************************************************************************************
@@ -49,6 +56,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.1.19 (2014-08-29)
+ - Added GM_update
 2.1.18  (2014-08-19)
  - Cleaned up header for OUJS
  - Removed old history
