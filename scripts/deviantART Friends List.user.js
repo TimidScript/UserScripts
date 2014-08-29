@@ -3,7 +3,7 @@
 // @namespace           TimidScript
 // @version             1.0.3
 // @description         Friends List - Direct Links to root Gallery instead of Profile Page
-// @icon                http://i.imgur.com/1KiUR7g.png
+// @icon                https://i.imgur.com/1KiUR7g.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
