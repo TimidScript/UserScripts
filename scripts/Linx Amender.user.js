@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.15
+// @version         3.0.16
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
-// @icon            http://i.imgur.com/WznrrlJ.png
+// @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
@@ -11,6 +11,8 @@
 // @include         *
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Draggable_Table_Rows.js
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Linx_Amender
 // @grant           GM_registerMenuCommand
 // @grant           GM_getValue
 // @grant           GM_setValue
@@ -44,7 +46,7 @@ Order of rule execution
 Hotkey F9       - Brings up settings window
 Hotkey Alt+F9   - Brings up settings window + ForceUpdate
 
-Onlien Rules URL Default:
+Online Rules URL Default:
 https://github.com/TimidScript/GreasyMonkey/raw/master/data/LinxAmenderRules.txt
 
 Default Online Rules can be set using GM_setValue
@@ -53,6 +55,10 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.16 (2014-08-29)
+ - Added GM_update
+ - Check if update URL is valid
+ - Bug Fix: Skip CSS rules in amendNodes
 3.0.15 (2014-08-21) First public release
  - Replacement of the previous scripts "[TS] Direct Outgoing Links" and "[TS] Title Amender" 
  - Starts with version 3.#.#  
@@ -82,49 +88,6 @@ else console.info("[TS] Linx Amender iframe: " + document.location.host);
 ==============================================================================================*/
 var iDocument = document;
 var isOnline = false;
-
-//#region TimidScript Library Functions
-/* 
-Copy and paste the commented out code underneath into your script for quick reference 
-and auto-complete feature if available. 
-*********************************************************************************/
-var TSL = new Object();
-
-//Remove node from document. Accepts id or node object
-TSL.removeNode = function (node, doc) { TimidScriptLibrary.removeNode(node, doc); };
-
-// Creates document element. Default doc value is the document.
-TSL.createElement = function (tag, attributes, doc) { return TimidScriptLibrary.createElement(tag, attributes, doc) };
-
-// Creates document element using html code. Default doc value is the document.
-TSL.createElementHTML = function (html, doc) { return TimidScriptLibrary.createElementHTML(html, doc) };
-
-//Add CSS styles to document header. Document can be left empty.
-TSL.addStyle = function (id, CSS, doc) { TimidScriptLibrary.addSyle(id, CSS, doc); };
-
-//General Functions
-TSL.makeStruct = function (names) { return TimidScriptLibrary.makeStruct(names); };
-
-// Checks if mouse event is within an elements client area
-TSL.isMouseEventInClientArea = function (event, element) { return TimidScriptLibrary.isMouseEventInClientArea(event, element); };
-
-//Returns the thickness of the scrollbar
-TSL.getScrollBarThickness = function () { return TimidScriptLibrary.getScrollBarThickness(); };
-
-//Array containing NTFS illegal characters alternatives
-TSL.ALTNTFSChars = [["<", "〉"], [">", "〈"], [":", "："], ['"', "‟"], ["/", "∕"], ["\\", ""], ["?", ""], ["*", "✳"], ];
-TSL.replaceNTFSIllegals = function (str) { return TimidScriptLibrary.replaceNTFSIllegals(str); };
-
-TSL.escapeRegExp = function (str) { return TimidScriptLibrary.escapeRegExp(str); };
-
-//String Padding
-String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); };
-String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); };
-/*
-*********************************************************************************/
-//#endregion
-
-
 
 /*
 ==================================================================================
@@ -954,8 +917,12 @@ var DialogMain =
         //Number of days before online checking again. 
         if (!forceUpdate && diff < 7) return;
         var url = GM_getValue("OnlineRulesURL", "https://github.com/TimidScript/GreasyMonkey/raw/master/data/LinxAmenderRules.txt");
-
-        console.warn("Trying to download Linx Online Rules: " + url);
+                                        
+        if (!url.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i))
+        {            
+            if (url.toLowerCase() != "disabled" && url.length != 0) console.error("Invalid update URL: ", url);
+            return
+        }
         GM_xmlhttpRequest({
             url: url,
             method: "GET",
@@ -985,7 +952,7 @@ var DialogMain =
                         {
                             var rule = GM_getValue(rules[i].id);
 
-                            if (!rule) continue; 
+                            if (!rule) continue;
                             rule = JSON.parse(rule);
 
                             rule.enabled = rules[i].enabled;
@@ -1001,12 +968,13 @@ var DialogMain =
                     iDocument.getElementsByClassName("gradientBar")[0].innerHTML += " <span style='color: yellow;'>(Online Rules Updated)<span>";
                     DialogMain.populateTable();
                 }
-                else { console.error("Unable to get online rules: ", url); console.warn(response); }
+                else
+                { console.error("Unable to get online rules: ", url); console.warn(response); }
             },
-            ontimeout: function (response) { console.error("Unable to get online rules due to timeout error. URL: " + url); console.warn(response);},
+            ontimeout: function (response) { console.error("Unable to get online rules due to timeout error. URL: " + url); console.warn(response); },
             onerror: function (response) { console.error("Error trying to get online rule. URL: " + url); console.warn(response); }
         });
-        
+
     }
 };
 
@@ -1146,7 +1114,7 @@ var parsedNodes = new Array();
    Parses through nodes and applies relevant rules.
 ==================================================================================*/
 function ParseNodes(resetTitle)
-{    
+{
     /* Reparse title to take into account rule changes. For links you need to 
     refresh the page */
     if (resetTitle)
@@ -1162,17 +1130,19 @@ function ParseNodes(resetTitle)
     var rules = GetSiteRules();
     if (rules.length == 0) return;
 
-    console.warn("Linx Amender Parsing Nodes");
+    var time = new Date().getTime();
+    console.warn("Linx Amender Parsing Nodes" ); 
     if (window === window.top)
     {
         amendURL(rules);
         if (document.readyState == "loading") return;
         appendCSS(rules);
-        amendPageTitle(rules);        
+        amendPageTitle(rules);
     }
     else if (document.readyState == "loading") return;
     amendNodes(rules);
-
+    var time = new Date().getTime() - time;
+    console.info("Speed: " + time + "ms");
 
 
     /* Gets the rules regular expression parameter values
@@ -1212,12 +1182,12 @@ function ParseNodes(resetTitle)
     /* Append CSS scripts to header
     ---------------------------------------------------------------------*/
     function appendCSS(rules)
-    {
+    {        
         if (document.head.appendedCSS) return;
         document.head.appendedCSS = true;
-                
+        
         for (var i = 0; i < rules.length ; i++)
-        {            
+        {
             if (rules[i].type == 6) TSL.addStyle(null, rules[i].script);
         }
     }
@@ -1259,7 +1229,7 @@ function ParseNodes(resetTitle)
         for (var i = 0; i < rules.length ; i++)
         {
             var rule = rules[i];
-            if (rule.type == 2 || rule.type == 3) continue; //Skip if Title or URL rule
+            if (rule.type == 2 || rule.type == 3 || rule.type == 6) continue; //Skip if Title, URL or CSS rule
 
 
             // ---- Script Rule
@@ -1293,7 +1263,7 @@ function ParseNodes(resetTitle)
             //if (!nodes) continue;
             if (rule.nthNode != 0) nodes = [nodes[rule.nthNode - 1]]; //Shrink the array if only applying one node
 
-
+            console.log(rule.name, nodes.length);
             for (var n = 0; n < nodes.length; n++)
             {
                 var node = nodes[n];
