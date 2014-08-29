@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.59
+// @version             3.1.60
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | Custom views for page types | Link Caching and other features. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer".
-// @icon                http://i.imgur.com/ZNBlNzI.png
+// @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
@@ -11,6 +11,11 @@
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=big&illust_id*
+// @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
+// @grant               GM_info
+// @grant               GM_getMetadata
+// @grant               GM_registerMenuComman
 // @grant               GM_getValue
 // @grant               GM_setValue
 // @grant               GM_listValues
@@ -35,6 +40,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.60 (2014-08-29)
+ - Added GM_update
 3.1.59 (2014-08-19)
  - Cleaned up header for OUJS
  - Removed old history
