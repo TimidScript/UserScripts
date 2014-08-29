@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.0.20
+// @version         1.0.21
 // @description     A more Powerful Image Viewer with info panel support for Pixiv and deviantArt.
 // @icon            http://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -10,11 +10,16 @@
 // @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @include         *
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Generic_Image_Viewer
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_listValues
 // @grant           GM_deleteValue
-// @grant           GM_xmlhttpRequest         
+// @grant           GM_xmlhttpRequest
+// @grant           GM_info
+// @grant           GM_getMetadata
+// @grant           GM_registerMenuCommand      
 // ==/UserScript==
 
 /* Information
@@ -41,6 +46,8 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
+1.0.21 (2014-08-29)
+ - Added GM_update
 1.0.20 (2014-08-19)
  - Cleaned up header for OUJS
  - Removed old history
