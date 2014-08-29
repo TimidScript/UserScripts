@@ -13,7 +13,7 @@
 // @include         http://www.youtube.*/channel/*
 // @include         https://www.youtube.*/channel/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Load_More_Channel_Videos
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
