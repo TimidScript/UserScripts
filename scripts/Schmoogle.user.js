@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] Schmoogle
 // @namespace       TimidScript
-// @version         2.1.41d
-// @description     Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
+// @version         2.1.42
+// @description     Dated but most functions work; Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
 // @icon            http://i.imgur.com/Kvb2Ili.png?1
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -12,10 +12,16 @@
 // @include         *//encrypted.google.*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_jsColorGM.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @grant           GM_setValue
-// @grant           GM_getValue
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Schmoogle
 // @grant           GM_listValues
+// @grant           GM_xmlhttpRequest
+// @grant           GM_info
+// @grant           GM_getMetadata
+// @grant           GM_getValue
+// @grant           GM_setValue
 // @grant           GM_deleteValue
+// @grant           GM_registerMenuCommand
 // ==/UserScript==
 
 
@@ -81,6 +87,8 @@ GUI to change Privacy settings
 GUI to ad removal options
 Maybe better CSS interface
 Fix Bug listed in 2.1.40 (Places)
+2.1.42 (2014-08-29)
+ - Added GM_update
 2.1.41
  - Bug Fix: window.scrollMaxY undefined in Google Chrome
  - Bug Fix: Auto-paging in Google Chrome
