@@ -3,7 +3,7 @@
 // @namespace       TimidScript
 // @version         1.0.8
 // @description     Adds the Download Link on illustration page if missing and also removes open in new tab
-// @icon            http://i.imgur.com/1KiUR7g.png
+// @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
