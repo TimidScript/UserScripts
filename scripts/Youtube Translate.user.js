@@ -1,15 +1,23 @@
 // ==UserScript==
 // @name                    [TS] Youtube Translate
 // @namespace               TimidScript
-// @version                 1.0.3
+// @version                 1.0.5
 // @description             Adds translate button for video's title  and "About" description. Works in most cases
-// @icon                    http://i.imgur.com/E2wQ6Xm.gif
+// @icon                    https://i.imgur.com/E2wQ6Xm.gif
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
 // @license                 Creative Commons BY-NC-SA + Please notify me if distributing
 // @include                 http*://*.youtube.*/watch?*
+// @require                 https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL                 https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Translate
 // @grant                   GM_xmlhttpRequest
+// @grant                   GM_info
+// @grant                   GM_getMetadata
+// @grant                   GM_getValue
+// @grant                   GM_setValue
+// @grant                   GM_deleteValue
+// @grant                   GM_registerMenuCommand
 // ==/UserScript==
 
 /* Information
@@ -27,6 +35,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.5 (2014-08-29)
+ - Added GM_update
+ - Bug Fix: Returned results sometimes creates unnecessary space in url link
 1.0.4 (2014-08-19)
  - Cleaned up header for OUJS
 1.0.3 (2014-08-14)
@@ -124,7 +135,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
     function Translate(node, arr, isTitle, idx)
     {
-
         if (idx == undefined) idx = 0;
         else if (!isTitle && idx < arr.length) node.innerHTML += "<br />";
         else if (!isTitle)
@@ -138,6 +148,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             }
             var links = node.nextElementSibling.getElementsByTagName("a");
             
+            node.innerHTML = node.innerHTML.replace(/http: (\/\/www.yt.\d\d)/gi, "http:$1");
             for (var i = 0; i < links.length; i++)
             {                
                 var linkID = "http://www.yt." + ('00' + i).slice(-2);                
@@ -146,7 +157,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             return;
         }
 
+        console.log("# & testing 1 2 34  / #sd");
         var txt = encodeURI(arr[idx]);
+        console.log(txt);
         txt = "♥❤❥ " + txt; //Added this to handle lines that contain only URL or email
 
         if (!isTitle && txt.trim().length == 0)
