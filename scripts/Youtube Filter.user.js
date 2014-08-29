@@ -1,18 +1,24 @@
 // ==UserScript==
-// @name                    [TS] Youtube Filter
-// @namespace               TimidScript
-// @version                 1.0.23
-// @description             Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
-// @icon                    http://i.imgur.com/E2wQ6Xm.gif
-// @author                  TimidScript
-// @homepageURL             https://openuserjs.org/users/TimidScript
-// @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 Creative Commons BY-NC-SA + Please notify me if distributing
-// @include                 *//www.youtube.*
-// @exclude                 *//www.youtube.*/embed/*
-// @grant                   GM_xmlhttpRequest
-// @grant                   GM_setValue
-// @grant                   GM_getValue
+// @name            [TS] Youtube Filter
+// @namespace       TimidScript
+// @version         1.0.24
+// @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
+// @icon            https://i.imgur.com/E2wQ6Xm.gif
+// @author          TimidScript
+// @homepageURL     https://openuserjs.org/users/TimidScript
+// @copyright       © 2014 TimidScript, All Rights Reserved.
+// @license         Creative Commons BY-NC-SA + Please notify me if distributing
+// @include         *//www.youtube.*
+// @exclude         *//www.youtube.*/embed/*
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Filter
+// @grant           GM_xmlhttpRequest
+// @grant           GM_info
+// @grant           GM_getMetadata
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_deleteValue
+// @grant           GM_registerMenuCommand
 // ==/UserScript==
 
 /* Information
@@ -33,6 +39,8 @@ Future Updates:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.24 (2014-08-29)
+ - Added GM_update
 1.0.23 (2014-08-19)
  - Cleaned up header for OUJS
 1.0.22 (2014-07-16)
