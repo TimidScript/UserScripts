@@ -1,14 +1,23 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.13
+// @version             1.0.14
 // @description         Loads all deviations in Inbox DeviantWatch
-// @icon                http://i.imgur.com/1KiUR7g.png
+// @icon                https://i.imgur.com/1KiUR7g.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
 // @license             Creative Commons BY-NC-SA + Please notify me if distributing
 // @include             http://www.deviantart.com/messages/*
+// @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_DeviationWatch_Load_All
+// @grant               GM_xmlhttpRequest
+// @grant               GM_info
+// @grant               GM_getMetadata
+// @grant               GM_getValue
+// @grant               GM_setValue
+// @grant               GM_deleteValue
+// @grant               GM_registerMenuCommand
 // ==/UserScript==
 
 /* Information
@@ -27,7 +36,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
-1.0.14 (2014-08-19)
+1.0.14 (2014-08-29)
+ - Added GM_update
+1.0.13 (2014-08-19)
  - Cleaned up header for OUJS
  - Saved in Unicode
 1.0.12 (2013-05-06)
