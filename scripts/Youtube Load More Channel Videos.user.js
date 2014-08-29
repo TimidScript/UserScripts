@@ -1,17 +1,26 @@
 // ==UserScript==
-// @name                    [TS] Youtube Load More Channel Videos
-// @namespace               TimidScript
-// @version                 1.0.3
-// @description             Auto loads more videos in channel
-// @icon                    http://i.imgur.com/E2wQ6Xm.gif
-// @author                  TimidScript
-// @homepageURL             https://openuserjs.org/users/TimidScript
-// @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 Creative Commons BY-NC-SA + Please notify me if distributing
-// @include                 http://www.youtube.*/user/*
-// @include                 https://www.youtube.*/user/*
-// @include                 http://www.youtube.*/channel/*
-// @include                 https://www.youtube.*/channel/*
+// @name            [TS] Youtube Load More Channel Videos
+// @namespace       TimidScript
+// @version         1.0.4
+// @description     Auto loads more videos in channel
+// @icon            https://i.imgur.com/E2wQ6Xm.gif
+// @author          TimidScript
+// @homepageURL     https://openuserjs.org/users/TimidScript
+// @copyright       © 2014 TimidScript, All Rights Reserved.
+// @license         Creative Commons BY-NC-SA + Please notify me if distributing
+// @include         http://www.youtube.*/user/*
+// @include         https://www.youtube.*/user/*
+// @include         http://www.youtube.*/channel/*
+// @include         https://www.youtube.*/channel/*
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         
+// @grant           GM_xmlhttpRequest
+// @grant           GM_info
+// @grant           GM_getMetadata
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_deleteValue
+// @grant           GM_registerMenuCommand
 // ==/UserScript==
 
 
@@ -30,6 +39,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.4 (2014-08-29)
+ - Added GM_update
 1.0.3 (2014-08-19)
  - Cleaned up header for OUJS
 1.0.2 (2013-12-14)
