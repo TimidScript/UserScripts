@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Load More Channel Videos
 // @namespace       TimidScript
-// @version         1.0.4
+// @version         1.0.4b
 // @description     Auto loads more videos in channel
 // @icon            https://i.imgur.com/E2wQ6Xm.gif
 // @author          TimidScript
