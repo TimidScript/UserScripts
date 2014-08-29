@@ -1,15 +1,24 @@
 // ==UserScript==
-// @name                    [TS] deviantART Gallery Pager
-// @namespace               TimidScript
-// @version                 1.0.2
-// @description             Auto-pager for DeviantArt gallery/favourites
-// @icon                    http://i.imgur.com/1KiUR7g.png
-// @author                  TimidScript
-// @homepageURL             https://openuserjs.org/users/TimidScript
-// @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 Creative Commons BY-NC-SA + Please notify me if distributing
-// @include                 http://*.deviantart.com/gallery/*
-// @include                 http://*.deviantart.com/favourites/*
+// @name            [TS] deviantART Gallery Pager
+// @namespace       TimidScript
+// @version         1.0.3
+// @description     Auto-pager for DeviantArt gallery/favourites
+// @icon            http://i.imgur.com/1KiUR7g.png
+// @author          TimidScript
+// @homepageURL     https://openuserjs.org/users/TimidScript
+// @copyright       © 2014 TimidScript, All Rights Reserved.
+// @license         Creative Commons BY-NC-SA + Please notify me if distributing
+// @include         http://*.deviantart.com/gallery/*
+// @include         http://*.deviantart.com/favourites/*
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Gallery_Pager
+// @grant           GM_xmlhttpRequest
+// @grant           GM_info
+// @grant           GM_getMetadata
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_deleteValue
+// @grant           GM_registerMenuCommand
 // ==/UserScript==
 
 
@@ -28,6 +37,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.3 (2014-08-29)
+ - Added GM_update
 1.0.2 (2014-08-19)
  - Cleaned up header for OUJS
 1.0.1 (2013-02-27)
