@@ -1,19 +1,25 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork 
 // @namespace       TimidScript
-// @version         1.0.6
-// @description     Changes the appearance of Greasy Fork. It remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
-// @icon            http://i.imgur.com/YKtX7ph.png
+// @version         1.0.7
+// @description     Changes the appearance of Greasy Fork, with tables. It remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
+// @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @include         https://greasyfork.org/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Citrus_GFork
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_deleteValue
 // @grant           GM_xmlhttpRequest
+// @grant           GM_xmlhttpRequest
+// @grant           GM_info
+// @grant           GM_getMetadata
+// @grant           GM_registerMenuCommand
 // ==/UserScript==
 
 /* Information
@@ -31,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.7 (2014-08-29)
+ - Added GM_update
+ - Added script numbers to table
 1.0.6 (2014-08-21)
  - Bug Fix for sorting
 1.0.5 (2014-08-21)
@@ -56,47 +65,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Initial release. Released as good enough. May contain bugs but good for general usage.   
  
 **********************************************************************************************/
-
-//#region TimidScript Library Functions
-/* 
-Copy and paste the commented out code underneath into your script for quick reference 
-and auto-complete feature if available. 
-*********************************************************************************/
-var TSL = new Object();
-
-//Remove node from document. Accepts id or node object
-TSL.removeNode = function (node, doc) { TimidScriptLibrary.removeNode(node, doc); };
-
-// Creates document element. Default doc value is the document.
-TSL.createElement = function (tag, attributes, doc) { return TimidScriptLibrary.createElement(tag, attributes, doc) };
-
-// Creates document element using html code. Default doc value is the document.
-TSL.createElementHTML = function (html, doc) { return TimidScriptLibrary.createElementHTML(html, doc) };
-
-//Add CSS styles to document header. Document can be left empty.
-TSL.addStyle = function (id, CSS, doc) { TimidScriptLibrary.addSyle(id, CSS, doc); };
-
-//General Functions
-TSL.makeStruct = function (names) { return TimidScriptLibrary.makeStruct(names); };
-
-// Checks if mouse event is within an elements client area
-TSL.isMouseEventInClientArea = function (event, element) { return TimidScriptLibrary.isMouseEventInClientArea(event, element); };
-
-//Returns the thickness of the scrollbar
-TSL.getScrollBarThickness = function () { return TimidScriptLibrary.getScrollBarThickness(); };
-
-//Array containing NTFS illegal characters alternatives
-TSL.ALTNTFSChars = [["<", "〉"], [">", "〈"], [":", "："], ['"', "‟"], ["/", "∕"], ["\\", ""], ["?", ""], ["*", "✳"], ];
-TSL.replaceNTFSIllegals = function (str) { return TimidScriptLibrary.replaceNTFSIllegals(str); };
-
-TSL.escapeRegExp = function (str) { return TimidScriptLibrary.escapeRegExp(str); };
-
-//String Padding
-String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); };
-String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); };
-/*
-*********************************************************************************/
-//#endregion
 
 (function ()
 {
@@ -183,7 +151,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             link.href = "/";
             link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
                             + '<span id="title-text">Greasy Fork&nbsp;</span>'
-                            + '<a id="title-subtext" href="https://openuserjs.org/users/TimidScript">100% Citrusy Goodness by <b style="text-decoration: underline;">TimidScript</b></span>';
+                            + '<a id="title-subtext" href="https://openuserjs.org/users/TimidScript">100% Citrusy Goodness by <b>TimidScript</b></span>';
             sname.appendChild(link);
 
             TSL.removeNode("script-list-option-groups");            
@@ -279,6 +247,9 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         var headers = ["Name", "Fans", "Daily", "Total", "Created", "Updated"];
         var tags = ["name", "fans", "", "total_installs", "created", "updated"];
 
+        cell = row.insertCell();
+        cell.textContent = "#";
+
         var cell;
         for (var i = 0; i < headers.length; i++)
         {
@@ -287,8 +258,8 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             cell.onclick = onTableHeaderClick;
             cell.setAttribute("tag", tags[i]);
         }
-        cell = row.cells[0];
 
+        cell = row.cells[1];
         switch (document.body.getAttribute("PageType"))
         {
             case "PersonalProfile":
@@ -312,11 +283,11 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
         TSL.addStyle("CitrusGS_Table", "#script-table {display: block; margin: 0 5px 5px 5px;} body {background-color: #EFEFB1; margin: 0;}"
             + "#script-table thead td {background-color: orange; border-radius: 0 0 5px 5px; box-shadow: 3px 3px 2px #888888;}"
             + "#script-table thead td:hover {cursor:pointer; background-color: yellow;}"
-            + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"
-            + "#script-table tbody tr td:first-child {text-align:left;}"
-            + "#script-table td:first-child{width: 99%;}"
+            + "#script-table thead td:first-child:hover {cursor:default; background-color: orange;}"
+            + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"                        
             + "#script-table tbody td {background-color: #FFFBDB;}"
-            + "#script-table tbody td:first-child{width: 99%; background-color: white;}"
+            + "#script-table tbody td:first-child{background-color: #F9D5A6;}"
+            + "#script-table tbody td:nth-child(2){width: 99%; background-color: white;text-align:left;}"
             + "#script-table tbody tr:hover td {background-color: yellow;}"
             + ".currentSort {background-color: yellow !important;}"
             + ".loadingSort {background-color: #FDFDC3 !important;}"
@@ -359,10 +330,21 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
             cell = row.insertCell();
             cell.setAttribute("style", "text-align:center; font-weight: bold; font-style: oblique;");
             cell.textContent = "No Scripts"
-            cell.setAttribute("colspan", 6);
+            cell.setAttribute("colspan", 7);
         }
 
         var separator = false;
+
+        var offset = 1;
+        var prefix = "";        
+        if (scripts.length > 0)
+        {
+            var page = document.URL.match(/[&\?]page=(\d+)/);
+            if (page) page = page[1]; else page = 1;
+            offset = 1 + +((page - 1) * 100);
+            var maxnum = scripts.length + offset;
+            prefix = prefix.lPad("0", maxnum.toString().length);
+        }
 
         for (var i = 0; i < scripts.length; i++)
         {
@@ -372,12 +354,16 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
                 separator = true;
                 row = tbody.insertRow(-1);
                 cell = row.insertCell();
-                cell.setAttribute("colspan", 6);
+                cell.setAttribute("colspan", 7);
                 cell.setAttribute("style", "background-color: orangered; height: 10px;");
             }
 
             row = tbody.insertRow(-1);
             row.className = "";
+            cell = row.insertCell();
+                                   
+            var num = i + offset;                                                            
+            cell.textContent = (prefix + num).slice((-1 * prefix.length));
             
             cell = row.insertCell();
             var el = document.createElement("div");
