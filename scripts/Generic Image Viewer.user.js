@@ -3,7 +3,7 @@
 // @namespace       TimidScript
 // @version         1.0.21
 // @description     A more Powerful Image Viewer with info panel support for Pixiv and deviantArt.
-// @icon            http://i.imgur.com/6yhR6jx.png
+// @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
