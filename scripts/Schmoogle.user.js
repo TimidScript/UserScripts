@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Schmoogle
 // @namespace       TimidScript
-// @version         2.1.42c
+// @version         2.1.42d
 // @description     Dated but most functions work; Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
 // @icon            https://i.imgur.com/Kvb2Ili.png
 // @author          TimidScript
