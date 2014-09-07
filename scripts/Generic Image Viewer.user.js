@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.0.21
+// @version         1.0.22
 // @description     A more Powerful Image Viewer with info panel support for Pixiv and deviantArt.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -46,6 +46,9 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
+1.0.22 (2014-08-29)
+ - Bug Fix: Due to changes to TSL-Generic
+ - Bug Fix: Made match url case insensitive
 1.0.21 (2014-08-29)
  - Added GM_update
 1.0.20 (2014-08-19)
@@ -558,7 +561,7 @@ var ControlHQ =
         var imgs = document.getElementsByTagName("img");
         ControlHQ.displayImage(imgs[1].src);
     }
-    else if ((document.URL.match(/.+\.(jpg|gif|jpeg|png|bmp)(\?\d+|:large|\?[^\\\.\/]+)?$/)
+    else if ((document.URL.match(/.+\.(jpg|gif|jpeg|png|bmp)(\?\d+|:large|\?[^\\\.\/]+)?$/i)
                 || document.URL.match(/\/[a-zA-Z0-9]+$/)
                 || document.URL.match(/^http:\/\/www\.pixiv\.net\/member_illust\.php\?mode=big&illust_id/))
             && document.body.children[0].tagName == "IMG")     
