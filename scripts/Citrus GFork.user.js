@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork 
 // @namespace       TimidScript
-// @version         1.0.7
-// @description     Changes the appearance of Greasy Fork, with tables. It remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
+// @version         1.0.9
+// @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -37,6 +37,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.8 (2014-09-07)
+ - Added new CSS  for <code> and <pre> elements
+1.0.8 (2014-08-03)
+ - Author name next to title
 1.0.7 (2014-08-29)
  - Added GM_update
  - Added script numbers to table
@@ -139,6 +143,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                           + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; margin: 0 10px;}"
                           + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 60px;}"
                           + "#nav-user-info {top: 3px;}"
+                          + "pre {background-color: #E9E8E5; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
+                          + "code {padding: 2px 4px; font-size: 90%; color: #C7254E; background-color: #F9F2F4; white-space: nowrap; border-radius: 4px; font-family: Menlo,Monaco,Consolas,'Courier New',monospace;}"
                           );
 
             TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 6px ridge #DF0404; box-shadow: 5px 5px 2px #888888; margin-bottom: 5px;}");
@@ -303,6 +309,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             + ".filterL:hover, .filterD:hover, .filterU:hover {cursor: default;}"
             + "#notice {margin:5px 5px 0 5px; background-color: #FDBB45;padding: 3px 5px; color: blue;}"            
             + "#notice .filterD { background-color: #C0BEBE; float: none; color: black;}"
+            + "thetitle {margin-bottom: 3px;} .theauthor{font-size:small;}"
         );
 
         if (document.body.getAttribute("PageType") == "PersonalProfile")
@@ -345,6 +352,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             var maxnum = scripts.length + offset;
             prefix = prefix.lPad("0", maxnum.toString().length);
         }
+        
 
         for (var i = 0; i < scripts.length; i++)
         {
@@ -365,9 +373,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             var num = i + offset;                                                            
             cell.textContent = (prefix + num).slice((-1 * prefix.length));
             
+            
             cell = row.insertCell();
             var el = document.createElement("div");
-            el.style.marginBottom = "5px";
+            el.className = "thetitle"
             el.innerHTML = "<a href='https://greasyfork.org/scripts/"
                             + script.id + "' style='margin-right: 10px;'><b>" + script.name + "</b></a>";
             if (script.type == "library")
@@ -385,16 +394,14 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                 el.innerHTML += '<span class="type-deleted" />';
                 row.className += "scriptD ";
             }
+            if (document.body.getAttribute("PageType") == "ListingPage")
+            {                 
+                el.innerHTML += '<span class="theauthor"><span>by </span><a href="https://greasyfork.org/users/' + script.authorID + '">' + script.author + '</a></span>';
+                
+            }
             cell.appendChild(el);
             
-            if (document.body.getAttribute("PageType") == "ListingPage")
-            {
-                
-                el = document.createElement("div");
-                el.style.fontSize = "small";
-                el.innerHTML = 'by <a href="https://greasyfork.org/users/' + script.authorID + '">' + script.author + '</a>';
-                cell.appendChild(el);
-            }
+            
 
             el = document.createElement("div");
             el.textContent = script.description;
@@ -511,7 +518,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
                     scripts = new Array();
                     //var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
-                    dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
+
+                    var dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
                     doc = document.implementation.createDocument("", "", dt),
                     documentElement = doc.createElement("html");
                     documentElement.innerHTML = xhr.responseText;
