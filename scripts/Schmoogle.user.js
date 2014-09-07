@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Schmoogle
 // @namespace       TimidScript
-// @version         2.1.42d
+// @version         2.1.43
 // @description     Dated but most functions work; Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
 // @icon            https://i.imgur.com/Kvb2Ili.png
 // @author          TimidScript
@@ -87,6 +87,8 @@ GUI to change Privacy settings
 GUI to ad removal options
 Maybe better CSS interface
 Fix Bug listed in 2.1.40 (Places)
+2.1.43 (2014-09-08)
+ - Bug Fix: Due to changes to TSL-Generic.
 2.1.42 (2014-08-29)
  - Added GM_update
 2.1.41
