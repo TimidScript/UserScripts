@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.0.22
+// @version         1.0.22b
 // @description     A more Powerful Image Viewer with info panel support for Pixiv and deviantArt.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -69,32 +69,6 @@ Hotkeys:
 1.0.1 (2013-10-06)
  - Initial Release with Pixiv Support Only
 **********************************************************************************************/
-
-//#region TimidScript Library Functions
-/* 
-Copy and paste the code underneath into your script for quick reference and
-auto-complete feature if available. 
-*********************************************************************************/
-
-var TSL = new Object();
-
-//Remove node from document. Accepts id or node object
-TSL.removeNode = function (node) { TimidScriptLibrary.removeNode(node); }
-//Add CSS styles to document header
-TSL.addStyle = function (id, CSS) { TimidScriptLibrary.addSyle(id, CSS); }
-
-//General Functions
-TSL.makeStruct = function (names) { return TimidScriptLibrary.makeStruct(names); }
-TSL.isMouseEventInClientArea = function (event, element) { return TimidScriptLibrary.isMouseEventInClientArea(event, element); };
-
-//Returns the thickness of the scrollbar
-TSL.getScrollBarThickness = function () { return TimidScriptLibrary.getScrollBarThickness(); };
-
-//String Padding
-String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); }
-String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); }
-/*
-*********************************************************************************/
 
 function makeStruct(names)
 {
