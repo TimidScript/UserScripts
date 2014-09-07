@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.1.19
+// @version         2.1.20
 // @description     A more Powerful Pixiv Manga Viewer. Works with Pixiv++ & Generic Image Viewer
 // @icon            https://i.imgur.com/ZNBlNzI.png
 // @author          TimidScript
@@ -56,6 +56,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.1.20 (2014-08-29)
+ - Bug Fix: Due to changes to TSL-Generic.
 2.1.19 (2014-08-29)
  - Added GM_update
 2.1.18  (2014-08-19)
@@ -106,37 +108,6 @@ var ViewingPage = { previous: -1, current: 0, next: 1 };
 
 var BGColors = JSON.parse(GM_getValue("BGColors", '[["DDF0F5","E2E2E1"],["F1F18A","C8F3C8"],["000071","000"],["EACCE6","A15F5F"]]'));
 //#endregion
-
-
-//#region TimidScript Library Functions
-/* 
-Copy and paste the commented out code underneath into your script for quick reference 
-and auto-complete feature if available. 
-*********************************************************************************/
-
-var TSL = new Object();
-
-//Remove node from document. Accepts id or node object
-TSL.removeNode = function (node) { TimidScriptLibrary.removeNode(node); }
-
-//Add CSS styles to document header
-TSL.addStyle = function (id, CSS) { TimidScriptLibrary.addSyle(id, CSS); }
-
-//General Functions
-TSL.makeStruct = function (names) { return TimidScriptLibrary.makeStruct(names); }
-
-// Checks if mouse event is within an elements client area
-TSL.isMouseEventInClientArea = function (event, element) { return TimidScriptLibrary.isMouseEventInClientArea(event, element); };
-
-//Returns the thickness of the scrollbar
-TSL.getScrollBarThickness = function () { return TimidScriptLibrary.getScrollBarThickness(); };
-
-//String Padding
-String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); }
-String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); }
-
-/*
-*********************************************************************************/
 
 var ScrollBarThickness = TSL.getScrollBarThickness();
 //#endregion
