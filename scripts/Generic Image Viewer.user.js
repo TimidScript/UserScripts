@@ -46,7 +46,7 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
-1.0.22 (2014-08-29)
+1.0.22 (2014-09-08)
  - Bug Fix: Due to changes to TSL-Generic
  - Bug Fix: Made match url case insensitive
 1.0.21 (2014-08-29)
