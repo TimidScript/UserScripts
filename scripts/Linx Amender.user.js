@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.16
+// @version         3.0.17
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -55,6 +55,11 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.17 (2014-09-07)
+ - Removed logging
+ - Using TSL-Generic addScript functionality
+ - Bug Fix: Script rules where running at the same time as Attrib and Click. Now they have their
+ own function.
 3.0.16 (2014-08-29)
  - Added GM_update
  - Check if update URL is valid
@@ -1130,8 +1135,8 @@ function ParseNodes(resetTitle)
     var rules = GetSiteRules();
     if (rules.length == 0) return;
 
-    var time = new Date().getTime();
-    console.warn("Linx Amender Parsing Nodes" ); 
+    //var time = new Date().getTime();
+    //console.warn("Linx Amender Parsing Nodes" ); 
     if (window === window.top)
     {
         amendURL(rules);
@@ -1139,10 +1144,11 @@ function ParseNodes(resetTitle)
         appendCSS(rules);
         amendPageTitle(rules);
     }
-    else if (document.readyState == "loading") return;
+    else if (document.readyState == "loading") return;    
+    appendScripts(rules);
     amendNodes(rules);
-    var time = new Date().getTime() - time;
-    console.info("Speed: " + time + "ms");
+    //var time = new Date().getTime() - time;
+    //console.info("Speed: " + time + "ms");
 
 
     /* Gets the rules regular expression parameter values
@@ -1192,6 +1198,43 @@ function ParseNodes(resetTitle)
         }
     }
 
+
+    /* Append JS Scripts to header
+    ---------------------------------------------------------------------*/
+    function appendScripts(rules)
+    {        
+        for (var i = 0; i < rules.length ; i++)
+        {
+            var rule = rules[i];
+            if (rule.type != 5 || document.getElementById(rule.id)) continue;
+
+            console.warn("Adding JS script: " + rule.name + " [" + rule.id + "]");
+
+            //Apply script variables
+            if (rule.scriptVariables)
+            {
+                var vars = rule.scriptVariables.split(";");
+                for (var j = 0; j < vars.length; j++)
+                {
+                    var v = vars[j].split("=");
+                    if (v.length != 2) continue;
+
+                    var s = "LA_get\\(['\"]" + TSL.escapeRegExp(v[0]) + "['\"]\\)";
+                    var re = new RegExp(s);
+                    rule.script = rule.script.replace(re, '"' + v[1] + '"');
+                }
+            }
+            
+
+            //var script = TSL.createElement("script", { "type": "text/javascript" });
+            //script.textContent = rule.script;
+            //script.id = rule.id;
+            //document.head.appendChild(script);
+            console.log(rule.script);
+            TSL.addScript(rule.id, rule.script);            
+        }
+    }
+
     /* Apply rules to the document title
     ---------------------------------------------------------------------*/
     function amendPageTitle(rules)
@@ -1229,41 +1272,14 @@ function ParseNodes(resetTitle)
         for (var i = 0; i < rules.length ; i++)
         {
             var rule = rules[i];
-            if (rule.type == 2 || rule.type == 3 || rule.type == 6) continue; //Skip if Title, URL or CSS rule
-
-
-            // ---- Script Rule
-            if (rule.type == 5 && !document.getElementById(rule.id))
-            {
-                console.warn("Adding JS script: " + rule.name + " [" + rule.id + "]");
-
-                //Apply script variables
-                if (rule.scriptVariables)
-                {
-                    var vars = rule.scriptVariables.split(";");
-                    for (var j = 0; j < vars.length; j++)
-                    {
-                        var v = vars[j].split("=");
-                        if (v.length != 2) continue;
-
-                        var s = "LA_get\\(['\"]" + TSL.escapeRegExp(v[0]) + "['\"]\\)";
-                        var re = new RegExp(s);
-                        rule.script = rule.script.replace(re, '"' + v[1] + '"');
-                    }
-                }
-
-                var script = TSL.createElement("script", { "type": "text/javascript" });
-                script.textContent = rule.script;
-                script.id = rule.id;
-                document.head.appendChild(script);
-                continue;
-            }
+            //if (rule.type == 2 || rule.type == 3 || rule.type == 5 || rule.type == 6) continue; //Skip if Title, URL or CSS rule
+            if (rule.type != 1 && rule.type != 4) continue;
 
             var nodes = document.querySelectorAll(rule.selectors);
             //if (!nodes) continue;
             if (rule.nthNode != 0) nodes = [nodes[rule.nthNode - 1]]; //Shrink the array if only applying one node
 
-            console.log(rule.name, nodes.length);
+            //console.log(rule.name, nodes.length);
             for (var n = 0; n < nodes.length; n++)
             {
                 var node = nodes[n];
