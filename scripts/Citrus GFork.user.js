@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name            [TS] Citrus GFork 
+// @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.9
+// @version         1.0.10
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -29,7 +29,7 @@ Script's Homepage:              Check homepages below
 
 TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 https://greasyfork.org/users/1455-timidscript
-                                https://monkeyguts.com/author.php?un=timidscript                                
+                                https://monkeyguts.com/author.php?un=timidscript
 
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
@@ -37,7 +37,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
-1.0.8 (2014-09-07)
+1.0.10 (2014-09-16)
+ - Bug Fix: Daily installs sort order
+ - Click on separator to toggle deleted script display
+1.0.9 (2014-09-07)
  - Added new CSS  for <code> and <pre> elements
 1.0.8 (2014-08-03)
  - Author name next to title
@@ -58,16 +61,16 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Added a frame around images and max-width
  - Few small bug fixes
 1.0.2 (2014-08-19)
- - Changes to CSS, including smaller font 
+ - Changes to CSS, including smaller font
  - Changed the interface
  - Added filter on user profile
  - Changed the behaviour of column click. If clicked it goes to first page as oppose to remaining on the same page
- - Increased number of scripts returned to 100 
+ - Increased number of scripts returned to 100
  - Citrified, orangified and crucified the forum. （￣﻿ _ゝ￣）
- - Small bug fixes 
+ - Small bug fixes
 1.0.1 (2014-08-18)
- - Initial release. Released as good enough. May contain bugs but good for general usage.   
- 
+ - Initial release. Released as good enough. May contain bugs but good for general usage.
+
 **********************************************************************************************/
 
 (function ()
@@ -86,10 +89,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     else if (document.URL.match(/greasyfork\.org\/scripts/)) //Script Listing
     {
         document.body.setAttribute("PageType", "ListingPage");
-        getScripts();        
+        getScripts();
         createScriptTable();
         populateScriptTable();
-        
+
         document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
 
         selectSortOrder("ListingPage");
@@ -114,7 +117,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     /* Base CSS styling
     ---------------------------------------------------------------------------*/
     function OrangifyPage()
-    {        
+    {
         if (document.URL.indexOf("greasyfork.org/forum/") > 0)
         {
             TSL.addStyle("CitrusGF_Forum", "body:not(.Settings) a:not(.Button) { color: #F19E06; }"
@@ -124,7 +127,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                     + "#Head a {color: yellow;}"
                     + ".SiteMenu {margin-left: 220px !important;}"
                     + "#TS-Link {position: absolute; transform: rotate(-90deg); font-size:10px; top: 25px; color: yellow; font-weight: 700;}"
-                    + "#Head .SiteSearch { float: right; margin-top: -25px !important; }"        
+                    + "#Head .SiteSearch { float: right; margin-top: -25px !important; }"
                 );
             var img = document.querySelector(".SiteTitle img");
             img.src = "https://i.imgur.com/RqikjW1.jpg";
@@ -152,7 +155,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
             var sname = document.getElementById("site-name");
             sname.innerHTML = "";
-            
+
             var link = document.createElement("a");
             link.href = "/";
             link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
@@ -160,7 +163,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                             + '<a id="title-subtext" href="https://openuserjs.org/users/TimidScript">100% Citrusy Goodness by <b>TimidScript</b></span>';
             sname.appendChild(link);
 
-            TSL.removeNode("script-list-option-groups");            
+            TSL.removeNode("script-list-option-groups");
         }
     }
 
@@ -168,13 +171,13 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     /* Styling for user page
     ---------------------------------------------------------------------------*/
     function OrangifyUserPage()
-    {        
+    {
         TSL.addStyle("CitrusGF_Shared", ".white-panel, #control-panel, #user-profile, #user-discussions-on-scripts-written {margin: 5px; border-radius: 8px; padding: 10px; }");
-        TSL.addStyle("CitrusGF_Profile", ".white-panel, #user-discussions-on-scripts-written, #control-panel, #user-profile {background-color: white; }");                
+        TSL.addStyle("CitrusGF_Profile", ".white-panel, #user-discussions-on-scripts-written, #control-panel, #user-profile {background-color: white; }");
         TSL.addStyle("", "#user-control-panel, #control-panel h3 {margin: 0; padding: 0;}  #user-control-panel > li { display: inline-block; margin: 0 5px; padding: 2px 5px; border-radius: 5px; background-color: #F5F2F2; border: 1px solid #404040; box-shadow: 3px 3px 2px #888888;} #user-control-panel a {text-decoration: none;} #user-control-panel li:hover {background-color: #FBEACA;}");
         TSL.addStyle("", ".white-panel *, #user-discussions-on-scripts-written * {margin: 0;}");
         TSL.addStyle("CitrusGF_OUJS", 'code {padding: 2px 4px;font-size: 90%;color: #C7254E;background-color: #F9F2F4;white-space: nowrap;border-radius: 4px;font-family: Menlo,Monaco,Consolas,"Courier New",monospace; }');
-        
+
 
         var author = document.createElement("h1");
         var name = document.getElementsByTagName("h2")[0];
@@ -199,7 +202,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
         el = document.getElementById("user-deleted-script-list");
         if (el) TSL.removeNode(el.parentElement);
-
     }
 
 
@@ -290,7 +292,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             + "#script-table thead td {background-color: orange; border-radius: 0 0 5px 5px; box-shadow: 3px 3px 2px #888888;}"
             + "#script-table thead td:hover {cursor:pointer; background-color: yellow;}"
             + "#script-table thead td:first-child:hover {cursor:default; background-color: orange;}"
-            + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"                        
+            + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"
             + "#script-table tbody td {background-color: #FFFBDB;}"
             + "#script-table tbody td:first-child{background-color: #F9D5A6;}"
             + "#script-table tbody td:nth-child(2){width: 99%; background-color: white;text-align:left;}"
@@ -307,7 +309,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             + ".type-unlisted:before {content: 'Unlisted';}"
             + ".filterL, .filterD, .filterU {float: left; margin: 2px 3px 0 0; padding: 0 15px;}"
             + ".filterL:hover, .filterD:hover, .filterU:hover {cursor: default;}"
-            + "#notice {margin:5px 5px 0 5px; background-color: #FDBB45;padding: 3px 5px; color: blue;}"            
+            + "#notice {margin:5px 5px 0 5px; background-color: #FDBB45;padding: 3px 5px; color: blue;}"
             + "#notice .filterD { background-color: #C0BEBE; float: none; color: black;}"
             + "thetitle {margin-bottom: 3px;} .theauthor{font-size:small;}"
         );
@@ -315,13 +317,13 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         if (document.body.getAttribute("PageType") == "PersonalProfile")
         {
             var notice = document.createElement("div");
-            notice.id = "notice";            
+            notice.id = "notice";
             notice.innerHTML = 'By default deleted scripts are hidden now. Click on <span class="filterD">D</span> to view them. Can be disabled by adding <code>GM_setValue("DisplayDeleted",true)</code> to the script.';
             document.body.insertBefore(notice, scriptTable);
 
-            //GM_setValue("DisplayDeleted", false);            
+            //GM_setValue("DisplayDeleted", false);
             if (!GM_getValue("DisplayDeleted")) document.querySelector("#script-table thead .filterD").click();
-        }        
+        }
     }
 
     /* Populate the table with scripts
@@ -343,7 +345,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var separator = false;
 
         var offset = 1;
-        var prefix = "";        
+        var prefix = "";
         if (scripts.length > 0)
         {
             var page = document.URL.match(/[&\?]page=(\d+)/);
@@ -352,7 +354,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             var maxnum = scripts.length + offset;
             prefix = prefix.lPad("0", maxnum.toString().length);
         }
-        
+
 
         for (var i = 0; i < scripts.length; i++)
         {
@@ -363,20 +365,22 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                 row = tbody.insertRow(-1);
                 cell = row.insertCell();
                 cell.setAttribute("colspan", 7);
-                cell.setAttribute("style", "background-color: orangered; height: 10px;");
+                cell.setAttribute("style", "background-color: orangered; height: 15px;");
+                cell.textContent = "Click to toggle deleted scripts display";
+                cell.onclick = function (e) { document.querySelector("#script-table span.filterD").click(); };
             }
 
             row = tbody.insertRow(-1);
             row.className = "";
             cell = row.insertCell();
-                                   
-            var num = i + offset;                                                            
+
+            var num = i + offset;
             cell.textContent = (prefix + num).slice((-1 * prefix.length));
-            
-            
+
+
             cell = row.insertCell();
             var el = document.createElement("div");
-            el.className = "thetitle"
+            el.className = "thetitle";
             el.innerHTML = "<a href='https://greasyfork.org/scripts/"
                             + script.id + "' style='margin-right: 10px;'><b>" + script.name + "</b></a>";
             if (script.type == "library")
@@ -395,13 +399,12 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                 row.className += "scriptD ";
             }
             if (document.body.getAttribute("PageType") == "ListingPage")
-            {                 
+            {
                 el.innerHTML += '<span class="theauthor"><span>by </span><a href="https://greasyfork.org/users/' + script.authorID + '">' + script.author + '</a></span>';
-                
             }
             cell.appendChild(el);
-            
-            
+
+
 
             el = document.createElement("div");
             el.textContent = script.description;
@@ -463,31 +466,34 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     {
         if (this.className || this.parentElement.getAttribute("busy")) return;
         this.parentElement.setAttribute("busy", true);
-        this.className = "loadingSort";        
+        this.className = "loadingSort";
 
         getScriptListing(this.getAttribute("tag"), true);
     }
 
 
 
-    /*   Get script page 
+    /*   Get script page
     ---------------------------------------------------------------------------*/
     function getScriptListing(tag, firstPage)
     {
         var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
-          
+
         if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/scripts(\/search)?/)[0] + "?per_page=100";
-        else url = document.URL;
+        else url = document.URL.replace(/\?.+/, "?");
 
         var m = document.URL.match("[^=\?&]+=[^&]+");
         if (m)
-            for (var i = 0; i < m.length; i++)
+            for (var i = 1; i < m.length; i++)
             {
                 if (!m[i].match(/^(per_page|sort)/) && !(firstPage && m[i].match(/^page/))) url += "&" + m[i];
             }
 
 
-        if (tag) url += ((url.indexOf("?") > 0) ? "&" : "?") + "sort=" + tag;
+        if (tag) url += "&sort=" + tag;
+
+        url = url.replace(/\?&/, "?");
+        url = url.replace(/\?$/, "");
 
         console.warn("getScriptListing IN: " + url)
         GM_xmlhttpRequest({
@@ -507,7 +513,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                     var header = document.querySelector(("td[tag='" + tag + "']"));
                     GM_setValue(document.body.getAttribute("PageType"), tag);
 
-                    //Highlight right column header                    
+                    //Highlight right column header
                     var els = document.querySelectorAll("#script-table thead td");
                     for (var i = 0; i < els.length; i++) els[i].removeAttribute("class");
 
@@ -540,7 +546,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
                 header.parentElement.removeAttribute("busy");
                 console.log("getScriptListing OUT: " + url)
-
             }
         })();
     }
