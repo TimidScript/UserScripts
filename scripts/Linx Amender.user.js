@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.17
+// @version         3.0.18
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -31,7 +31,7 @@ Script's Homepage:              Check homepages below
 TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 https://greasyfork.org/users/1455-timidscript
                                 https://monkeyguts.com/author.php?un=timidscript
-                                
+
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
 
@@ -39,9 +39,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 Order of rule execution
  - URL Rules (Does not run in iframes)
  - CSS Rules (Does not run in iframes)
- - Title Rules (Does not run in iframes) 
+ - Title Rules (Does not run in iframes)
  - Script Rules
- - Attrib & Click in Order 
+ - Attrib & Click in Order
 
 Hotkey F9       - Brings up settings window
 Hotkey Alt+F9   - Brings up settings window + ForceUpdate
@@ -55,6 +55,11 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.18 (2014-09-18)
+ - Bug fixes for G-Chrome
+   - onkeydown replaced with onkeyup as it is not fired in G-Chrome
+   - table not showing text and needs to be put in span
+   - Settings are lost in g-chrome. Reaseon unknown
 3.0.17 (2014-09-07)
  - Removed logging
  - Using TSL-Generic addScript functionality
@@ -65,8 +70,8 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
  - Check if update URL is valid
  - Bug Fix: Skip CSS rules in amendNodes
 3.0.15 (2014-08-21) First public release
- - Replacement of the previous scripts "[TS] Direct Outgoing Links" and "[TS] Title Amender" 
- - Starts with version 3.#.#  
+ - Replacement of the previous scripts "[TS] Direct Outgoing Links" and "[TS] Title Amender"
+ - Starts with version 3.#.#
  - Ability to amend node attributes
  - Ability to amend page title
  - Ability to amend page URL (redirect)
@@ -75,13 +80,13 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
  - Ability to add CSS script
  - Import "[TS] Direct Outgoing Links" exports
  - Import "[TS] Title Amender" exports
-Some of the script that I have that it replaces 
+Some of the script that I have that it replaces
     - [TS] Youtube Secure
     - [TS] Direct Outgoing Links
     - [TS] Title Amender
     - [TS] Blogger NCR
-    - [TS] Voltaire Network Language Picker    
- 
+    - [TS] Voltaire Network Language Picker
+
 ********************************************************************************************/
 
 if (window === window.top) console.info("[TS] Linx Amender: " + document.location.host);
@@ -220,7 +225,6 @@ var DialogEdit =
                 setValue(ipts[2], rule.regexes[i].replace);
             }
         }
-
     },
 
     adjustEditButtons: function (e)
@@ -293,7 +297,7 @@ var DialogEdit =
         }
 
         //Remove properties with empty string
-        //for (var key in rule) if (!rule[key]) delete rule[key];        
+        //for (var key in rule) if (!rule[key]) delete rule[key];
 
 
         var regexes = rule.regexes
@@ -319,7 +323,7 @@ var DialogEdit =
             }
         }
 
-        //Remove duplicate regexes        
+        //Remove duplicate regexes
         for (var i = 0; i < regexes.length; i++)
         {
             var regi = regexes[i];
@@ -533,7 +537,8 @@ var DialogMain =
             row.id = rule.id;
         }
 
-        name = (rule.name) ? rule.name : "";
+        var name = (rule.name) ? rule.name : "";
+
         row.setAttribute("name", name);
         row.title = (rule.description) ? rule.description : name;
 
@@ -555,7 +560,7 @@ var DialogMain =
 
         if (rule.description) rule.description = rule.description.replace("\n", "<br/>");
 
-        html += '</button>' + ((url) ? "</a>" : "") + name
+        html += '</button>' + ((url) ? "</a>" : "") + "<span>" + name + "</span>"
             + ((rule.description) ? '<div class="descriptionBox">' + rule.description + "<div>" : "")
             + '</td>';
 
@@ -636,6 +641,7 @@ var DialogMain =
         {
             case "LinxExit":
                 TSL.removeNode("LinxFrame");
+                //GetOrderedRules();
                 break;
             case "LinxNewRule":
                 DialogEdit.show();
@@ -919,12 +925,12 @@ var DialogMain =
 
         var diff = (date2 - date1) / (1000 * 60 * 60 * 24);
 
-        //Number of days before online checking again. 
+        //Number of days before online checking again.
         if (!forceUpdate && diff < 7) return;
         var url = GM_getValue("OnlineRulesURL", "https://github.com/TimidScript/GreasyMonkey/raw/master/data/LinxAmenderRules.txt");
-                                        
+
         if (!url.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i))
-        {            
+        {
             if (url.toLowerCase() != "disabled" && url.length != 0) console.error("Invalid update URL: ", url);
             return
         }
@@ -947,7 +953,7 @@ var DialogMain =
                     }
 
                     var strRules = response.responseText.replace(/("id":")L(\d+")/gi, "$1O$2"); //Change the rule type to Online if not already the case
-                    strRules = strRules.replace(/,"enabled":true,/gi, ',"enabled":false,'); //Disable all rules                       
+                    strRules = strRules.replace(/,"enabled":true,/gi, ',"enabled":false,'); //Disable all rules
                     DialogPaste.importRules(strRules);
 
                     //Set the stored rule values for enabled and runFirst.
@@ -979,12 +985,11 @@ var DialogMain =
             ontimeout: function (response) { console.error("Unable to get online rules due to timeout error. URL: " + url); console.warn(response); },
             onerror: function (response) { console.error("Error trying to get online rule. URL: " + url); console.warn(response); }
         });
-
     }
 };
 
 /*
-==================================================================================  
+==================================================================================
  runFirstEnabled is only set when parsing through nodes. For listing in table you
  want the online rules to proceed the local rules.
 ==================================================================================*/
@@ -997,6 +1002,7 @@ function GetOrderedRules(runFirstEnabled)
 
 
     var names = GM_listValues();
+    //console.log(names);
     for (var i = 0; i < names.length; i++)
     {
         var name = names[i];
@@ -1010,7 +1016,7 @@ function GetOrderedRules(runFirstEnabled)
 
         for (var j = 0; j < rules.length; j++) //Insert it in the correct place
         {
-            if ((runFirstEnabled && rule.runFirst && !rules[j].runFirst) || //Online rule runs before offline rule               
+            if ((runFirstEnabled && rule.runFirst && !rules[j].runFirst) || //Online rule runs before offline rule
                (ruleOrder.indexOf(rule.id) >= 0 && ruleOrder.indexOf(rule.id) < ruleOrder.indexOf(rules[j].id)))
             {
                 rules.splice(j, 0, rule);
@@ -1059,8 +1065,8 @@ function createRE(str, rule, regex, checkFlags)
 
 
 /*
-==================================================================================  
- Returns an ordered array containing all the enabled rules that are relevant to 
+==================================================================================
+ Returns an ordered array containing all the enabled rules that are relevant to
  the current site. Use forceEnable to enable it by force.
 ==================================================================================*/
 function GetSiteRules(forceEnable)
@@ -1078,7 +1084,7 @@ function GetSiteRules(forceEnable)
 
         for (var j = 0; j < URLs.length; j++)
         {
-            if (URLs[j].trim().length == 0) continue; //Skip it invalid URL 
+            if (URLs[j].trim().length == 0) continue; //Skip it invalid URL
 
             var str = URLs[j];
 
@@ -1097,7 +1103,7 @@ function GetSiteRules(forceEnable)
             if (negate && found)
             {
                 addRule = false;
-                break; //Negate overrides all other positive search                        
+                break; //Negate overrides all other positive search
             }
             else if (!negate && found)
             {
@@ -1114,13 +1120,13 @@ function GetSiteRules(forceEnable)
 
 
 var parsedNodes = new Array();
-/* 
+/*
 ==================================================================================
    Parses through nodes and applies relevant rules.
 ==================================================================================*/
 function ParseNodes(resetTitle)
 {
-    /* Reparse title to take into account rule changes. For links you need to 
+    /* Reparse title to take into account rule changes. For links you need to
     refresh the page */
     if (resetTitle)
     {
@@ -1136,7 +1142,7 @@ function ParseNodes(resetTitle)
     if (rules.length == 0) return;
 
     //var time = new Date().getTime();
-    //console.warn("Linx Amender Parsing Nodes" ); 
+    //console.warn("Linx Amender Parsing Nodes" );
     if (window === window.top)
     {
         amendURL(rules);
@@ -1144,7 +1150,7 @@ function ParseNodes(resetTitle)
         appendCSS(rules);
         amendPageTitle(rules);
     }
-    else if (document.readyState == "loading") return;    
+    else if (document.readyState == "loading") return;
     appendScripts(rules);
     amendNodes(rules);
     //var time = new Date().getTime() - time;
@@ -1188,10 +1194,10 @@ function ParseNodes(resetTitle)
     /* Append CSS scripts to header
     ---------------------------------------------------------------------*/
     function appendCSS(rules)
-    {        
+    {
         if (document.head.appendedCSS) return;
         document.head.appendedCSS = true;
-        
+
         for (var i = 0; i < rules.length ; i++)
         {
             if (rules[i].type == 6) TSL.addStyle(null, rules[i].script);
@@ -1202,7 +1208,7 @@ function ParseNodes(resetTitle)
     /* Append JS Scripts to header
     ---------------------------------------------------------------------*/
     function appendScripts(rules)
-    {        
+    {
         for (var i = 0; i < rules.length ; i++)
         {
             var rule = rules[i];
@@ -1224,14 +1230,14 @@ function ParseNodes(resetTitle)
                     rule.script = rule.script.replace(re, '"' + v[1] + '"');
                 }
             }
-            
+
 
             //var script = TSL.createElement("script", { "type": "text/javascript" });
             //script.textContent = rule.script;
             //script.id = rule.id;
             //document.head.appendChild(script);
             console.log(rule.script);
-            TSL.addScript(rule.id, rule.script);            
+            TSL.addScript(rule.id, rule.script);
         }
     }
 
@@ -1305,7 +1311,6 @@ function ParseNodes(resetTitle)
                 {
                     for (var j = 0; j < rule.regexes.length; j++)
                     {
-
                         var regex = rule.regexes[j];
                         var reParms = getREParams(regex);
 
@@ -1313,7 +1318,7 @@ function ParseNodes(resetTitle)
 
 
                         if (reParms.name[0] == "=")
-                        {   //Operations done on node property 
+                        {   //Operations done on node property
                             var name = reParms.name.substr(1);
 
                             //if (node.hasOwnProperty(name))
@@ -1400,5 +1405,5 @@ var MO =
     MO.monitorChanges();
 
     if (window === window.top)
-        window.onkeypress = function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); };
+        window.onkeyup = function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); };
 })();
