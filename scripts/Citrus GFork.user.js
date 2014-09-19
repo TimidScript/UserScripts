@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.11
+// @version         1.0.12
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.12 (2014-09-19)
+ - Bug fix in sorting of lists with search. Not using global flag when matching regex
 1.0.11 (2014-09-16)
  - Bug fix in search listing introduced in version 1.0.10
 1.0.10 (2014-09-16)
@@ -485,13 +487,12 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/scripts(\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
 
-        var m = document.URL.match("[^=\?&]+=[^&]+");
+        var m = document.URL.match(/[^=\?&]+=[^&]+/g);
         if (m)
             for (var i = 0; i < m.length; i++)
             {
                 if (!m[i].match(/^(per_page|sort)/) && !(firstPage && m[i].match(/^page/))) url += "&" + m[i];
             }
-
 
         if (tag) url += "&sort=" + tag;
 
