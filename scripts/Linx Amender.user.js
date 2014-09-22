@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.18
+// @version         3.0.19
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -38,8 +38,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
 Order of rule execution
  - URL Rules (Does not run in iframes)
- - CSS Rules (Does not run in iframes)
  - Title Rules (Does not run in iframes)
+ - CSS Rules
  - Script Rules
  - Attrib & Click in Order
 
@@ -55,6 +55,15 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.19 (2014-09-22)
+ - Much more efficient than before with less hanging
+ - Slight delay before parsing as it seems to cause issues with some sites utilising ajax.
+ - amendNodes now runs asynchronous to stop hanging the browser when the webpage is large. This
+ problem is mainly caused with auto-paging scripts like Schmoogle.
+ - Changed the order of execution. CSS Rules now runs in iframes and they are executed after
+ Title Rules.
+ - Using busy flag to capture all changes now and no longer disconnecting the MutationObserver.
+ This fixes a lot of issues caused by pages with lots of nodes to parse through.
 3.0.18 (2014-09-18)
  - Bug fixes for G-Chrome
    - onkeydown replaced with onkeyup as it is not fired in G-Chrome
@@ -1117,44 +1126,50 @@ function GetSiteRules(forceEnable)
     return filterdRules;
 }
 
-
-
-var parsedNodes = new Array();
 /*
 ==================================================================================
    Parses through nodes and applies relevant rules.
 ==================================================================================*/
 function ParseNodes(resetTitle)
 {
+    var time = new Date().getTime();
+    //if (window === window.top) console.log("Parsing Nodes: " + time);
+
+    MO.busy = true;
     /* Reparse title to take into account rule changes. For links you need to
     refresh the page */
     if (resetTitle)
     {
         var title = document.head.getElementsByTagName("title")[0];
-        if (title.hasAttribute("originalTitle"))
-        {
-            title.textContent = title.getAttribute("originalTitle");
-            title.removeAttribute("amendedTitle");
-        }
+        if (title.original) title.textContent = title.original;
     }
 
     var rules = GetSiteRules();
+    //if (window === window.top) console.log("Parsing Nodes A: " + time + " (" + (new Date().getTime() - time) + ")");
     if (rules.length == 0) return;
 
-    //var time = new Date().getTime();
-    //console.warn("Linx Amender Parsing Nodes" );
     if (window === window.top)
     {
         amendURL(rules);
-        if (document.readyState == "loading") return;
-        appendCSS(rules);
-        amendPageTitle(rules);
+        if (document.readyState != "loading") amendPageTitle(rules);
     }
-    else if (document.readyState == "loading") return;
-    appendScripts(rules);
+
+    if (document.readyState == "loading")
+    {
+        MO.busy = false;
+        return;
+    }
+
+    if (!document.parsed)
+    {
+        document.parsed = true;
+        appendCSS(rules);
+        appendScripts(rules);
+    }
+    //if (window === window.top) console.warn("Parsing Nodes B: " + time + " (" + (new Date().getTime() - time) + ")");
     amendNodes(rules);
-    //var time = new Date().getTime() - time;
-    //console.info("Speed: " + time + "ms");
+    //setTimeout(amendNodes, 250, rules);
+
 
 
     /* Gets the rules regular expression parameter values
@@ -1246,9 +1261,9 @@ function ParseNodes(resetTitle)
     function amendPageTitle(rules)
     {
         var title = document.head.getElementsByTagName("title")[0];
-        if (title && (title.getAttribute("amendedTitle") != title.textContent))
+        if (title && (title.original != title.textContent))
         {
-            title.setAttribute("originalTitle", title.textContent);
+            title.original = title.textContent;
             var newTitle = title.textContent;
 
             for (var i = 0; i < rules.length ; i++)
@@ -1265,7 +1280,6 @@ function ParseNodes(resetTitle)
                 }
             }
 
-            title.setAttribute("amendedTitle", newTitle);
             title.textContent = newTitle;
         }
     }
@@ -1274,37 +1288,57 @@ function ParseNodes(resetTitle)
     ---------------------------------------------------------------------*/
     function amendNodes(rules)
     {
-        var addedNodes = new Array();
-        for (var i = 0; i < rules.length ; i++)
+        var r = n = -1;
+
+        parseRules();
+
+        function parseRules()
         {
-            var rule = rules[i];
-            //if (rule.type == 2 || rule.type == 3 || rule.type == 5 || rule.type == 6) continue; //Skip if Title, URL or CSS rule
-            if (rule.type != 1 && rule.type != 4) continue;
+            r++;
+            if (r >= rules.length)
+            {
+                //if (window === window.top) console.info("Parsing Nodes Z: " + time + " (" + (new Date().getTime() - time) + ")");
+                MO.busy = false;
+                return;
+            }
+
+            var rule = rules[r];
+            if (rule.type != 1 && rule.type != 4) //If not attrib of click rule skip
+            {
+                parseRules();
+                return;
+            }
 
             var nodes = document.querySelectorAll(rule.selectors);
-            //if (!nodes) continue;
             if (rule.nthNode != 0) nodes = [nodes[rule.nthNode - 1]]; //Shrink the array if only applying one node
 
-            //console.log(rule.name, nodes.length);
-            for (var n = 0; n < nodes.length; n++)
+            n = -1;
+            parseNodes(rule, nodes);
+        }
+
+        function parseNodes(rule, nodes)
+        {
+            n++;
+            if (n >= nodes.length)
+            {
+                parseRules();
+                return;
+            }
+
+            /*
+                To make the parsing quicker and not hang. we are parsing x number of nodes at a time through a
+                for loop and then a setTimeout.
+                max = n + x;
+            */
+            var max = n + 50;
+
+            for (; n < nodes.length && n < max; n++)
             {
                 var node = nodes[n];
-                if (!node) continue; //Can be an invalid node if the nthNode is out of range
 
-                //Check if node has already been parsed, if so skip
-                for (var j = 0; j < parsedNodes.length; j++)
-                {
-                    if (parsedNodes[j] == node) break;
-                }
-                if (parsedNodes[j] == node) continue;
-
-
-                //Add the node to list so it can be added to the parseNodes at the end
-                for (var j = 0; j < addedNodes.length; j++)
-                {
-                    if (addedNodes[j] == node) continue;
-                }
-                if (addedNodes[j] != node) addedNodes.push(node);
+                if (node.parsed && node.time != time) continue;
+                node.time = time; //Store the time as you want to apply all rules in the first parse.
+                node.parsed = true;
 
                 if (rule.type == 4) node.click(); // ---- Click Rule
                 else // ---- Attrib rule
@@ -1357,9 +1391,9 @@ function ParseNodes(resetTitle)
                     }
                 }
             }
-        }
 
-        parsedNodes = parsedNodes.concat(addedNodes);
+            setTimeout(parseNodes, 0, rule, nodes);
+        }
     }
 }
 
@@ -1370,7 +1404,8 @@ function ParseNodes(resetTitle)
 =====================================================================*/
 var MO =
 {
-    busy: null,
+    busy: false,
+    timeout: null,
     Observer: null,
     monitorChanges: function ()
     {
@@ -1385,24 +1420,34 @@ var MO =
 
     callback: function ()
     {
-        MO.Observer.disconnect();
-
-        //It crashes some pages on deviantArt if I do not do a delay.
-        setTimeout(function ()
+        clearTimeout(MO.timeout);
+        if (MO.busy)
         {
-            ParseNodes();
-            MO.monitorChanges();
-        }, 100);
+            MO.timeout = setTimeout(MO.callback(), 500);
+            return;
+        }
+        MO.busy = true;
+        ParseNodes();
     }
 };
 
 
 (function ()
 {
-    GM_registerMenuCommand("[TS] Linx Amender", DialogMain.show);
+    if (window === window.top) GM_registerMenuCommand("[TS] Linx Amender", DialogMain.show);
+
+    /* To avoid start lag caused by the MutationObserver on a number of sites that uses iframe
+    and ajax, we delaying the mutation observer */
 
     ParseNodes();
-    MO.monitorChanges();
+    setTimeout(ParseNodes, 1500);
+    setTimeout(ParseNodes, 3000);
+
+    setTimeout(function ()
+    {
+        ParseNodes();
+        MO.monitorChanges();
+    }, 5000);
 
     if (window === window.top)
         window.onkeyup = function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); };
