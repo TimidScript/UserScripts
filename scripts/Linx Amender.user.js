@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.20
+// @version         3.0.20b
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -1398,7 +1398,7 @@ function ParseNodes(resetTitle)
                     }
                 }
             }
-
+            n--;                                                            
             setTimeout(parseNodes, 0, rule, nodes);
         }
     }
