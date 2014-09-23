@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.19
+// @version         3.0.20
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -55,6 +55,12 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.20 (2014-09-23)
+ - Last fix was a failure. MutationObserver still causes huge lagging. Might be better
+ just to have an interval timer with a parsed tag. One more try at fixing it, by going
+ back to disconnect.
+ - If no rules are present at site the MO is disconnected. Can be reconnected if you
+ refresh, create/enable title rules.
 3.0.19 (2014-09-22)
  - Much more efficient than before with less hanging
  - Slight delay before parsing as it seems to cause issues with some sites utilising ajax.
@@ -1133,9 +1139,8 @@ function GetSiteRules(forceEnable)
 function ParseNodes(resetTitle)
 {
     var time = new Date().getTime();
-    //if (window === window.top) console.log("Parsing Nodes: " + time);
+    if (DEBUG) console.log("Parsing Nodes: " + time);
 
-    MO.busy = true;
     /* Reparse title to take into account rule changes. For links you need to
     refresh the page */
     if (resetTitle)
@@ -1145,8 +1150,12 @@ function ParseNodes(resetTitle)
     }
 
     var rules = GetSiteRules();
-    //if (window === window.top) console.log("Parsing Nodes A: " + time + " (" + (new Date().getTime() - time) + ")");
-    if (rules.length == 0) return;
+    if (DEBUG) console.log("Parsing Nodes A: " + time + " (" + (new Date().getTime() - time) + ")");
+    if (rules.length == 0)
+    {
+        MO.reConnect(true);
+        return;
+    }
 
     if (window === window.top)
     {
@@ -1156,7 +1165,7 @@ function ParseNodes(resetTitle)
 
     if (document.readyState == "loading")
     {
-        MO.busy = false;
+        MO.reConnect();
         return;
     }
 
@@ -1166,7 +1175,7 @@ function ParseNodes(resetTitle)
         appendCSS(rules);
         appendScripts(rules);
     }
-    //if (window === window.top) console.warn("Parsing Nodes B: " + time + " (" + (new Date().getTime() - time) + ")");
+    if (DEBUG) console.warn("Parsing Nodes B: " + time + " (" + (new Date().getTime() - time) + ")");
     amendNodes(rules);
     //setTimeout(amendNodes, 250, rules);
 
@@ -1289,16 +1298,14 @@ function ParseNodes(resetTitle)
     function amendNodes(rules)
     {
         var r = n = -1;
-
         parseRules();
-
         function parseRules()
         {
             r++;
             if (r >= rules.length)
             {
-                //if (window === window.top) console.info("Parsing Nodes Z: " + time + " (" + (new Date().getTime() - time) + ")");
-                MO.busy = false;
+                if (DEBUG) console.info("Parsing Nodes Z: " + time + " (" + (new Date().getTime() - time) + ")");
+                MO.reConnect();
                 return;
             }
 
@@ -1404,9 +1411,10 @@ function ParseNodes(resetTitle)
 =====================================================================*/
 var MO =
 {
-    busy: false,
     timeout: null,
     Observer: null,
+    disconnected: true,
+
     monitorChanges: function ()
     {
         if (!MO.Observer)
@@ -1415,39 +1423,41 @@ var MO =
             if (mo) MO.Observer = new mo(MO.callback);
         }
 
-        if (MO.Observer) MO.Observer.observe(document, { subtree: true, childList: true });
+        if (MO.Observer && MO.disconnected)
+        {
+            MO.disconnected = false;
+            MO.Observer.observe(document, { subtree: true, childList: true });
+        }
     },
 
     callback: function ()
     {
-        clearTimeout(MO.timeout);
-        if (MO.busy)
+        MO.Observer.disconnect();
+        MO.disconnected = true;
+
+        setTimeout(function ()
         {
-            MO.timeout = setTimeout(MO.callback(), 500);
-            return;
+            ParseNodes();
+        }, 250);
+    },
+
+    reConnect: function (norules)
+    {
+        if (MO.disconnected && !norules)
+        {
+            setTimeout(MO.monitorChanges, 250);
         }
-        MO.busy = true;
-        ParseNodes();
     }
 };
 
 
+var DEBUG = false;
+DEBUG = (window === window.top && DEBUG);
 (function ()
 {
     if (window === window.top) GM_registerMenuCommand("[TS] Linx Amender", DialogMain.show);
 
-    /* To avoid start lag caused by the MutationObserver on a number of sites that uses iframe
-    and ajax, we delaying the mutation observer */
-
-    ParseNodes();
-    setTimeout(ParseNodes, 1500);
-    setTimeout(ParseNodes, 3000);
-
-    setTimeout(function ()
-    {
-        ParseNodes();
-        MO.monitorChanges();
-    }, 5000);
+    setTimeout(ParseNodes, 250);
 
     if (window === window.top)
         window.onkeyup = function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); };
