@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.61
+// @version             3.1.62
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | Custom views for page types | Link Caching and other features. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer".
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -31,7 +31,7 @@ Script's Homepage:              Check homepages below
 TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 https://greasyfork.org/users/1455-timidscript
                                 https://monkeyguts.com/author.php?un=timidscript
-                                
+
 
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
@@ -40,6 +40,13 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.62 (2014-09-27)
+ - Fixes direct links that got broken due to latest changes in Pixiv++. Uses API all the time now.
+ It is now impossible to get the necessary meta data from just the illustration page, therefore
+ LinkerMethod(1) is no longer supported.
+ - Current obsolete code still remains and needs to be removed.
+ - Changes in Pixic broke detection of Ugoria illustration. Two methods now implemented, checking 480URL
+ or tags. Choose tag method.
 3.1.61 (2014-08-29)
  - Bug Fix: Cropped the d in GM_registerMenuCommand in header
 3.1.60 (2014-08-29)
@@ -49,7 +56,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Removed old history
 3.1.58 (2014-08-17)
  - Full support for Ugoira links
- - Removed header data @versioninfo as there is no personalised updater 
+ - Removed header data @versioninfo as there is no personalised updater
 3.1.57 (2014-07-09)
  - Bug Fix for Pixiv layout changes
 3.1.56 (2014-07-03)
@@ -76,7 +83,7 @@ var PAGETYPE = (function ()
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/(cate_r18|mypage|member)\.php/i)) return 1;
         //else if (document.URL.match(/http:\/\/www\.pixiv\.net\/(response\.php\?type=illust\&id)/i)) return 2; //Response
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php\?id/i)) return 3; //Artist Work Page
-    else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php/i)) return 4; //Personal Work Page 
+    else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php/i)) return 4; //Personal Work Page
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark(_add)?\.php/i)) return 5;  //Personal Bookmarks, Added new bookmarks
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark\.php\?id=/i)) return 6; //Artist Bookmark
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark_new_illust(_r18)?\.php/i)) return 7; //Works from favourite artists
@@ -104,13 +111,12 @@ function IsMangaBigVersionEnabled(imageID)
 
 var containerClasses =
     {
-
         UnPaged:
         [
             "works_display", // Illustration Page (http://www.pixiv.net/member_illust.php?mode)
             "content", //Personal Home Page (http://www.pixiv.net/mypage.php)
             "top_display_works linkStyleWorks", //Personal Home Page Adult Content
-            "worksListOthers", //Artist's Profile Page (http://www.pixiv.net/member.php?)  
+            "worksListOthers", //Artist's Profile Page (http://www.pixiv.net/member.php?)
             "search_a2_result linkStyleWorks", //Response Page
         ],
         Paged:
@@ -168,7 +174,7 @@ IllustrationData =
 
     /*
     ------------------------------------------------------------------------------------------------
-     Does not automatically reset cache. It checks if it can be used, if not it is reset and 
+     Does not automatically reset cache. It checks if it can be used, if not it is reset and
      cached flag is set accordingly
     ------------------------------------------------------------------------------------------------*/
     resetCache: function ()
@@ -191,7 +197,7 @@ IllustrationData =
 
 /*
 ===================================================================================================================================
- Handles all functions to do with getting and adding all Illustration links and metadata. This includes: Image Links, 
+ Handles all functions to do with getting and adding all Illustration links and metadata. This includes: Image Links,
  IQDB, Bookmark Count, Views, Rating and score.
 ===================================================================================================================================*/
 var IllustrationLinker =
@@ -208,11 +214,11 @@ var IllustrationLinker =
        intervalID: null,
        msgHandle: null,
        thumbcounter: 0,
-       //Used by the pager when running in "SafeMode" as it temporarily removes session cookie 
+       //Used by the pager when running in "SafeMode" as it temporarily removes session cookie
        shortPause: false,
        //If false the thumbnail interval parser stops running
        enabled: false, //First time it gets turned on is when the SideBar is loaded
-       requestMethod: GM_getValue("LinkerMethod", 2), //1: Uses illustration page otherwise it uses APIMethod
+       requestMethod: 2, // GM_getValue("LinkerMethod", 2), //1: Uses illustration page otherwise it uses APIMethod
        TIMESTART: 0,
        TIMEEND: 0,
 
@@ -238,7 +244,6 @@ var IllustrationLinker =
                            thumbnail.className += " pppThumb" + (pageNumber % 3);
                            thumbnail.setAttribute("page", pageNumber);
                            thumbnail.setAttribute("position", ++IllustrationLinker.thumbcounter);
-
                        }
 
                        var data;
@@ -262,9 +267,9 @@ var IllustrationLinker =
                var link = IllustrationLinker.thumbnailLinks.shift();
 
                //Use API to get missing information such as bookmark count
-               IllustrationLinker.getIllustrationAPIData(link);
                IllustrationLinker.setMetadataM1(link, document);
-               IllustrationLinker.createLinksBox(link);
+               IllustrationLinker.getIllustrationAPIData(link);
+               //IllustrationLinker.createLinksBox(link);
            }
            else if (this.enabled) this.runIntevalThumbnailParser();
        },
@@ -315,7 +320,7 @@ var IllustrationLinker =
                            PreviewHQ.adjustAllHotboxPositions();
                        }
 
-                       //Last check                       
+                       //Last check
                        if (IllustrationLinker.enabled && IllustrationLinker.thumbnailLinks.length > 0)
                        {
                            IllustrationLinker.simultaneousCalls++;
@@ -342,7 +347,7 @@ var IllustrationLinker =
        /*
        -------------------------------------------------------------------------------------------
         Thumbnail parser interval is cleared and the link generation halts until it switchOn
-        is called.        
+        is called.
        -------------------------------------------------------------------------------------------*/
        switchOff: function ()
        {
@@ -351,7 +356,6 @@ var IllustrationLinker =
            IllustrationLinker.intervalID = null;
            if (IllustrationLinker.msgHandle) RemoveMessage(IllustrationLinker.msgHandle);
            IllustrationLinker.msgHandle = null;
-
        },
 
        switchOn: function ()
@@ -366,7 +370,6 @@ var IllustrationLinker =
        -------------------------------------------------------------------------------------------*/
        getPageCount: function (doc)
        {
-
            var metaData = doc.evaluate("//ul[@class='meta']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
            if (metaData)
            {
@@ -392,7 +395,7 @@ var IllustrationLinker =
        {
            var thumbnail = link.parentNode;
            var metadata = IllustrationData.getIllustrationLinkData(link);
-           //var metadata = new METADATA();           
+           //var metadata = new METADATA();
 
            var scoreBar = doc.evaluate("//section[@class='score']/dl", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
            if (scoreBar)
@@ -430,10 +433,10 @@ var IllustrationLinker =
            }
 
            metadata.pageCount = IllustrationLinker.getPageCount(doc);
-           
+
            if (metadata.pageCount > 0) metadata.illustType = 2; //Manga
            else if (doc.getElementsByClassName("_ugoku-illust-player-container").length > 0) metadata.illustType = 3; //Ugoira (Animated)
-           else metadata.illustType = 1; //Single illustration                               
+           else metadata.illustType = 1; //Single illustration
 
            var title = doc.evaluate("//section[@class='work-info']//h1[@class='title']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
            if (title) metadata.illustTitle = title.textContent;
@@ -457,9 +460,9 @@ var IllustrationLinker =
                 [X] The imageURLBase URL we want
                 NB: Image URL may have a suffix similar to this "?342342131"              */
 
-           
+
            if (metadata.illustType == 3) //Ugoira
-           {               
+           {
                var md = doc.querySelector('meta[property = "og:image"]');
                if (md) metadata.illustBaseURL = md.getAttribute("content").replace(/\/img-inf\/(.+)_s.+/i, '/img-zip-ugoira/$1_ugoira1920x1080.zip');
            }
@@ -469,8 +472,10 @@ var IllustrationLinker =
                baseURL = baseURL.replace(/(\/mobile\/)([^\/]+)$/gi, "/$2"); //Remove "Mobile" if one exists
                baseURL = baseURL.replace(/(\/\d+)[^\/]+\.(jpe?g|gif|png)(\?\d+)?$/gi, "$1.$2"); //Remove extra information
                metadata.illustBaseURL = baseURL;
+               console.log(baseURL);
            }
-           //console.log(metadata);
+
+           if (IsIllustrationPage) console.log("HTML", metadata);
        },
 
        /*
@@ -482,7 +487,7 @@ var IllustrationLinker =
        {
            var rawlist = APIresponse.split(",");
            var datalist = new APIDataFull();
-           var dataNames = APIMetaNames.split(" ");           
+           var dataNames = APIMetaNames.split(" ");
            for (var i = 0, n = 0; rawdata = rawlist[i], i < rawlist.length; i++)
            {
                var j = 0;
@@ -492,8 +497,8 @@ var IllustrationLinker =
                    j++;
                    rawdata += "," + rawlist[i + j]; //We add the comma that we removed as it was part of the value
                }
-               i += j; //We appended items               
-               rawdata = rawdata.replace(/^"|"$/g, ""); //We remove any starting or ending quotes               
+               i += j; //We appended items
+               rawdata = rawdata.replace(/^"|"$/g, ""); //We remove any starting or ending quotes
                datalist[dataNames[n]] = rawdata;
                n++;
            }
@@ -502,26 +507,34 @@ var IllustrationLinker =
            var metadata = IllustrationData.getIllustrationLinkData(link);
            for (var i = 0; i < dataNames.length; i++)
            {
-               //Null if item exists otherwise it would be undefined. 
+               //Null if item exists otherwise it would be undefined.
                if (metadata[dataNames[i]] === null)
                {
                    metadata[dataNames[i]] = datalist[dataNames[i]];
                    if (metadata[dataNames[i]].length > 0 && !isNaN(metadata[dataNames[i]])) metadata[dataNames[i]] = parseInt(metadata[dataNames[i]]);
                }
            }
-           //metadata = new METADATA(); 
-           //If empty or pageCount equal zero then its not a manga       
+           //metadata = new METADATA();
+           //If empty or pageCount equal zero then its not a manga
            if (isNaN(metadata.pageCount)) metadata.pageCount = 0;
 
            if (metadata.pageCount > 0) metadata.illustType = 2; //Manga
-           else if (datalist.illust128URL.match("_square.")) metadata.illustType = 3; //Ugoira (Animated)
+               //else if (datalist.illust480URL.match(/img-master\/img/)) metadata.illustType = 3; //Ugoira (Animated)
+           else if (metadata.tags.match(/(^|\s)うごイラ(\s|$)/)) metadata.illustType = 3; //Ugoira (Animated)
            else metadata.illustType = 1; //Single illustration
 
            var baseURL = datalist["illust480URL"];
            baseURL = baseURL.replace(/(\/mobile\/)([^\/]+)$/gi, "/$2"); //Remove "Mobile" if one exists
+
            metadata.illustBaseURL = baseURL.replace(/(\/\d+)[^\/]+\.(jpe?g|gif|png)(\?\d+)?$/gi, "$1." + datalist.illustExt); //Remove extra information
+
            if (metadata.illustType == 3) //Ugoira
                metadata.illustBaseURL = metadata.illustBaseURL.replace(/\/c\/\d+x\d+\/img-master\/(.+\/\d+)\..+/i, "/img-zip-ugoira/$1_ugoira1920x1080.zip");
+
+           //if (metadata.illustType == 1 datalist.illust128URL.match("master1200"))
+           //{
+           //    metadata.illustPreviewURL = datalist.illust128URL.replace("128x128", "600x600");
+           //}
 
            if (IsIllustrationPage) //Never gets called because we use Method1 there XD
            {
@@ -531,6 +544,8 @@ var IllustrationLinker =
                    response = parseInt(response.textContent.replace(/.*\((\d+)\).*/, "$1"));
                }
            } else metadata.responseCount = IllustrationLinker.getResponseCount(link.parentElement);
+
+           if (IsIllustrationPage) console.log("API\n", datalist, "\n\n", metadata);
        },
 
        /*
@@ -564,7 +579,7 @@ var IllustrationLinker =
         IllustrationData
        -------------------------------------------------------------------------------------------*/
        createLinksBox: function (link)
-       {           
+       {
            var thumbnail = link.parentNode;
            var metadata = IllustrationData.getIllustrationLinkData(link);
            //var metadata = new METADATA();
@@ -578,38 +593,39 @@ var IllustrationLinker =
 
            directLinks.className = "pppDirectLinks";
 
+
            if (PAGETYPE > 1)
            {
-               var evaluator = new XPathEvaluator(); //document.evaluate  
+               var evaluator = new XPathEvaluator(); //document.evaluate
                var sortButton = evaluator.evaluate("//a[@name='Sort']", SideBar.iDoc.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                if (sortButton.firstElementChild.style.borderColor == "rgb(0, 255, 0)") sortButton.firstElementChild.style.borderColor = "#F00";
            }
-           
+
 
            if (metadata.pageCount == 0) //Single Illustration
            {
                /*
                 http://superuser.com/questions/364632/how-to-override-a-javascript-value-with-greasemonkey
-                You'll want to use unsafeWindow, which, as the name infers, is not the most secure method 
+                You'll want to use unsafeWindow, which, as the name infers, is not the most secure method
                 -- but if all you are doing is changing the value of a page based variable, there's no risk involved.
 
-                If you just use window.SESSION_TIMEOUT, you more than likely will not be accessing the 
-                correct scope, and your SESSION_TIMEOUT variable would go unmodified, and a new one 
+                If you just use window.SESSION_TIMEOUT, you more than likely will not be accessing the
+                correct scope, and your SESSION_TIMEOUT variable would go unmodified, and a new one
                 created inside another context / scope. */
-               
+
                //console.warn(unsafeWindow.pixiv.context.ugokuIllustData);
                //console.warn(unsafeWindow.pixiv.context.ugokuIllustFullscreenData);
-                                             
+
                var directLink = document.createElement("a");
                directLink.textContent = "[❀]"; //S❂❀
-               
+
                //if (metadata.illustType == 1) directLink.href = metadata.illustBaseURL;
                //else if (IsIllustrationPage) directLink.href = unsafeWindow.pixiv.context.ugokuIllustFullscreenData.src;
                //else if (!IsIllustrationPage) directLink.href = null;
-               
+
                directLink.href = metadata.illustBaseURL;
-               
-               if (!Settings.display.illustLink) directLinks.style.display = "none";               
+
+               if (!Settings.display.illustLink) directLinks.style.display = "none";
                directLinks.appendChild(directLink);
            }
            else //Manga Illustration
@@ -624,8 +640,6 @@ var IllustrationLinker =
                {
                    if (IsIllustrationPage)
                    {
-
-
                        var linkSML = '<a title ="Page #' + i + '" href="' + metadata.illustBaseURL.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_p" + i + ".$2") + '">' + i + '</a>';
                        var linkBIG = '<a title ="Page #' + i + '" href="' + metadata.illustBaseURL.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_big_p" + i + ".$2") + '">' + i + '</a>';
 
@@ -644,7 +658,6 @@ var IllustrationLinker =
                            imageLinksSML = imageLinksSML + linkSML + ' | ';
                            imageLinksBIG = imageLinksBIG + linkBIG + ' | ';
                        }
-
                    }
                    else
                    {
@@ -720,7 +733,8 @@ var IllustrationLinker =
                        var END = new Date();
                        //console.info(END - START);
                        IllustrationLinker.setMetadataM2(link, response.responseText);
-                       if (!IsIllustrationPage) IllustrationLinker.createLinksBox(link);
+                       //if (!IsIllustrationPage)
+                       IllustrationLinker.createLinksBox(link);
                    }
                    else console.error("hmmmmm");
                    IllustrationLinker.simultaneousCalls--;
@@ -794,8 +808,8 @@ var Pager =
          Initialises the pager.
          - pageLoadEventHandler must be set as it gets called when a new page is
          loaded. It takes (document,nextURL) parameters.
-         - scrollOffset function that return the bottom position of the main 
-         container. Used to calculate when to load next page. 
+         - scrollOffset function that return the bottom position of the main
+         container. Used to calculate when to load next page.
         ------------------------------------------------------------------------------*/
         initalise: function (pageLoadEventHandler, funcScrollOffset)
         {
@@ -811,8 +825,8 @@ var Pager =
         ------------------------------------------------------------------------------
          Rated version of "initialise". Initialise still needs to be called first.
          - firstPageLoadEventHandler - gets called when the content of the first page
-         is acquired. Used to replace content of current document. 
-         Takes (doc, array, ageRating). Array contains the result count for All, Safe, R18. 
+         is acquired. Used to replace content of current document.
+         Takes (doc, array, ageRating). Array contains the result count for All, Safe, R18.
          Used mainly to compare difference result count and make sure that
          R18 + Safe = All.
          - ageRating - 0:All|1:SafeMode|2:R-18
@@ -892,12 +906,12 @@ var Pager =
         /*
         ------------------------------------------------------------------------------
          Gets the next page url from an element or full document. Returns null
-         if there isn't a next page other the url.  
+         if there isn't a next page other the url.
         ------------------------------------------------------------------------------*/
         getNextPageURL: function (xml)
         {
             this.nextPageURL = null;
-            var evaluator = new XPathEvaluator(); //document.evaluate                   
+            var evaluator = new XPathEvaluator(); //document.evaluate
             var btnNext = evaluator.evaluate(".//a[@rel='next' and @class='_button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
             if (btnNext) this.nextPageURL = btnNext.href;
             //else btnNext = evaluator.evaluate(".//a[@rel='next' and @class='button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -925,7 +939,7 @@ var Pager =
             IllustrationLinker.pause = true;
             var sessionID = Pager.GetSessionID();
             //console.info(document.cookie);
-            //Fake Session ID. If you leave it blank you cannot re-create cookie with old sessionID.                
+            //Fake Session ID. If you leave it blank you cannot re-create cookie with old sessionID.
             //console.warn("Pixiv session cookie being removed.");
             if (sessionID) document.cookie = "PHPSESSID=000000000000000;path=/;domain=.pixiv.net;"
             return sessionID;
@@ -962,7 +976,7 @@ var Pager =
 
         /*
         ------------------------------------------------------------------------------
-         Gets the next page asynchronously.          
+         Gets the next page asynchronously.
         ------------------------------------------------------------------------------*/
         getNextPage: function ()
         {
@@ -997,7 +1011,7 @@ var Pager =
                             doc.appendChild(documentElement);
 
                             //Not supported by Opera
-                            //var doc = new DOMParser().parseFromString(response.responseText, "text/html")                            
+                            //var doc = new DOMParser().parseFromString(response.responseText, "text/html")
                             Pager.NextPageReceived(doc, pageNumber);
                         }
                         else Pager.pageErrorTimeout("ERROR: Page [" + pageNumber + "] failed request", response);
@@ -1053,7 +1067,6 @@ var Pager =
 
                 iframe.src = this.nextPageURL;
                 setTimeout(function () { RemoveMessage(msg); }, 3000);
-
             }
 
             if (safeMode) Pager.restoreSessionID(sessionID);
@@ -1071,7 +1084,6 @@ var Pager =
                         , Pager.timeOutLength);
             Pager.requestingPage = false;
         }
-
     }
 
 /*
@@ -1142,7 +1154,7 @@ var PaginatorHQ =
 
         /*
        -------------------------------------------------------------------------------------------
-        Callback from the Pager when new rated page result have returned. 
+        Callback from the Pager when new rated page result have returned.
         It strips current result and insert new content.
        -------------------------------------------------------------------------------------------*/
         intialiseRated: function (doc, countList, ageRating)
@@ -1158,7 +1170,7 @@ var PaginatorHQ =
             var evaluator = new XPathEvaluator(); //document.evaluate
             var resultCount = evaluator.evaluate("//div[@class='column-label']/span[@class='count-badge']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-            /* We do this to avoid language issues. Remember we are getting safe 
+            /* We do this to avoid language issues. Remember we are getting safe
             pages without valid session cookie (logged out) */
             resultCount.textContent = resultCount.textContent.replace(/\d+/, countList[ageRating]);
 
@@ -1202,7 +1214,6 @@ var PaginatorHQ =
             style.innerHTML = textContent;
             if (id) style.id = id;
             document.head.appendChild(style);
-
         },
 
         setStyles: function ()
@@ -1214,13 +1225,12 @@ var PaginatorHQ =
             PaginatorHQ.addStyle("pppPaged", ".pppPage1{background-color: yellow;}.pppPage2{background-color: #63FF00;}.pppPage0{background-color: #FF00FC;}.pppThumb1{background-color: #FCFCA8 !important;}.pppThumb2{background-color: #D9FFD9 !important;}.pppThumb0{background-color: #EAD3EF !important;}");
             PaginatorHQ.addStyle("pppPaginator", ".paginator{background-color: white; margin:0; border: ridge;}");
             PaginatorHQ.addStyle("pppVisitedIllusPage", ".image-item > a.work:visited > img { border: 22px solid red; !important}");
-            
+
 
             //Used to fix broken artist and bookmarks pages
             PaginatorHQ.addStyle(null, ".pppPage1 > li, .pppPage2 > li, .pppPage0 > li { clear: none; float: none !important; display:inline-block;}");
             PaginatorHQ.addStyle(null, ".paginator li {clear:none;float:none;display:inline:block; width:auto;}");
             PaginatorHQ.addStyle("linkColours", ".pppThumb0 a:link, .pppThumb1 a:link, .pppThumb2 a:link{color:#0507FF;} .pppThumb0 a:visited, .pppThumb1 a:visited, .pppThumb2 a:visited{color:#BCBBB9;}")
-
         },
 
         getPageNumber: function (url)
@@ -1232,7 +1242,7 @@ var PaginatorHQ =
 
         /*
        -------------------------------------------------------------------------------------------
-         Adds new content. 
+         Adds new content.
        -------------------------------------------------------------------------------------------*/
         addNewPage: function (doc, url)
         {
@@ -1240,7 +1250,7 @@ var PaginatorHQ =
 
             var pageNumber = PaginatorHQ.getPageNumber(url);
 
-            //PageContainer            
+            //PageContainer
             var pageContainer = PaginatorHQ.getContainers(doc)[0];
             pageContainer.setAttribute("name", "pageContainer");
             pageContainer.setAttribute("page", pageNumber);
@@ -1261,7 +1271,7 @@ var PaginatorHQ =
             PaginatorHQ.pageTable.appendChild(pageContainer);
 
 
-            //IllustrationLinker.getContainerLinks should always after page is added.            
+            //IllustrationLinker.getContainerLinks should always after page is added.
             IllustrationLinker.getContainerLinks([pageContainer], pageNumber);
             PaginatorHQ.updateVisibilityOfAllElements(pageContainer);
             if (Settings.filterSwitchFlag > 0)
@@ -1274,8 +1284,8 @@ var PaginatorHQ =
 
         /*
         -----------------------------------------------------------------------------------------
-         Returns containers that contain thumbnails. If doc is left out it uses current 
-         document. This does not return dynamic containers, i.e. containers like recommended 
+         Returns containers that contain thumbnails. If doc is left out it uses current
+         document. This does not return dynamic containers, i.e. containers like recommended
          illustrations whose content are auto-updated by Pixiv.
         -----------------------------------------------------------------------------------------*/
         getContainers: function (doc)
@@ -1284,7 +1294,6 @@ var PaginatorHQ =
             if (!doc) doc = document;
             for (var i = 0; i < containerClasses.Paged.length; i++)
             {
-
                 var nodes = doc.getElementsByClassName(containerClasses.Paged[i]);
                 if (nodes.length > 0) return nodes;
             }
@@ -1303,7 +1312,7 @@ var PaginatorHQ =
         {
             if (Settings.filterSwitchFlag == 0) return;
 
-            //var data = new METADATA();            
+            //var data = new METADATA();
             var data = IllustrationData.getIllustrationData(thumbnail.getAttribute("illustration-id"));
             var filterOut = false;
 
@@ -1321,12 +1330,12 @@ var PaginatorHQ =
                 var values = Settings.filters[Settings.filter.set];
                 try
                 {
-                    if ((flag & 2) == 2 && data.pageCount == 0) filterOut = true; //Filtering out Illustrations                
+                    if ((flag & 2) == 2 && data.pageCount == 0) filterOut = true; //Filtering out Illustrations
                     else if ((flag & 4) == 4 && data.pageCount > 0) filterOut = true; //Filtering out Manga
                     else if ((flag & 8) == 8 && data.bookmarkCount < values[0]) filterOut = true; //Bookmarks
                     else if ((flag & 16) == 16 && data.viewCount < values[1]) filterOut = true; //Views
                     else if ((flag & 32) == 32 && data.ratings < values[2]) filterOut = true; //Ratings
-                    else if ((flag & 64) == 64 && data.totalRatings < values[3]) filterOut = true; //Total                
+                    else if ((flag & 64) == 64 && data.totalRatings < values[3]) filterOut = true; //Total
                 } catch (e) { };
             }
 
@@ -1441,7 +1450,7 @@ var PaginatorHQ =
                 paginators[i].style.display = (filtering) ? "none" : null;
             }
 
-            if (filtering) //Displaying all items 
+            if (filtering) //Displaying all items
             {
                 mainContainer.style.backgroundColor = "transparent";
                 for (var i = 0; i < containers.length; i++)
@@ -1450,14 +1459,14 @@ var PaginatorHQ =
                     PaginatorHQ.filterContainer(containers[i]);
                 }
             }
-            else //Filtering out 
+            else //Filtering out
             {
                 mainContainer.style.backgroundColor = null;
                 var evaluator = new XPathEvaluator();
                 var nodesSnapshot = evaluator.evaluate(".//li[@name='pppThumb']", mainContainer, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
                 for (var i = 0 ; thumb = nodesSnapshot.snapshotItem(i), i < nodesSnapshot.snapshotLength; i++)
                 {
-                    //msg.textContent = ("Filtering thumbnail " + (i + 1) + "/" + nodesSnapshot.snapshotLength);                                        
+                    //msg.textContent = ("Filtering thumbnail " + (i + 1) + "/" + nodesSnapshot.snapshotLength);
                     thumbPage = thumb.getAttribute("page");
                     if (thumbPage > mainContainerPage) containers[thumbPage - mainContainerPage].appendChild(thumb);
                     thumb.style.display = null;
@@ -1484,7 +1493,7 @@ var PaginatorHQ =
         {
             if (!doc) doc = document;
 
-            var evaluator = new XPathEvaluator(); //document.evaluate                           
+            var evaluator = new XPathEvaluator(); //document.evaluate
             //var result = evaluator.evaluate("//div[@class='column-label' or '_unit manage-unit']/span[@class='count-badge']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
             var result = evaluator.evaluate("//div[@class='column-label' or @class='_unit manage-unit']/span[@class='count-badge']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
@@ -1509,7 +1518,7 @@ var PaginatorHQ =
             var it = SideBar.iDoc.getElementById("InfoTable");
             var resultCount = PaginatorHQ.getResultCount(); //Number of items returned by search
 
-            var linked = (thumbs.length - IllustrationLinker.thumbnailLinks.length - IllustrationLinker.simultaneousCalls);            
+            var linked = (thumbs.length - IllustrationLinker.thumbnailLinks.length - IllustrationLinker.simultaneousCalls);
 
             if (resultCount < 0) //We do not know how many pages can be displayed. Might not be paged
             {
@@ -1533,7 +1542,6 @@ var PaginatorHQ =
             }
             else
             {
-
                 var visibleCount = thumbs.length;
                 if (Settings.filterSwitchFlag > 0)
                 {
@@ -1548,12 +1556,12 @@ var PaginatorHQ =
                 var pageS = PaginatorHQ.getPageNumber(document.URL);
                 var pageE = pageS + pagesLoaded - 1;
                 var pageCount = Math.ceil(resultCount / 20);
-                
+
                 it.rows[0].cells[1].textContent = pagesLoaded + " (" + pageS + "-" + pageE + " | " + pageCount + ")";
 
                 var leftCount = resultCount - ((pageS - 1) * 20)
                 if (Settings.filterSwitchFlag > 0) it.rows[1].cells[1].innerHTML = visibleCount + " / " + linked + " | " + thumbs.length + "<br /> (" + leftCount + " | " + resultCount + ")";
-                else it.rows[1].cells[1].textContent = linked + " / " + thumbs.length +  " (" + leftCount + " | " + resultCount + ")";
+                else it.rows[1].cells[1].textContent = linked + " / " + thumbs.length + " (" + leftCount + " | " + resultCount + ")";
             }
 
             //Adjust frame size to fit info text
@@ -1583,7 +1591,7 @@ var PaginatorHQ =
             var containers = document.getElementsByName("pageContainer");
             var sortType = Settings.sortType;
 
-            //A very bad way of doing sort but it seems efficient. Problem is having items spread over containers 
+            //A very bad way of doing sort but it seems efficient. Problem is having items spread over containers
             var evaluator = new XPathEvaluator();
             var nodesSnapshot = evaluator.evaluate(".//li[@name='pppThumb']", PaginatorHQ.pageTable, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
             var arr = new Array();
@@ -1593,7 +1601,7 @@ var PaginatorHQ =
                 arr.push({ "index": i, "value": value });
             }
 
-            //Stores thumbnail metascore and position in an array and then sorts the array and then proceeds to 
+            //Stores thumbnail metascore and position in an array and then sorts the array and then proceeds to
             //to apply sorted result to the thumbnails
             for (var i = 0 ; i < arr.length; i++)
             {
@@ -1621,7 +1629,7 @@ var PaginatorHQ =
                 container.appendChild(nodesSnapshot.snapshotItem(arr[i].index));
             }
 
-            var evaluator = new XPathEvaluator(); //document.evaluate  
+            var evaluator = new XPathEvaluator(); //document.evaluate
             var sortButton = evaluator.evaluate("//a[@name='Sort']", SideBar.iDoc.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
             if (sort)
             {
@@ -1661,7 +1669,6 @@ var PaginatorHQ =
             var linksBoxes = document.getElementsByClassName("pppLinksBox");
 
             for (var i = 0; i < linksBoxes.length; i++) PaginatorHQ.updateIQDBLink(linksBoxes[i]);
-
         },
 
         /*
@@ -1722,7 +1729,7 @@ var PaginatorHQ =
                 link.innerHTML = link.innerHTML.replace(/(<img[^>]*>).*/gi, "$1");
                 link.style.display = "block";
                 var h1 = document.createElement("h1");
-                //h1.className = "title";                
+                //h1.className = "title";
                 h1.textContent = metadata.illustTitle;
                 link.appendChild(h1);
             }
@@ -1813,27 +1820,27 @@ var PreviewHQ =
         if (metadata.pageCount == 0)
         {
             hotbox.className = "pppHotBoxTi";
-            hotbox.href = metadata.illustBaseURL;            
+            hotbox.href = metadata.illustBaseURL;
         }
         else
         {
             hotbox.className += "pppHotBoxTm";
 
             var bigImage = IsMangaBigVersionEnabled(metadata.illustID);
-            hotbox.href = "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID; //DirectLink to Manga Page Viewer                                
+            hotbox.href = "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID; //DirectLink to Manga Page Viewer
         }
 
         if (IsIllustrationPage)
         {
-            if (metadata.pageCount == 0) link.href = metadata.illustBaseURL;
+            //if (metadata.pageCount == 0) link.href = metadata.illustBaseURL;
 
-            //console.log("Illustration Page");
+            console.log("Illustration Page");
             var br = document.createElement("br");
             link.insertBefore(br, hotbox);
             hotbox.className = "pppHotBoxI";
             var img = link.getElementsByTagName("img")[0];
             hotbox.style.width = (img.offsetWidth - 4) + "px";
-                        
+
             PreviewHQ.intervalImageLoadCheck = setInterval(function ()
             {
                 if (img.naturalWidth > 0)
@@ -1904,7 +1911,7 @@ var PreviewHQ =
         var imageID = pThumb.getAttribute("illustration-id");
 
         var metadata = IllustrationData.getIllustrationData(imageID);
-        //metadata = new METADATA();        
+        //metadata = new METADATA();
 
         var previewWindow = document.getElementById("previewWindow");
         if (previewWindow && previewWindow.getAttribute("illustration-id") == imageID) return;
@@ -1963,8 +1970,8 @@ var PreviewHQ =
         //http://www.pixiv.net/bookmark_detail.php?illust_id=34470652
         //http://www.pixiv.net/response.php?type=illust&id=34470652
         //http://www.pixiv.net/member_illust.php?id=68447
-        
-        var links;        
+
+        var links;
         if (metadata.illustType == 3)
         {
             data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='" + IQDBPrefix + pThumb.getElementsByTagName("img")[0].src + "&'>IQDB<a>";
@@ -1985,11 +1992,11 @@ var PreviewHQ =
 
         previewWindow.setAttribute("style", "position: absolute; z-index: 1000; background-color:#000;border: 5px ridge #565757; max-width: 90%;");
 
-        if (metadata.illustType == 3)
+        if (metadata.illustType == 3) //Ugoria
         {
             // Do nothing and no images
         }
-        else if (metadata.pageCount > 0)
+        else if (metadata.illustType == 2) //Manga
         {
             /* Sample URLS
             http://i2.pixiv.net/img14/img/whatsoy/16791530.jpg
@@ -2032,6 +2039,7 @@ var PreviewHQ =
             preImg.setAttribute("style", "margin: auto auto; height: " + Settings.preview.height + "px;text-align:center;");
 
             var imgsrc = (Settings.preview.height > 350) ? link.href.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_m.$2") : link.href.replace(/(.+\/)(\d+)\.(jpe?g|gif|png)$/, "$1mobile/$2_240mw.jpg");
+
             var topOffSet = 0;
             if (Settings.display.autoPreview)
             {
@@ -2064,7 +2072,6 @@ var PreviewHQ =
                     PreviewHQ.adjustPreviewWindow(previewWindow, hotbox, topOffSet);
                     //console.log(preImg.width, 'x', preImg.height);
                 }
-
             }, 0);
 
             //if (preImg.offsetWidth == 0) preImg.onload = function () { preImg.onload = null; };
@@ -2097,8 +2104,7 @@ var PreviewHQ =
 
     adjustPreviewWindow: function (previewWindow, hotbox, topOffset)
     {
-
-        if (previewWindow.offsetWidth == 0) return; //PreviewWindow unloaded. Setting onload to null in onMouseOut does not work. 
+        if (previewWindow.offsetWidth == 0) return; //PreviewWindow unloaded. Setting onload to null in onMouseOut does not work.
         if (!topOffset) topOffset = 0;
         var offset = GetAbsolutePosition(hotbox);
 
@@ -2491,7 +2497,7 @@ var SideBar =
     onSwitchPressed: function (e)
     {
         e.stopPropagation();
-        //e.preventDefault(); //Stops propagating to parent        
+        //e.preventDefault(); //Stops propagating to parent
         var s = e.target;
         while (s.tagName != "A") s = s.parentElement;
 
@@ -2888,7 +2894,7 @@ function RemoveMessage(msg)
 
 function DisplayMessage(msgTxt, timeout)
 {
-    //text-align: center; display:inline-block; width: 100px; background-color: #D3D3D3; border: 1;  
+    //text-align: center; display:inline-block; width: 100px; background-color: #D3D3D3; border: 1;
     var msgBox = document.getElementById("pppMsgBox");
     if (!msgBox)
     {
@@ -2924,7 +2930,7 @@ function makeStruct(names)
     return constructor;
 }
 
-var APIMetaNames = "illustID userID illustExt illustTitle unknown1 userName illust128URL unused1 unused2 illust480URL unused3 unused4 time tags software ratings totalRatings viewCount description pageCount unused5 unused6 bookmarkCount unknown2 userLoginName unused7 R18 unused8 unused9 userProfileImageURL endMarker";
+var APIMetaNames = "illustID userID illustExt illustTitle imgDirectoryNumber userName illust128URL unused1 unused2 illust480URL unused3 unused4 time tags software ratings totalRatings viewCount description pageCount unused5 unused6 bookmarkCount unknown2 userLoginName unused7 R18 unused8 unused9 userProfileImageURL endMarker";
 var APIDataFull = makeStruct(APIMetaNames);
 var METADATA = makeStruct("userID userName userProfileImageURL illustType illustID illustTitle illustBaseURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount R18");
 var APIAgeRating = GM_getValue("APIAgeRating", true);
@@ -2948,9 +2954,9 @@ method.
 
 [2] Default: 2
 By default we are using PhoneAPI (value 2). Set it to 1 if you want to gete metadata from
-Illustration Page (slower). 
-1: Relies on actual thumbnail to extract bookmark count which isn't always present. 
-2: Relies on actual thumbnail to extract response count which isn't always present 
+Illustration Page (slower).
+1: Relies on actual thumbnail to extract bookmark count which isn't always present.
+2: Relies on actual thumbnail to extract response count which isn't always present
 From version 3.1.47 Illustration page uses API also to get bookmark count
 
 [3] Default: true
@@ -2959,12 +2965,12 @@ Caching of links when using SideBar Age Rated Search.
 
 [4] Default: true
 New feature from 3.1.38:
-Uses the metadata value for age search by default. Before it XMLHttpRequest to make a new search and the 
+Uses the metadata value for age search by default. Before it XMLHttpRequest to make a new search and the
 repopulate the result. Now it filters out the current result using the metadata.
-This makes it a lot faster and backward. If you choose to go back to the old method, it is recommended 
+This makes it a lot faster and backward. If you choose to go back to the old method, it is recommended
 to enable caching [3] to make it a lot faster.
 **This Feature only works with LinkerMethod 2.
-**EnableCache should be disabled with this feature. 
+**EnableCache should be disabled with this feature.
 */
 
 
