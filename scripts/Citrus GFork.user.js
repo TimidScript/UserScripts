@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.14
+// @version         1.0.15
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.15 (2014-09-29)
+ - Fixed the issue that 1.0.15 supposedly had fixed
+ - Appreciation notice added
 1.0.14 (2014-09-22)
  - Re-fixed profile table sort :?
 1.0.13 (2014-09-19)
@@ -93,6 +96,18 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         TSL.addStyle("", ".install-link {background-color: #F7A207;} .install-help-link {background-color: #F9C565 !important;}");
         TSL.addStyle("", "#additional-info {border-radius: 5px;} #additional-info > div {background-color: white;");
         TSL.addStyle("", "header:first-child {background-color:white; padding: 5px 10px;}");
+
+        var ia = document.getElementById("install-area");
+
+        if (ia)
+        {
+            var notice = document.createElement("span");
+            notice.textContent = "Show your appreciation to the author by favouring the script and giving positive feedback";
+            notice.setAttribute("style", "padding: 0 20px; border-radius: 4px;");
+
+            disco(0);
+            ia.appendChild(notice);
+        }
     }
     else if (document.URL.match(/greasyfork\.org\/scripts/)) //Script Listing
     {
@@ -175,6 +190,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         }
     }
 
+    function disco(i)
+    {
+        notice.style.backgroundColor = (i % 2) ? "transparent" : "yellow";
+        if (i < 18) setTimeout(disco, 500, ++i);
+    }
 
     /* Styling for user page
     ---------------------------------------------------------------------------*/
@@ -502,7 +522,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
         url = url.replace(/\?&/, "?");
         url = url.replace(/\?$/, "");
-        if (url.indexOf("?") < 0) url.replace("&", "?");
+        if (url.indexOf("?") < 0) url = url.replace("&", "?");
 
         console.warn("getScriptListing IN: " + url)
         GM_xmlhttpRequest({
