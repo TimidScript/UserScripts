@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.1.20
+// @version         2.1.21
 // @description     A more Powerful Pixiv Manga Viewer. Works with Pixiv++ & Generic Image Viewer
 // @icon            https://i.imgur.com/ZNBlNzI.png
 // @author          TimidScript
@@ -32,7 +32,7 @@ Script's Homepage:              Check homepages below
 TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 https://greasyfork.org/users/1455-timidscript
                                 https://monkeyguts.com/author.php?un=timidscript
-                                
+
 
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
@@ -56,6 +56,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.1.21 (2014-10-02)
+ - Bug fixes due to changes in pixiv url syntax
 2.1.20 (2014-09-08)
  - Bug Fix: Due to changes to TSL-Generic.
 2.1.19 (2014-08-29)
@@ -70,7 +72,7 @@ Hotkeys:
  - Multiple background colour options
  - Settings are removed with update
  - Optimised and cleaned up the code
- - Need to manually place the image to make sure correct CSS is applied to image background 
+ - Need to manually place the image to make sure correct CSS is applied to image background
  in correct order.
 2.0.15 (2013-10-14)
  - document.replaceChild used
@@ -89,15 +91,15 @@ Hotkeys:
 //GM_setValue("BGColors", '[["DDF0F5","E2E2E1"],["F1F18A","C8F3C8"],["000071","000"],["EACCE6","A15F5F"]]');  //Image Background Colours
 
 
-/* 
+/*
 ==============================================================================================
  Variables you should not touch
 ==============================================================================================*/
 var APIMetaNames = "illustID userID illustExt illustTitle unknown1 userName illust128URL unused1 unused2 illust480URL unused3 unused4 time tags software ratings totalRatings viewCount description pageCount unused5 unused6 bookmarkCount unknown2 userLoginName unused7 unknown3 unused8 unused9 userProfileImageURL endMarker";
-var METADATA = makeStruct("userID userName userProfileImageURL illustID illustTitle illustBaseURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount");
+var METADATA = makeStruct("userID userName userProfileImageURL illustID illustTitle illust128URL illust150URL illustURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount");
 
 var APIDataFull = makeStruct(APIMetaNames);
-var MangaData = new METADATA();
+var metadata = new METADATA();
 
 var MangaBigPagesID = 11319936;
 var MaxSyncCalls = GM_getValue("SyncCalls", "5");
@@ -134,7 +136,7 @@ function GetCurrentViewedPage()
             {
                 ViewingPage.previous = i;
                 ViewingPage.current = i + 1;
-                if (ViewingPage.current < MangaData.pageCount) ViewingPage.next = i + 2;
+                if (ViewingPage.current < metadata.pageCount) ViewingPage.next = i + 2;
             }
             else if (top > 50)
             {
@@ -145,10 +147,10 @@ function GetCurrentViewedPage()
     }
     if (ViewingPage.previous == -1 && ViewingPage.current == -1 && ViewingPage.next == -1)
     {
-        ViewingPage.previous = MangaData.pageCount - 1;
-        ViewingPage.current = MangaData.pageCount;
+        ViewingPage.previous = metadata.pageCount - 1;
+        ViewingPage.current = metadata.pageCount;
     }
-    //console.log("Page Count: " + MangaData.pageCount, ViewingPage);
+    //console.log("Page Count: " + metadata.pageCount, ViewingPage);
 
     if (thumbnails && thumbnails.length > 0)
     {
@@ -210,7 +212,7 @@ function RemoveAllDocumentContent()
 function KeyDownCallback(e)
 {
     //var key = String.fromCharCode(e.keyCode).toLowerCase();
-    //e.stopImmediatePropagation();    
+    //e.stopImmediatePropagation();
 
     switch (e.keyCode)
     {
@@ -231,10 +233,10 @@ function KeyDownCallback(e)
         case 90: //Z: Load next page
             e.stopImmediatePropagation();
             GetCurrentViewedPage();
-            if (ViewingPage.next > 0 && ViewingPage.next <= MangaData.pageCount) GotoToPageNumber(ViewingPage.next);
+            if (ViewingPage.next > 0 && ViewingPage.next <= metadata.pageCount) GotoToPageNumber(ViewingPage.next);
             return false; //window.pageYOffset == document.documentElement.scrollTop
         case 81: //Q: Toggle Thumbnail Gallery Display
-        case 102: //Num 6 
+        case 102: //Num 6
             e.stopImmediatePropagation();
             var tg = document.getElementById("ThumbGallery");
             if (tg) tg.parentElement.removeChild(tg);
@@ -304,10 +306,10 @@ function DisplayThumbGallery()
         thumbgallery.appendChild(infopanel);
 
 
-        var panel = CreatePanelControl(MangaData.illustTitle, "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + MangaData.illustID);
+        var panel = CreatePanelControl(metadata.illustTitle, "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID);
         infopanel.appendChild(panel);
 
-        panel = CreatePanelControlImage("http://www.pixiv.net/member.php?id=" + MangaData.userID, MangaData.userProfileImageURL);
+        panel = CreatePanelControlImage("http://www.pixiv.net/member.php?id=" + metadata.userID, metadata.userProfileImageURL);
         infopanel.appendChild(panel);
         var image = panel.getElementsByTagName("IMG")[0];
         image.style.margin = "0 5px 0 10px";
@@ -316,10 +318,10 @@ function DisplayThumbGallery()
         infopanel.appendChild(panel);
 
 
-        panel = CreatePanelControl(MangaData.userName, "http://www.pixiv.net/member_illust.php?id=" + MangaData.userID);
+        panel = CreatePanelControl(metadata.userName, "http://www.pixiv.net/member_illust.php?id=" + metadata.userID);
         infopanel.appendChild(panel);
 
-        //var seperator = document.createElement("span");        
+        //var seperator = document.createElement("span");
         //seperator.setAttribute("style", "width: 50px;");
         //infopanel.appendChild(seperator);
 
@@ -349,11 +351,13 @@ function DisplayThumbGallery()
         var thumbs = document.createElement("div");
         thumbs.id = "Thumbnails";
         thumbgallery.appendChild(thumbs);
-        for (var i = 0; i < MangaData.pageCount; i++)
+        for (var i = 0; i < metadata.pageCount; i++)
         {
             var thumbnail = document.createElement("a");
             var image = document.createElement("img");
-            image.src = MangaData.illustBaseURL.replace(/(\d+)\.(jpe?g|gif|png)($|\?\d+$)/gi, "/mobile/" + "$1_128x128_p" + i + ".jpg");
+
+            image.src = metadata.illust150URL || metadata.illust128URL;
+            image.src.replace(/_p\d+/, "_p" + i);
 
             var div = document.createElement("div");
             var j = i + 1;
@@ -376,17 +380,14 @@ function DisplayThumbGallery()
     return false;
 }
 
-
 function GetImageLink(forceNormalSize, page)
 {
-    var suffix = (MangaData.illustID < MangaBigPagesID || forceNormalSize) ? "_p" : "_big_p";
-    return MangaData.illustBaseURL.replace(/\.(jpe?g|gif|png)$/gi, suffix + page + ".$1");
+    return metadata.illustURL.replace(/_p\d+/, "_p" + page);
 }
-
 
 /*
 ==============================================================================================
- 
+
 ==============================================================================================*/
 function ImageCursor(e, img)
 {
@@ -399,8 +400,8 @@ function ImageCursor(e, img)
     }
     else
     {
-        if (img.getAttribute("page") == MangaData.pageCount && img.className != "cursorS") img.className = "cursorS";
-        else if (img.getAttribute("page") < MangaData.pageCount && img.className != "cursorN") img.className = "cursorN";
+        if (img.getAttribute("page") == metadata.pageCount && img.className != "cursorS") img.className = "cursorS";
+        else if (img.getAttribute("page") < metadata.pageCount && img.className != "cursorN") img.className = "cursorN";
     }
 }
 
@@ -440,7 +441,7 @@ function makeStruct(names)
 
 /* Mouse Monitor Functions
 ====================================================================
- Monitors mouse cursor and set visibility of panels according to 
+ Monitors mouse cursor and set visibility of panels according to
  cursor position.
 ====================================================================*/
 var MouseMonitor =
@@ -575,7 +576,7 @@ var ResizeHQ =
 
             //Resize taking into account ScrollBars
             if (document.body.scrollWidth > document.body.clientWidth) maxH - ScrollBarThickness;
-            if (document.body.scrollHeight >= document.body.clientHeight) img.style.width = maxW - ScrollBarThickness;            
+            if (document.body.scrollHeight >= document.body.clientHeight) img.style.width = maxW - ScrollBarThickness;
 
             img.style.maxHeight = (ResizeMode & 2) ? maxH + "px" : null;
             img.style.maxWidth = (ResizeMode & 4) ? maxW + "px" : null;
@@ -586,12 +587,12 @@ var ResizeHQ =
                 var clientRatio = window.innerWidth / window.innerHeight;
 
                 img.style.width = (imageRatio >= clientRatio) ? maxW + "px" : null;
-                img.style.height = (imageRatio < clientRatio) ? maxH + "px" : null;                               
+                img.style.height = (imageRatio < clientRatio) ? maxH + "px" : null;
             }
             else if (ResizeMode & 8) //Stretch image
             {
                 img.style.height = (ResizeMode & 2) ? maxH + "px" : null;
-                img.style.width = (ResizeMode & 4) ? maxW + "px" : null;                                                
+                img.style.width = (ResizeMode & 4) ? maxW + "px" : null;
             }
             else
             {
@@ -663,7 +664,7 @@ var MainHQ =
         RemoveAllDocumentContent();
         MainHQ.addStyles();
 
-        for (var i = 0; i < MangaData.pageCount; i++)
+        for (var i = 0; i < metadata.pageCount; i++)
         {
             var link = document.createElement("a");
             link.href = GetImageLink(false, i);
@@ -693,10 +694,10 @@ var MainHQ =
         linkPanel.setAttribute("style", "visibility:hidden;  position: fixed; left: 10px; top: 10px; z-index:100; border: 1px ridge gray; padding: 5px;");
         linkPanel.id = "LinkPanel"
 
-        var panel = CreatePanelControl(MangaData.illustTitle, "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + MangaData.illustID);
+        var panel = CreatePanelControl(metadata.illustTitle, "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID);
         linkPanel.appendChild(panel);
 
-        panel = CreatePanelControlImage("http://www.pixiv.net/member.php?id=" + MangaData.userID, MangaData.userProfileImageURL);
+        panel = CreatePanelControlImage("http://www.pixiv.net/member.php?id=" + metadata.userID, metadata.userProfileImageURL);
         linkPanel.appendChild(panel);
         var image = panel.getElementsByTagName("IMG")[0];
         image.style.margin = "0 5px 0 10px";
@@ -704,7 +705,7 @@ var MainHQ =
         image.style.width = "20px";
         linkPanel.appendChild(panel);
 
-        panel = CreatePanelControl(MangaData.userName, "http://www.pixiv.net/member_illust.php?id=" + MangaData.userID);
+        panel = CreatePanelControl(metadata.userName, "http://www.pixiv.net/member_illust.php?id=" + metadata.userID);
         linkPanel.appendChild(panel);
 
         document.body.appendChild(linkPanel);
@@ -727,17 +728,17 @@ var MainHQ =
         img.src = GetImageLink(false, MainHQ.imageCount - 1);
         img.setAttribute("normal", GetImageLink(true));
         img.setAttribute("page", (MainHQ.imageCount));
-        img.alt = "Page " + (MainHQ.imageCount) + " out of " + MangaData.pageCount + "pages";
-        img.title = "Page " + (MainHQ.imageCount) + " out of " + MangaData.pageCount + "pages";
+        img.alt = "Page " + (MainHQ.imageCount) + " out of " + metadata.pageCount + "pages";
+        img.title = "Page " + (MainHQ.imageCount) + " out of " + metadata.pageCount + "pages";
         img.name = "MangaImage";
         img.id = "IMG" + MainHQ.imageCount;
 
-        MainHQ.imageEvents(img);        
+        MainHQ.imageEvents(img);
         mPage.appendChild(img);
         //document.body.appendChild(mPage);
-        document.body.insertBefore(mPage ,document.body.children[MainHQ.imageCount - 1]);
+        document.body.insertBefore(mPage, document.body.children[MainHQ.imageCount - 1]);
 
-        if (MainHQ.imageCount == MangaData.pageCount) clearInterval(MainHQ.intervalID);
+        if (MainHQ.imageCount == metadata.pageCount) clearInterval(MainHQ.intervalID);
         TSL.removeNode("fb-root"); //Sometimes an extra div is created by Pixiv script. Just removing it.
     },
 
@@ -793,7 +794,7 @@ var MainHQ =
 
 
                 //Pager
-                var panelLink = CreatePanelControl(this.getAttribute("page") + "/" + MangaData.pageCount, "#" + this.parentElement.parentElement.id);
+                var panelLink = CreatePanelControl(this.getAttribute("page") + "/" + metadata.pageCount, "#" + this.parentElement.parentElement.id);
                 panelLink.firstElementChild.name = this.parentElement.parentElement.id;
                 panelLink.firstElementChild.onclick = GotoToPageID;
                 panelLink.firstElementChild.className = "pageCount";
@@ -804,7 +805,7 @@ var MainHQ =
                 panelLink.getElementsByTagName("img")[0].className = "directImageLink";
                 panels.appendChild(panelLink);
 
-                // 
+                //
                 var panelLink = CreatePanelControl("IQDB", null);
                 panelLink.firstElementChild.className = "IQDBLink";
                 panels.appendChild(panelLink);
@@ -820,7 +821,7 @@ var MainHQ =
                 floatingPanel.style.left = window.pageXOffset + "px";
 
                 var links = floatingPanel.getElementsByTagName("a");
-                links[0].textContent = img.getAttribute("page") + "/" + MangaData.pageCount;
+                links[0].textContent = img.getAttribute("page") + "/" + metadata.pageCount;
                 links[1].href = img.src;
                 links[2].href = "http://" + ((IQDBType == 0) ? "www" : IQDBTypes[IQDBType]) + ".iqdb.org/?url=" + img.src + "&"; //& at the end so as not to get picked up by download managers
                 floatingPanel.setAttribute("page", img.getAttribute("page"));
@@ -833,7 +834,7 @@ var MainHQ =
 
 /* Main Function
 ====================================================================
- The main function that runs first. It Gets the manga information 
+ The main function that runs first. It Gets the manga information
  using Pixiv's phone API.
 ====================================================================*/
 (function ()
@@ -865,7 +866,7 @@ var MainHQ =
     var sessionID = (m[0] != null) ? (m[0].split("=")[1]) : "";
     var apiLink = "http://spapi.pixiv.net/iphone/illust.php?PHPSESSID=" + sessionID + "&illust_id=" + id;
 
-    //Does not work with XMLHttpRequest as you are unable to set the Referer. 
+    //Does not work with XMLHttpRequest as you are unable to set the Referer.
     GM_xmlhttpRequest({
         url: apiLink,
         method: "GET",
@@ -887,8 +888,8 @@ var MainHQ =
                         j++;
                         rawdata += "," + rawlist[i + j]; //We add the comma that we removed as it was part of the value
                     }
-                    i += j; //We appended items               
-                    rawdata = rawdata.replace(/^"|"$/g, ""); //We remove any starting or ending quotes               
+                    i += j; //We appended items
+                    rawdata = rawdata.replace(/^"|"$/g, ""); //We remove any starting or ending quotes
                     datalist[dataNames[n]] = rawdata;
                     n++;
                 }
@@ -896,18 +897,38 @@ var MainHQ =
 
                 for (var i = 0; i < dataNames.length; i++)
                 {
-                    //Null if item exists otherwise it would be undefined. 
-                    if (MangaData[dataNames[i]] === null)
+                    //Null if item exists otherwise it would be undefined.
+                    if (metadata[dataNames[i]] === null)
                     {
-                        MangaData[dataNames[i]] = datalist[dataNames[i]];
-                        if (MangaData[dataNames[i]].length > 0 && !isNaN(MangaData[dataNames[i]])) MangaData[dataNames[i]] = parseInt(MangaData[dataNames[i]]);
+                        metadata[dataNames[i]] = datalist[dataNames[i]];
+                        if (metadata[dataNames[i]].length > 0 && !isNaN(metadata[dataNames[i]])) metadata[dataNames[i]] = parseInt(metadata[dataNames[i]]);
                     }
                 }
 
-                var baseURL = datalist["illust480URL"];
-                baseURL = baseURL.replace(/(\/mobile\/)([^\/]+)$/gi, "/$2"); //Remove "Mobile" if one exists
-                MangaData.illustBaseURL = baseURL.replace(/(\/\d+)[^\/]+\.(jpe?g|gif|png)(\?\d+)?$/gi, "$1." + datalist.illustExt); //Remove extra information
+                if (datalist.illust480URL.indexOf("/img-master/") > 0) //2014-10 Pixiv URLs
+                {
+                    //Default Manga thumbnails
+                    //metadata.illust128URL = metadata.illust128URL.replace("_128x128", "_p0_square1200");
 
+                    //Embedded images get full image this way
+                    //Using datalist.time does not always work as if the image is updated the time changes but the original path remains
+                    //metadata.illust150URL = metadata.illust128URL.replace(/\.pixiv\.net.+/, ".pixiv.net/c/150x150/img-master/img/") + datalist.time.replace(/-|:|\s/g, "/") + "/" + datalist.illustID + "_p0_master1200.jpg";
+                    metadata.illust150URL = metadata.illust128URL.replace(/128x128(.+)_128x128/, "150x150$1_p0_master1200");
+                    metadata.illust240URL = metadata.illust150URL.replace("/150x150/", "/240x480/");
+                    metadata.illust480URL = metadata.illust150URL.replace("/150x150/", "/480x960/");
+                    metadata.illust600URL = metadata.illust150URL.replace("/150x150/", "/600x600/");
+
+                    metadata.illustURL = metadata.illust600URL.replace(/c\/600x600\/img-master(.+)\/.+/, "img-original$1/" + datalist.illustID + "_p0." + datalist.illustExt);
+                }
+                else //Old format
+                {
+                    metadata.illust128URL = datalist.illust480URL.replace(/(\d+)_480mw(\.\w+)/, "$1_128x128_p0$2");
+                    metadata.illust600URL = datalist.illust480URL.replace(/\/mobile(\/.+)480mw\..+/, "$1m." + datalist.illustExt);
+                    metadata.illustURL = metadata.illust600URL.replace(/_m\.\w+$/, "") + ((metadata.illustType == 1) ? "." : "_big_p0.") + datalist.illustExt;
+
+                    //Old manga format does not support _big
+                    if (datalist.illustID < 11319936) metadata.illustURL = metadata.illustURL.replace("_big", "");
+                }
 
                 MainHQ.LoadAllMangaPages();
                 ResizeHQ.addButtons();
