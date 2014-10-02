@@ -2,7 +2,7 @@
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
 // @version         2.1.21
-// @description     A more Powerful Pixiv Manga Viewer. Works with Pixiv++ & Generic Image Viewer
+// @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @icon            https://i.imgur.com/ZNBlNzI.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
