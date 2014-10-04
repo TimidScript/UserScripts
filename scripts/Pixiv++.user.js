@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.62
-// @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | Custom views for page types | Link Caching and other features. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer".
+// @version             3.1.63
+// @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -40,6 +40,15 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.63 (2014-10-04)
+ - Bug fixes to handle more changes in pixiv layout
+ - Using new embedded images instead of thumbnail images for new layout as it gets full images rather than cropped version
+ - Manga page now has direct links to large size only
+ - Removed some of the redundant code.
+ - Ugoria has preview image now
+ - Slight improvement in code by making adjustAllHotboxPositions asynchronous
+ - CSS added for visited illustration page
+ - Bug fix to adjustHotboxPosition due to layout changes
 3.1.62 (2014-09-27)
  - Fixes direct links that got broken due to latest changes in Pixiv++. Uses API all the time now.
  It is now impossible to get the necessary meta data from just the illustration page, therefore
@@ -61,7 +70,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Bug Fix for Pixiv layout changes
 3.1.56 (2014-07-03)
  - Bug Fix: Links on Illustration page not working
- - Bug Fix in SetMethod2 document.evalute variable fix
+ - Bug Fix in SetMethod2 document.evaluate variable fix
 3.1.55 (2014-07-03)
  - Partial support for Ugoira animated files. More information found:
     http://www.pixiv.net/info.php?id=2476&lang=en
@@ -102,13 +111,6 @@ if (!(typeof GM_getValue === "function" && GM_getValue("", "?") === "?"))
     GM_getValue = function (key, def) { return (localStorage.getItem(key) ? localStorage.getItem(key) : def); }
 }
 
-
-function IsMangaBigVersionEnabled(imageID)
-{
-    return (imageID >= 11319936);
-}
-
-
 var containerClasses =
     {
         UnPaged:
@@ -121,7 +123,7 @@ var containerClasses =
         ],
         Paged:
             [
-
+                "_image-items",
                 "display_works linkStyleWorks", //Artist's & Personal Work and Bookmark Page (http://www.pixiv.net/member_illust.php)(http://www.pixiv.net/bookmark.php)
                 "_image-items autopagerize_page_element", // Illustrations Search; New Illustrations; Your Favourite Artist's New Illustrations; (http://www.pixiv.net/search.php?)(http://www.pixiv.net/new_illust.php)(http://www.pixiv.net/new_illust_r18.php)(http://www.pixiv.net/bookmark_new_illust.php)
 
@@ -182,7 +184,7 @@ IllustrationData =
         //Remove items with incomplete data
         for (var i = 0; data = IllustrationData.collection[i], i < IllustrationData.collection.length; i++)
         {
-            if (data.illustBaseURL == null)
+            if (data.illustURL == null)
             {
                 IllustrationData.collection.splice(i, 1);
                 i--;
@@ -351,6 +353,7 @@ var IllustrationLinker =
        -------------------------------------------------------------------------------------------*/
        switchOff: function ()
        {
+           PreviewHQ.adjustAllHotboxPositions();
            IllustrationLinker.enabled = false;
            clearInterval(IllustrationLinker.intervalID);
            IllustrationLinker.intervalID = null;
@@ -360,6 +363,7 @@ var IllustrationLinker =
 
        switchOn: function ()
        {
+           PreviewHQ.adjustAllHotboxPositions();
            IllustrationLinker.enabled = true;
            IllustrationLinker.runIntevalThumbnailParser();
        },
@@ -402,7 +406,6 @@ var IllustrationLinker =
            {
                var m = scoreBar.textContent.match(/[^0-9]+(\d+)[^0-9]+(\d+)[^0-9]+(\d+)$/);
 
-
                var response = doc.evaluate("//div[@class='worksImageresponse']/p[@class='worksAlso']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                if (response)
                {
@@ -410,69 +413,8 @@ var IllustrationLinker =
                }
                else response = IllustrationLinker.getResponseCount(thumbnail);
 
-               //if (isNaN(response)) response = "?"; //It means it is a response
                if (isNaN(response)) response = 0;
-
                metadata.responseCount = response;
-               if (m.length == 4)
-               {
-                   // Do not check because if it's illustration page then it does not exist
-                   if (!IsIllustrationPage) metadata.bookmarkCount = this.getBookmarkCount(thumbnail);
-
-                   metadata.viewCount = parseInt(m[1]);
-                   metadata.ratings = parseInt(m[2]);
-                   metadata.totalRatings = parseInt(m[3]);
-               }
-           }
-
-           var author = doc.evaluate("//a[@class='user-link']/h1[@class='user']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-           if (author)
-           {
-               metadata.userName = author.textContent;
-               metadata.userID = author.parentElement.href.replace(/.+\?id=(\d+)$/, "$1");
-           }
-
-           metadata.pageCount = IllustrationLinker.getPageCount(doc);
-
-           if (metadata.pageCount > 0) metadata.illustType = 2; //Manga
-           else if (doc.getElementsByClassName("_ugoku-illust-player-container").length > 0) metadata.illustType = 3; //Ugoira (Animated)
-           else metadata.illustType = 1; //Single illustration
-
-           var title = doc.evaluate("//section[@class='work-info']//h1[@class='title']", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-           if (title) metadata.illustTitle = title.textContent;
-
-           if (doc.getElementsByClassName("r-18").length == 1) metadata.R18 = 1;
-           else if (doc.getElementsByClassName("r-18g").length == 1) metadata.R18 = 2;
-           else metadata.R18 = 0;
-
-           /* Possible image base URLs
-                [-]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_128x128_p0.jpg - Thumbnail use in Manga View
-                [-]http://i2.pixiv.net/img14/img/whatsoy/16791530_s.jpg - OLD Thumbnail URL.
-                [*]http://i2.pixiv.net/img14/img/whatsoy/16791530_m.jpg - Illustration Page Size (Medium)
-                [X]http://i2.pixiv.net/img14/img/whatsoy/16791530.jpg - Full Size Illustration
-                [-]http://i2.pixiv.net/img14/img/whatsoy/16791530_p0.jpg - [Manga Page] Full Size For Old Images otherwise Large
-                [-]http://i2.pixiv.net/img14/img/whatsoy/16791530_big_p0.jpg - [Manga Page] Full Size For New Images
-                [-]http://i1.pixiv.net/img101/img/nahenaheko/mobile/34649107_240mw.jpg [Embed Image?] Taken from Illustration page
-                [*]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_480mw.jpg  - [JPG][Mobile] Illustration Page Size (Medium) Very low quality & large size
-                [*]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_128x128.jpg - [JPG][Mobile] Thumbnail
-                [*]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_128x128_p0.jpg - [Mobile] Paged Thumbnail
-                [*] Are imageURLBase URLs that we are expecting. The rest can be generated
-                [X] The imageURLBase URL we want
-                NB: Image URL may have a suffix similar to this "?342342131"              */
-
-
-           if (metadata.illustType == 3) //Ugoira
-           {
-               var md = doc.querySelector('meta[property = "og:image"]');
-               if (md) metadata.illustBaseURL = md.getAttribute("content").replace(/\/img-inf\/(.+)_s.+/i, '/img-zip-ugoira/$1_ugoira1920x1080.zip');
-           }
-           else
-           {
-               var baseURL = doc.getElementsByClassName("works_display")[0].getElementsByTagName("a")[0].getElementsByTagName("img")[0].src;
-               baseURL = baseURL.replace(/(\/mobile\/)([^\/]+)$/gi, "/$2"); //Remove "Mobile" if one exists
-               baseURL = baseURL.replace(/(\/\d+)[^\/]+\.(jpe?g|gif|png)(\?\d+)?$/gi, "$1.$2"); //Remove extra information
-               metadata.illustBaseURL = baseURL;
-               console.log(baseURL);
            }
 
            if (IsIllustrationPage) console.log("HTML", metadata);
@@ -503,6 +445,8 @@ var IllustrationLinker =
                n++;
            }
 
+           datalist.illust480URL = datalist.illust480URL.replace(/\?\d+$/, "");
+
            //console.log(datalist);
            var metadata = IllustrationData.getIllustrationLinkData(link);
            for (var i = 0; i < dataNames.length; i++)
@@ -520,21 +464,94 @@ var IllustrationLinker =
 
            if (metadata.pageCount > 0) metadata.illustType = 2; //Manga
                //else if (datalist.illust480URL.match(/img-master\/img/)) metadata.illustType = 3; //Ugoira (Animated)
-           else if (metadata.tags.match(/(^|\s)うごイラ(\s|$)/)) metadata.illustType = 3; //Ugoira (Animated)
+           else if (metadata.illust480URL.match(/_master1200.jpg$/)) metadata.illustType = 3; //Ugoira (Animated)
            else metadata.illustType = 1; //Single illustration
 
-           var baseURL = datalist["illust480URL"];
-           baseURL = baseURL.replace(/(\/mobile\/)([^\/]+)$/gi, "/$2"); //Remove "Mobile" if one exists
 
-           metadata.illustBaseURL = baseURL.replace(/(\/\d+)[^\/]+\.(jpe?g|gif|png)(\?\d+)?$/gi, "$1." + datalist.illustExt); //Remove extra information
+           /* Possible image base URLs
+             [-]http://i2.pixiv.net/img14/profile/whatsoy/mobile/7330980_80.jpg - Profile image
+             [-]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_128x128_p0.jpg - Thumbnail use in Manga View
+             [-]http://i2.pixiv.net/img14/img/whatsoy/16791530_s.jpg - OLD Thumbnail URL.
+             [*]http://i2.pixiv.net/img14/img/whatsoy/16791530_m.jpg - Illustration Page Size (Medium)
+             [X]http://i2.pixiv.net/img14/img/whatsoy/16791530.jpg - Full Size Illustration
+             [-]http://i2.pixiv.net/img14/img/whatsoy/16791530_p0.jpg - [Manga Page] Full Size For Old Images otherwise Large
+             [-]http://i2.pixiv.net/img14/img/whatsoy/16791530_big_p0.jpg - [Manga Page] Full Size For New Images
+             [-]http://i1.pixiv.net/img101/img/nahenaheko/mobile/34649107_240mw.jpg [Embed Image?] Taken from Illustration page
+             [*]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_480mw.jpg  - [JPG][Mobile] Illustration Page Size (Medium) Very low quality & large size
+             [*]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_128x128.jpg - [JPG][Mobile] Thumbnail
+             [*]http://i2.pixiv.net/img14/img/whatsoy/mobile/16791530_128x128_p0.jpg - [Mobile] Paged Thumbnail
+             [*] Are imageURLBase URLs that we are expecting. The rest can be generated
+             [X] The imageURLBase URL we want
+             NB: Image URL may have a suffix similar to this "?342342131" */
 
-           if (metadata.illustType == 3) //Ugoira
-               metadata.illustBaseURL = metadata.illustBaseURL.replace(/\/c\/\d+x\d+\/img-master\/(.+\/\d+)\..+/i, "/img-zip-ugoira/$1_ugoira1920x1080.zip");
+           /* NEW URL 2014-10 ---------------------------------------------------
+                http://i2.pixiv.net/img02/profile/vantmic/mobile/2727986_80.jpg //Profile image
 
-           //if (metadata.illustType == 1 datalist.illust128URL.match("master1200"))
-           //{
-           //    metadata.illustPreviewURL = datalist.illust128URL.replace("128x128", "600x600");
-           //}
+                http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46250475
+                http://i2.pixiv.net/c/128x128/img-master/img/2014/09/29/12/49/18/46250475_128x128.jpg //API 128
+                http://i2.pixiv.net/c/480x960/img-master/img/2014/09/29/12/49/18/46250475_480mw.jpg //API 480
+                http://i2.pixiv.net/c/600x600/img-master/img/2014/09/29/12/49/18/46250475_p0_master1200.jpg //Illustration page
+                http://i2.pixiv.net/img-original/img/2014/09/29/12/49/18/46250475_p0.jpg //Full Image
+
+                http://i2.pixiv.net/c/600x600/img-master/img/2014/09/29/12/49/18/46250475_p0_master1200.jpg //Embed
+                http://i2.pixiv.net/c/240x480/img-master/img/2014/09/29/12/49/18/46250475_p0_master1200.jpg //Embed
+                http://i2.pixiv.net/c/150x150/img-master/img/2014/09/29/12/49/18/46250475_p0_master1200.jpg //Embed
+
+                Manga Paged
+                http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46283246
+                http://i1.pixiv.net/c/128x128/img-master/img/2014/10/01/06/19/21/46283246_128x128.jpg //API Thumbnail
+                http://i1.pixiv.net/c/480x960/img-master/img/2014/10/01/06/19/21/46283246_480mw.jpg //API 480
+                http://i1.pixiv.net/c/128x128/img-master/img/2014/10/01/06/19/21/46283246_p0_square1200.jpg //Thumbnails
+                http://i1.pixiv.net/c/600x600/img-master/img/2014/10/01/06/19/21/46283246_p0_master1200.jpg //Illustration Page
+                http://i1.pixiv.net/c/1200x1200/img-master/img/2014/10/01/06/19/21/46283246_p0_master1200.jpg //Not FULL image.
+                http://i1.pixiv.net/img-original/img/2014/10/01/06/19/21/46283246_p0.png //Full Image
+
+                http://i1.pixiv.net/c/600x600/img-master/img/2014/10/01/06/19/21/46283246_p0_master1200.jpg //Embed
+                http://i1.pixiv.net/c/240x480/img-master/img/2014/10/01/06/19/21/46283246_p0_master1200.jpg //Embed
+                http://i1.pixiv.net/c/150x150/img-master/img/2014/10/01/06/19/21/46283246_p0_master1200.jpg //Embed
+
+                http://i1.pixiv.net/c/480x960/img-master/img/2014/10/01/06/19/21/46283246_big_p2.png //Unofficial but works
+
+
+                Ugoira Animations
+                http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46283334
+                http://www.pixiv.net/member_illust.php?mode=ugoira_view&illust_id=46283334
+                http://i1.pixiv.net/c/128x128/img-master/img/2014/10/01/06/38/39/46283334_square1200.jpg //API 128
+                http://i1.pixiv.net/c/480x960/img-master/img/2014/10/01/06/38/39/46283334_master1200.jpg //API 480
+                http://i1.pixiv.net/img-zip-ugoira/img/2014/10/01/06/38/39/46283334_ugoira1920x1080.zip
+             */
+
+           if (metadata.illustType == 3)
+           {
+               metadata.illustURL = datalist.illust480URL.replace(/c\/\d+x\d+\/img-master(.+)\/.+/, "img-zip-ugoira$1/" + datalist.illustID + "_ugoira1920x1080.zip");
+               metadata.illust600URL = metadata.illust480URL.replace("480x960", "600x600");
+           }
+           else if (datalist.illust480URL.indexOf("/img-master/") > 0) //2014-10 Pixiv URLs
+           {
+               //Default Manga thumbnails
+               //metadata.illust128URL = metadata.illust128URL.replace("_128x128", "_p0_square1200");
+
+               //Embedded images get full image this way
+               //Using datalist.time does not always work as if the image is updated the time changes but the original path remains
+               //metadata.illust150URL = metadata.illust128URL.replace(/\.pixiv\.net.+/, ".pixiv.net/c/150x150/img-master/img/") + datalist.time.replace(/-|:|\s/g, "/") + "/" + datalist.illustID + "_p0_master1200.jpg";
+               metadata.illust150URL = metadata.illust128URL.replace(/128x128(.+)_128x128/, "150x150$1_p0_master1200");
+               metadata.illust240URL = metadata.illust150URL.replace("/150x150/", "/240x480/");
+               metadata.illust480URL = metadata.illust150URL.replace("/150x150/", "/480x960/");
+               metadata.illust600URL = metadata.illust150URL.replace("/150x150/", "/600x600/");
+
+               metadata.illustURL = metadata.illust600URL.replace(/c\/600x600\/img-master(.+)\/.+/, "img-original$1/" + datalist.illustID + "_p0." + datalist.illustExt);
+           }
+           else //Old format
+           {
+               metadata.illust128URL = datalist.illust480URL.replace(/(\d+)_480mw(\.\w+)/, "$1_128x128_p0$2");
+               metadata.illust240URL = datalist.illust480URL.replace(/(\d+)_480mw(\.\w+)/, "$1_240mw_p0$2");
+               metadata.illust150URL = metadata.illust240URL;
+               metadata.illust600URL = datalist.illust480URL.replace(/\/mobile(\/.+)480mw\..+/, "$1m." + datalist.illustExt);
+               metadata.illustURL = metadata.illust600URL.replace(/_m\.\w+$/, "") + ((metadata.illustType == 1) ? "." : "_big_p0.") + datalist.illustExt;
+
+               //Old manga format does not support _big
+               if (datalist.illustID < 11319936) metadata.illustURL = metadata.illustURL.replace("_big", "");
+           }
 
            if (IsIllustrationPage) //Never gets called because we use Method1 there XD
            {
@@ -617,78 +634,31 @@ var IllustrationLinker =
                //console.warn(unsafeWindow.pixiv.context.ugokuIllustFullscreenData);
 
                var directLink = document.createElement("a");
-               directLink.textContent = "[❀]"; //S❂❀
+               directLink.textContent = "[" + ((metadata.illustType == 3) ? "🎥" : "❀") + "]"; //S❂❀
 
-               //if (metadata.illustType == 1) directLink.href = metadata.illustBaseURL;
-               //else if (IsIllustrationPage) directLink.href = unsafeWindow.pixiv.context.ugokuIllustFullscreenData.src;
-               //else if (!IsIllustrationPage) directLink.href = null;
-
-               directLink.href = metadata.illustBaseURL;
+               directLink.href = metadata.illustURL;
 
                if (!Settings.display.illustLink) directLinks.style.display = "none";
                directLinks.appendChild(directLink);
            }
            else //Manga Illustration
            {
-               var bigImage = (IsMangaBigVersionEnabled(metadata.illustID));
-
                directLinks.setAttribute("style", "font-size:xx-small");
-               var imageLinksSML = '[ ';
-               var imageLinksBIG = '[ ';
+               var mangaLinks = '[ ';
 
-               for (var i = 0; i < metadata.pageCount; i++)
+               for (var i = 0, href; i < metadata.pageCount; i++)
                {
-                   if (IsIllustrationPage)
-                   {
-                       var linkSML = '<a title ="Page #' + i + '" href="' + metadata.illustBaseURL.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_p" + i + ".$2") + '">' + i + '</a>';
-                       var linkBIG = '<a title ="Page #' + i + '" href="' + metadata.illustBaseURL.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_big_p" + i + ".$2") + '">' + i + '</a>';
+                   href = metadata.illustURL.replace(/_p\d+/, "_p" + i);
 
-                       if (i == 0)
-                       {
-                           imageLinksSML = '[ ' + linkSML + ' | ';
-                           imageLinksBIG = '[ ' + linkBIG + ' | ';
-                       }
-                       else if (i == metadata.pageCount - 1)
-                       {
-                           imageLinksSML = imageLinksSML + linkSML;
-                           imageLinksBIG = imageLinksBIG + linkBIG;
-                       }
-                       else
-                       {
-                           imageLinksSML = imageLinksSML + linkSML + ' | ';
-                           imageLinksBIG = imageLinksBIG + linkBIG + ' | ';
-                       }
-                   }
-                   else
-                   {
-                       lchar = ((i + 1) % 5 == 0) ? "◆" : "◇";
-
-                       var linkSML = '<a title ="Page #' + i + '" href="' + metadata.illustBaseURL.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_p" + i + ".$2") + '">' + lchar + '</a>';
-                       var linkBIG = '<a title ="Page #' + i + '" href="' + metadata.illustBaseURL.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_big_p" + i + ".$2") + '">' + lchar + '</a>';
-                       imageLinksSML = imageLinksSML + linkSML;
-                       imageLinksBIG = imageLinksBIG + linkBIG;
-                   }
+                   if (IsIllustrationPage) mangaLinks += '<a title ="Page #' + i + '" href="' + href + '">' + i + '</a> | ';
+                   else mangaLinks += '<a title ="Page #' + i + '" href="' + href + '">' + (((i + 1) % 5 == 0) ? "◆" : "◇") + '</a>';
                }
 
-               imageLinksSML = imageLinksSML + ' ]';
-               imageLinksBIG = imageLinksBIG + ' ]';
+               mangaLinks = mangaLinks.replace(/ | $/, "") + "]";
 
+               if (IsIllustrationPage) directLinks.innerHTML = mangaLinks;
+               else directLinks.innerHTML = mangaLinks;
 
-               if (this.mangaImageLinksShown == 2)
-               {
-                   if (IsIllustrationPage) directLinks.innerHTML = "SML: " + imageLinksSML + "<br/>BIG: " + imageLinksBIG;
-                   else directLinks.innerHTML = imageLinksSML + "<br/>" + imageLinksBIG;
-               }
-               else if (this.mangaImageLinksShown == 0 || !bigImage)
-               {
-                   if (IsIllustrationPage) directLinks.innerHTML = "SML: " + imageLinksSML;
-                   else directLinks.innerHTML = imageLinksSML;
-               }
-               else
-               {
-                   if (IsIllustrationPage) directLinks.innerHTML = "BIG: " + imageLinksBIG;
-                   else directLinks.innerHTML = imageLinksBIG;
-               }
 
                if (!Settings.display.mangaLinks) directLinks.style.display = "none";
            }
@@ -1820,20 +1790,16 @@ var PreviewHQ =
         if (metadata.pageCount == 0)
         {
             hotbox.className = "pppHotBoxTi";
-            hotbox.href = metadata.illustBaseURL;
+            hotbox.href = metadata.illustURL;
         }
         else
         {
             hotbox.className += "pppHotBoxTm";
-
-            var bigImage = IsMangaBigVersionEnabled(metadata.illustID);
             hotbox.href = "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID; //DirectLink to Manga Page Viewer
         }
 
         if (IsIllustrationPage)
         {
-            //if (metadata.pageCount == 0) link.href = metadata.illustBaseURL;
-
             console.log("Illustration Page");
             var br = document.createElement("br");
             link.insertBefore(br, hotbox);
@@ -1880,7 +1846,8 @@ var PreviewHQ =
     adjustHotboxPosition: function (hotbox)
     {
         //If image is not loaded you might need to readjust position.
-        var img = hotbox.parentElement.getElementsByTagName("img")[0];
+        //var img = hotbox.parentElement.getElementsByTagName("img")[0];
+        var img = hotbox.parentElement.getElementsByClassName("_layout-thumbnail")[0];
         //hotbox.style.left = (img.offsetLeft + 2) + "px";
         //hotbox.style.top = (img.offsetTop + 2) + "px";
         hotbox.style.left = img.offsetLeft + "px";
@@ -1893,10 +1860,16 @@ var PreviewHQ =
     ------------------------------------------------------------------------------------------*/
     adjustAllHotboxPositions: function (container)
     {
+        clearInterval(PreviewHQ.cid);
         var hotboxes = document.getElementsByName("HotBox");
-        for (var i = 0; i < hotboxes.length; i++)
+        var i = 0;
+        PreviewHQ.cid = setInterval(AP, 0);
+
+        function AP()
         {
+            if (i > hotboxes.length) clearInterval(PreviewHQ.cid);
             PreviewHQ.adjustHotboxPosition(hotboxes[i]);
+            i++
         }
     },
 
@@ -1938,7 +1911,6 @@ var PreviewHQ =
 
         var metascore = [metadata.bookmarkCount, metadata.viewCount, metadata.ratings, metadata.totalRatings, metadata.responseCount];
 
-
         var metaname = ["★", "Views", "Rating", "Total", "Response"];
         var data = document.createElement("div");
         data.className = "pwMetadata";
@@ -1972,13 +1944,13 @@ var PreviewHQ =
         //http://www.pixiv.net/member_illust.php?id=68447
 
         var links;
+        links = pThumb.getElementsByClassName("pppDirectLinks")[0].getElementsByTagName("a");
         if (metadata.illustType == 3)
         {
             data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='" + IQDBPrefix + pThumb.getElementsByTagName("img")[0].src + "&'>IQDB<a>";
         }
         else
         {
-            links = pThumb.getElementsByClassName("pppDirectLinks")[0].getElementsByTagName("a");
             data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='" + IQDBPrefix + pThumb.getElementsByTagName("img")[0].src
                 + "&fullimage=" + links[0].href + "&'>IQDB<a>";
         }
@@ -1992,11 +1964,7 @@ var PreviewHQ =
 
         previewWindow.setAttribute("style", "position: absolute; z-index: 1000; background-color:#000;border: 5px ridge #565757; max-width: 90%;");
 
-        if (metadata.illustType == 3) //Ugoria
-        {
-            // Do nothing and no images
-        }
-        else if (metadata.illustType == 2) //Manga
+        if (metadata.illustType == 2) //Manga
         {
             /* Sample URLS
             http://i2.pixiv.net/img14/img/whatsoy/16791530.jpg
@@ -2013,8 +1981,20 @@ var PreviewHQ =
                 var link = document.createElement("a");
                 var thumbnail = document.createElement("img");
 
-                thumbnail.setAttribute("style", "border: 2px ridge #FFF; width: 128px; height: 128px; ");
-                thumbnail.src = links[i].href.replace(/(.+\/)(\d+)((_big)?(_p\d+))\.(jpe?g|gif|png)$/, "$1mobile/$2_128x128$5.jpg");
+
+                if (metadata.illust150URL)
+                {
+                    thumbnail.setAttribute("style", "border: 2px ridge #FFF;");
+                    thumbnail.setAttribute("style", "border: 2px ridge #FFF; width: 128px; height: 128px;");
+                    thumbnail.src = metadata.illust150URL.replace(/_p\d+/, "_p" + i);
+                }
+                else //Old format
+                {
+                    thumbnail.setAttribute("style", "border: 2px ridge #FFF; width: 128px; height: 128px;");
+                    thumbnail.src = metadata.illust128URL.replace(/_p\d+/, "_p" + i);
+                    //thumbnail.src = metadata.illust240URL.replace(/_p\d+/, "_p" + i);
+                }
+
                 thumbnail.alt = "Page #" + i;
                 link.href = links[i].href;
                 link.appendChild(thumbnail);
@@ -2033,12 +2013,13 @@ var PreviewHQ =
 
             var prethumb = document.createElement("div");
             var link = document.createElement("a");
+            console.log(links);
             link.href = links[0].href;
 
             var preImg = document.createElement("img");
             preImg.setAttribute("style", "margin: auto auto; height: " + Settings.preview.height + "px;text-align:center;");
 
-            var imgsrc = (Settings.preview.height > 350) ? link.href.replace(/(.+)\.(jpe?g|gif|png)+$/, "$1_m.$2") : link.href.replace(/(.+\/)(\d+)\.(jpe?g|gif|png)$/, "$1mobile/$2_240mw.jpg");
+            var imgsrc = (Settings.preview.height > 450) ? metadata.illust600URL : metadata.illust480URL;
 
             var topOffSet = 0;
             if (Settings.display.autoPreview)
@@ -2932,7 +2913,7 @@ function makeStruct(names)
 
 var APIMetaNames = "illustID userID illustExt illustTitle imgDirectoryNumber userName illust128URL unused1 unused2 illust480URL unused3 unused4 time tags software ratings totalRatings viewCount description pageCount unused5 unused6 bookmarkCount unknown2 userLoginName unused7 R18 unused8 unused9 userProfileImageURL endMarker";
 var APIDataFull = makeStruct(APIMetaNames);
-var METADATA = makeStruct("userID userName userProfileImageURL illustType illustID illustTitle illustBaseURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount R18");
+var METADATA = makeStruct("userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust480URL illust600URL illustURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount R18");
 var APIAgeRating = GM_getValue("APIAgeRating", true);
 
 /*
@@ -2982,6 +2963,8 @@ to enable caching [3] to make it a lot faster.
 if (window.self === window.top)
     (function ()
     {
+        PaginatorHQ.addStyle("Adjust-Pixiv", "img._thumbnail {color: white; border: 3px ridge; padding: 1px; background-color: white;} a:visited img._thumbnail{color: cyan !important;}");
+
         console.info("Pixiv Main");
         var counter = 0;
         var id = setInterval(function ()
