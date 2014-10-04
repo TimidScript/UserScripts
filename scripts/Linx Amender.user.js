@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.20b
+// @version         3.0.21
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -55,6 +55,9 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.21 (2014-10-01)
+ - Bug fix: was skipping one node for every 50 (max=n+50) nodes parsed in the amendNodes.parseNodes
+ for loop.
 3.0.20 (2014-09-23)
  - Last fix was a failure. MutationObserver still causes huge lagging. Might be better
  just to have an interval timer with a parsed tag. One more try at fixing it, by going
@@ -1398,7 +1401,7 @@ function ParseNodes(resetTitle)
                     }
                 }
             }
-            n--;                                                            
+            n--; //We do this so as not to skip a node
             setTimeout(parseNodes, 0, rule, nodes);
         }
     }
