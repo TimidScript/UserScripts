@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.15
+// @version         1.0.16
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,8 +37,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.16 (2014-09-29)
+ - Got rid of the flashing timer
 1.0.15 (2014-09-29)
- - Fixed the issue that 1.0.15 supposedly had fixed
+ - Fixed the issue that 1.0.14 supposedly had fixed
  - Appreciation notice added
 1.0.14 (2014-09-22)
  - Re-fixed profile table sort :?
@@ -103,10 +105,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         {
             var notice = document.createElement("span");
             notice.textContent = "Show your appreciation to the author by favouring the script and giving positive feedback";
-            notice.setAttribute("style", "padding: 0 20px; border-radius: 4px;");
-
-            disco(0);
+            notice.setAttribute("style", "padding: 0 20px; border-radius: 4px; background-color: yellow;");
             ia.appendChild(notice);
+            //disco(0);
         }
     }
     else if (document.URL.match(/greasyfork\.org\/scripts/)) //Script Listing
