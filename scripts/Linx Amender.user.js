@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.21
+// @version         3.0.22
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -9,6 +9,7 @@
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @include         *
+// @exclude         http://www.pixiv.net/bookmark_add.php*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Draggable_Table_Rows.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -55,6 +56,9 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.22 (2014-10-12)
+ - Bug fix: amendNodes removal of attributes
+ - Pixiv bookmark add exclude added
 3.0.21 (2014-10-01)
  - Bug fix: was skipping one node for every 50 (max=n+50) nodes parsed in the amendNodes.parseNodes
  for loop.
@@ -116,6 +120,7 @@ else console.info("[TS] Linx Amender iframe: " + document.location.host);
 ==============================================================================================*/
 var iDocument = document;
 var isOnline = false;
+var log = {};
 
 /*
 ==================================================================================
@@ -924,7 +929,7 @@ var DialogMain =
                 mergedRule.selectors = mergedRule.selectors.replace(/" , "$/, "");
 
                 DialogEdit.saveRuleCompact(("L" + new Date().getTime()), mergedRule);
-                console.log("Merged rules ", ids.replace(/ \+ $/, ""));
+                log.log("Merged rules ", ids.replace(/ \+ $/, ""));
             }
         }
 
@@ -949,7 +954,7 @@ var DialogMain =
 
         if (!url.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/i))
         {
-            if (url.toLowerCase() != "disabled" && url.length != 0) console.error("Invalid update URL: ", url);
+            if (url.toLowerCase() != "disabled" && url.length != 0) log.error("Invalid update URL: ", url);
             return
         }
         GM_xmlhttpRequest({
@@ -961,7 +966,7 @@ var DialogMain =
             {
                 if (response.status == 200)
                 {
-                    console.log("Rules downloaded");
+                    log.log("Rules downloaded");
                     var rules = GetOrderedRules();
 
                     for (var i = 0; i < rules.length; i++)
@@ -993,15 +998,15 @@ var DialogMain =
 
 
                     GM_setValue("OnlineRulesTimestamp", new Date().getTime());
-                    console.info("Downloaded Online Rules");
+                    log.info("Downloaded Online Rules");
                     iDocument.getElementsByClassName("gradientBar")[0].innerHTML += " <span style='color: yellow;'>(Online Rules Updated)<span>";
                     DialogMain.populateTable();
                 }
                 else
-                { console.error("Unable to get online rules: ", url); console.warn(response); }
+                { log.error("Unable to get online rules: ", url); log.warn(response); }
             },
-            ontimeout: function (response) { console.error("Unable to get online rules due to timeout error. URL: " + url); console.warn(response); },
-            onerror: function (response) { console.error("Error trying to get online rule. URL: " + url); console.warn(response); }
+            ontimeout: function (response) { log.error("Unable to get online rules due to timeout error. URL: " + url); log.warn(response); },
+            onerror: function (response) { log.error("Error trying to get online rule. URL: " + url); log.warn(response); }
         });
     }
 };
@@ -1020,7 +1025,7 @@ function GetOrderedRules(runFirstEnabled)
 
 
     var names = GM_listValues();
-    //console.log(names);
+    //log.log(names);
     for (var i = 0; i < names.length; i++)
     {
         var name = names[i];
@@ -1071,8 +1076,8 @@ function createRE(str, rule, regex, checkFlags)
     }
     catch (err)
     {
-        console.error(err);
-        console.warn(rule.name + " [" + rule.id + "] : " + str);
+        log.error(err);
+        log.warn(rule.name + " [" + rule.id + "] : " + str);
 
         if (regex) regex.raised = true;
         return null;
@@ -1142,7 +1147,7 @@ function GetSiteRules(forceEnable)
 function ParseNodes(resetTitle)
 {
     var time = new Date().getTime();
-    if (DEBUG) console.log("Parsing Nodes: " + time);
+    log.log("Parsing Nodes -: " + time);
 
     /* Reparse title to take into account rule changes. For links you need to
     refresh the page */
@@ -1153,7 +1158,7 @@ function ParseNodes(resetTitle)
     }
 
     var rules = GetSiteRules();
-    if (DEBUG) console.log("Parsing Nodes A: " + time + " (" + (new Date().getTime() - time) + ")");
+    log.log("Parsing Nodes A: " + time + " (" + (new Date().getTime() - time) + ") Rule Count: " + rules.length);
     if (rules.length == 0)
     {
         MO.reConnect(true);
@@ -1178,7 +1183,7 @@ function ParseNodes(resetTitle)
         appendCSS(rules);
         appendScripts(rules);
     }
-    if (DEBUG) console.warn("Parsing Nodes B: " + time + " (" + (new Date().getTime() - time) + ")");
+    log.warn("Parsing Nodes B: " + time + " (" + (new Date().getTime() - time) + ")");
     amendNodes(rules);
     //setTimeout(amendNodes, 250, rules);
 
@@ -1241,7 +1246,7 @@ function ParseNodes(resetTitle)
             var rule = rules[i];
             if (rule.type != 5 || document.getElementById(rule.id)) continue;
 
-            console.warn("Adding JS script: " + rule.name + " [" + rule.id + "]");
+            log.warn("Adding JS script: " + rule.name + " [" + rule.id + "]");
 
             //Apply script variables
             if (rule.scriptVariables)
@@ -1263,7 +1268,7 @@ function ParseNodes(resetTitle)
             //script.textContent = rule.script;
             //script.id = rule.id;
             //document.head.appendChild(script);
-            console.log(rule.script);
+            log.log(rule.script);
             TSL.addScript(rule.id, rule.script);
         }
     }
@@ -1300,14 +1305,16 @@ function ParseNodes(resetTitle)
     ---------------------------------------------------------------------*/
     function amendNodes(rules)
     {
+        log.log("amendNodes");
         var r = n = -1;
+
         parseRules();
         function parseRules()
         {
             r++;
             if (r >= rules.length)
             {
-                if (DEBUG) console.info("Parsing Nodes Z: " + time + " (" + (new Date().getTime() - time) + ")");
+                log.info("Parsing Nodes Z: " + time + " (" + (new Date().getTime() - time) + ")");
                 MO.reConnect();
                 return;
             }
@@ -1320,7 +1327,9 @@ function ParseNodes(resetTitle)
             }
 
             var nodes = document.querySelectorAll(rule.selectors);
+            log.log("Rule : ", rule);
             if (rule.nthNode != 0) nodes = [nodes[rule.nthNode - 1]]; //Shrink the array if only applying one node
+            log.log("Number of nodes " + nodes.length);
 
             n = -1;
             parseNodes(rule, nodes);
@@ -1341,6 +1350,7 @@ function ParseNodes(resetTitle)
                 max = n + x;
             */
             var max = n + 50;
+            log.log("Parse nodes " + n + " - " + (max - 1));
 
             for (; n < nodes.length && n < max; n++)
             {
@@ -1360,7 +1370,6 @@ function ParseNodes(resetTitle)
 
                         if (regex.raised || reParms.name.length == 0 || (reParms.name[0] != "=" && reParms.name[0] != "+" && !node.hasAttribute(reParms.name.replace(/^-/, "")))) continue;
 
-
                         if (reParms.name[0] == "=")
                         {   //Operations done on node property
                             var name = reParms.name.substr(1);
@@ -1369,7 +1378,7 @@ function ParseNodes(resetTitle)
                             if (!(name in node))
                             {
                                 regex.raised = true;
-                                console.error("Node object property \"" + name + "\" does not exist. Rule: " + rule.name + "[" + rule.id + "]");
+                                log.error("Node object property \"" + name + "\" does not exist. Rule: " + rule.name + "[" + rule.id + "]");
                                 continue;
                             }
 
@@ -1382,12 +1391,17 @@ function ParseNodes(resetTitle)
                             if (v1 != v2) node[name] = v2;
                         }
                         else if (reParms.name[0] == "+") node.setAttribute(reParms.name.substr(1), reParms.replace);
-                        else if (reParms.name[0] == "-") node.removeAttribute(reParms.name.substr(1));
-                        else if (reParms.search[0] == "-")
+                        else if (reParms.name[0] == "-")
                         {
-                            var v1 = node.getAttribute(reParms.name);
-                            var re = createRE(reParms.search.substr(1), rule, regex, true);
-                            if (re && v1.match(re)) node.removeAttribute(reParms.name.substr(1));
+                            var name = reParms.name.substr(1);
+
+                            if (reParms.search.length == 0) node.removeAttribute(name);
+                            else
+                            {
+                                var v1 = node.getAttribute(name);
+                                var re = createRE(reParms.search, rule, regex, true);
+                                if (re && v1.match(re)) node.removeAttribute(name);
+                            }
                         }
                         else //Standard search and replace on attribute value
                         {
@@ -1456,6 +1470,22 @@ var MO =
 
 var DEBUG = false;
 DEBUG = (window === window.top && DEBUG);
+
+if (!DEBUG)
+{
+    log.info = function () { };
+    log.log = function () { };
+    log.warn = function () { };
+    log.error = function () { };
+}
+else
+{
+    log.info = console.info;
+    log.log = console.log;
+    log.warn = console.warn;
+    log.error = console.error;
+}
+
 (function ()
 {
     if (window === window.top) GM_registerMenuCommand("[TS] Linx Amender", DialogMain.show);
