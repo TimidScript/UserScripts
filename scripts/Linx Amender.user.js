@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.22
+// @version         3.0.23
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -9,7 +9,6 @@
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Please notify me if distributing
 // @include         *
-// @exclude         http://www.pixiv.net/bookmark_add.php*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Draggable_Table_Rows.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -56,6 +55,9 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.23 (2014-10-18)
+ - Fix for "Error: Permission denied to access property 'handler'"
+   http://stackoverflow.com/questions/24719256/error-permission-denied-to-access-property-handler
 3.0.22 (2014-10-12)
  - Bug fix: amendNodes removal of attributes
  - Pixiv bookmark add exclude added
@@ -1488,10 +1490,11 @@ else
 
 (function ()
 {
-    if (window === window.top) GM_registerMenuCommand("[TS] Linx Amender", DialogMain.show);
+    if (window === window.top)
+    {
+        if (window === window.top) GM_registerMenuCommand("[TS] Linx Amender", DialogMain.show);
+        window.addEventListener("keyup", function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); }, true);
+    }
 
     setTimeout(ParseNodes, 250);
-
-    if (window === window.top)
-        window.onkeyup = function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); };
 })();
