@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.8
-// @description             OpenuserJS: New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page...
+// @version                 1.0.9
+// @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page...
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -38,6 +38,17 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.9 (2014/10/18)
+ - Bug Fix in history cleanup
+ - Stats history takes into account deleted and new scripts
+ - Negative stat is now shown in brackets
+ - History Chart always at the bottom of page
+  - Renamed "Top Installs During Period" chart
+ - Added frame and margin to images
+ - Correct handling of singular and plural period nouns
+ - Changed the history spacing
+ - Added wait period between new issues checks. Maximum of once every 20 seconds
+ - Selected table header highlight is more visible and saves last sort order
 1.0.8 Initial public release (2014/10/01)
  - Improved table view with numbering.
  - All profile scripts listed on one page
@@ -58,6 +69,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
 if (window !== window.top) return;
 console.info("OUJS-1 is Running");
+var DAY = 86400000;
 
 function ToggleIssuesView(discuss, issues)
 {
@@ -98,7 +110,9 @@ function ClickedHistory(e)
 
 function DisplayStats(old, current)
 {
-    var totalI = totalR = 0, row, sups = document.querySelectorAll(".dStatP, .dStatN");
+    var totalI = totalIN = totalNew = totalR = totalRN = 0, row, sups = document.querySelectorAll(".dStatP, .dStatN, .dStatNew");
+
+    var tmpStamp = Date.now();
 
     for (var i = 0; sups && i < sups.length; i++) TSL.removeNode(sups[i]);
     TSL.removeNode("TopTen");
@@ -107,23 +121,52 @@ function DisplayStats(old, current)
     for (var scriptID in current)
     {
         row = document.querySelector('tr[scriptid="' + scriptID + '"]');
-        if (!row) continue;
-        if (old[scriptID])
+
+        if (scriptID == "timestamp") continue;
+        else if (!row) arr.push ({name: GM_getValue(scriptID),  installs : -1}); //Removed Items
+        else if (old[scriptID])
         {
+            row.tempStamp = tmpStamp;
             var diff = current[scriptID].installs - old[scriptID].installs;
             totalI += diff;
+            if (diff < 0) totalIN += diff; //Can happen when you remove and then re-add the script
             if (diff) row.querySelector("td:nth-child(2) p").appendChild(TSL.createElementHTML("<sup class='dStat" + ((diff > 0) ? "P" : "N") + "'>" + diff + "</sup>"));
 
             if (diff) arr.push ({name: row.querySelector("b").textContent,  installs : diff} );
 
             diff = current[scriptID].rating - old[scriptID].rating;
             totalR += diff;
+            if (diff < 0) totalRN += diff;
             if (diff) row.querySelector("td:nth-child(3) p").appendChild(TSL.createElementHTML("<sup class='dStat" + ((diff > 0) ? "P" : "N") + "'>" + diff + "</sup>"));
         }
     }
 
-    if (totalI) document.querySelector(".table thead th:nth-child(2) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalI > 0) ? "P" : "N") +   "'>" + totalI + "</sup>"));
-    if (totalR) document.querySelector(".table thead th:nth-child(3) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalR > 0) ? "P" : "N") +   "'>" + totalR + "</sup>"));
+    var rows = document.querySelectorAll(".col-xs-12 .table .tr-link");
+    for(var i = 0, installs; i < rows.length, row = rows[i]; i++)
+    {
+        if (row.tempStamp != tmpStamp)
+        {
+            installs = parseInt(row.getAttribute("installs"));
+            totalI += installs;
+            totalNew += installs;
+            row.querySelector("td:nth-child(2) p").appendChild(TSL.createElementHTML("<sup class='dStatNew'>" + installs+ "</sup>"));
+            arr.push({ name: row.querySelector(".tr-link-a > b").textContent, installs : installs, isNew : true});
+        }
+    }
+
+    if (totalI) document.querySelector(".table thead th:nth-child(2) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalI > 0) ? "P" : "N") +   "'>"
+        + totalI + (function()
+        {
+            if (totalI != totalIN &&  totalIN < 0) return "<span style='color: red;'>[" + totalIN + "]</span>"
+            return "";
+        })() + "</sup>"));
+    if (totalR) document.querySelector(".table thead th:nth-child(3) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalR > 0) ? "P" : "N") +   "'>"
+        + totalR +
+        (function()
+        {
+            if (totalR != totalRN &&  totalRN < 0) return "<span style='color: red;'>[" + totalRN + "]</span>"
+            return "";
+        })() + "</sup>"));
 
     if (arr.length < 4) return;
     arr.sort(function(a, b)
@@ -145,7 +188,7 @@ function DisplayStats(old, current)
     panel.className = "panel-body";
 
     var el = document.createElement("h3");
-    el.textContent = "Top Installs During Period";
+    el.innerHTML = "History Period Installs Chart (<span style=\"color:green;\">" + totalI + "</span>)";
     panel.appendChild(el);
 
     var ol = document.createElement("ol");
@@ -155,7 +198,9 @@ function DisplayStats(old, current)
     while (arr.length > 0)
     {
         el = document.createElement("li");
-        el.innerHTML = arr[0].name + " (<span style='color:green; font-weight: 700;'>" + arr[0].installs + "</span>)";
+        if (arr[0].installs < 0) el.innerHTML = arr[0].name + " (<span style='color:red; font-weight: 700;'>Removed</span>)";
+        else if (arr[0].isNew) el.innerHTML = arr[0].name + " (<span style='color:blue; font-weight: 700;'>" + arr[0].installs + "</span>)";
+        else el.innerHTML = arr[0].name + " (<span style='color:green; font-weight: 700;'>" + arr[0].installs + "</span>)";
         ol.appendChild(el);
         arr.shift();
     }
@@ -194,24 +239,26 @@ function addScriptListingNumbers()
 function SortScriptTable(e)
 {
     e.stopImmediatePropagation();
-    TSL.addStyle("OUJS-ORDER",".decen {background-color: rgba(200,255,255,0.2);} .ascen {background-color: rgba(255,220,255, 0.2);} ");
+    TSL.addStyle("OUJS-ORDER",".decen {background-color: rgba(200,255,255,0.6);} .ascen {background-color: rgba(255,220,255, 0.6);} ");
     //#F0DDFD #DAFBF6 #C2F4F7 #FF0
 
-    var descending = TSL.hasClass(this.parentElement,"decen");
+    var sortDescending = !TSL.hasClass(this.parentElement,"decen");
     if (document.querySelector(".decen, .ascen")) TSL.removeClass(document.querySelector(".decen, .ascen"), "decen ascen");
-    TSL.addClass(this.parentElement, ((descending) ? "ascen" : "decen"));
+    TSL.addClass(this.parentElement, ((sortDescending) ? "decen" : "ascen"));
 
     var tbody = document.querySelector(".table tbody");
     var rows = tbody.getElementsByClassName("tr-link");
 
     var idx = this.parentElement.cellIndex;
+    GM_setValue("SortHeader", idx);
+    GM_setValue("SortDescending", sortDescending);
 
     for(var n, i = 0; i < rows.length - 1; i++)
     {
         n = i;
         for(var j=i+1; j < rows.length; j++)
         {
-            if ((descending && compareRows(rows[n], rows[j]) > 0) || (!descending && compareRows(rows[n], rows[j]) < 0))
+            if ((sortDescending && compareRows(rows[n], rows[j]) < 0) || (!sortDescending && compareRows(rows[n], rows[j]) > 0))
             {
                 n = j;
             }
@@ -238,15 +285,20 @@ function SortScriptTable(e)
             val1 = row1.querySelector(selector).textContent.toLowerCase();
             val2 = row2.querySelector(selector).textContent.toLowerCase();
         }
+        else if (idx == 1)
+        {
+            val1 = parseInt(row1.getAttribute("installs"));
+            val2 = parseInt(row2.getAttribute("installs"));
+        }
+        else if (idx == 2)
+        {
+            val1 = parseInt(row1.getAttribute("rating"));
+            val2 = parseInt(row2.getAttribute("rating"));
+        }
         else if (idx == 3)
         {
             val1 = new Date(row1.querySelector(selector).getAttribute("datetime")).getTime();
             val2 = new Date(row2.querySelector(selector).getAttribute("datetime")).getTime();
-        }
-        else
-        {
-            val1 = parseInt(row1.querySelector(selector).textContent.match(/^\d+/)[0]);
-            val2 = parseInt(row2.querySelector(selector).textContent.match(/^\d+/)[0]);
         }
 
         if (val1 < val2) return -1;
@@ -263,9 +315,12 @@ function SortScriptTable(e)
 
 (function ()
 {
+    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="/users/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
     var timestamp = Date.now();
     var loggedUsername = "";
-    TSL.addStyle("LimitImageSize", "img {max-width: 98%;}");
+    TSL.addStyle("Image-Limiter", ".user-content img, .topic-post-contents img {max-width: 98%; border: 1px solid blue; padding: 2px; color: yellow; margin: 5px 0; box-shadow: 5px 5px 2px #888888;}"
+        + ".topic-post-contents img:last-child {margin-bottom: 10px;}"
+        );
 
     if (document.querySelector(".fa-sign-out") != undefined)
     {
@@ -294,7 +349,7 @@ function SortScriptTable(e)
 
             for (var key in meta)
             {
-                if (timestamp - meta[key].timestamp > 86400000 * 14) //30 Days
+                if (timestamp - meta[key].timestamp > DAY * 14) //30 Days
                 {
                     delete meta[key];
                     GM_deleteValue(key);
@@ -366,7 +421,24 @@ function SortScriptTable(e)
             return;
         }
 
-        xhrPage("https://openuserjs.org/forum", function (xhr, doc)
+
+        if (window.sessionStorage.getItem("NewIssuesStamp") && Date.now() - window.sessionStorage.getItem("NewIssuesStamp") < 20000)
+        {
+            var dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
+            doc = document.implementation.createDocument("", "", dt),
+            documentElement = doc.createElement("html");
+            documentElement.innerHTML = window.sessionStorage.getItem("NewIssuesDoc");
+            doc.appendChild(documentElement);
+            NewIssues(doc);
+        }
+        else xhrPage("https://openuserjs.org/forum", function (xhr, doc)
+        {
+            window.sessionStorage.setItem("NewIssuesDoc", xhr.responseText);
+            window.sessionStorage.setItem("NewIssuesStamp", Date.now());
+            NewIssues(doc);
+        });
+
+        function NewIssues(doc)
         {
             var count = 0;
             var usernames = getSavedUsernames();
@@ -414,7 +486,7 @@ function SortScriptTable(e)
                 discuss.innerHTML += ")";
 
                 TSL.addStyle("OUJS-IL-BT", "#IssuesListing {position: absolute;background-color: #2C3E50; color: white; font-weight: 600; z-index: 99999;"
-                    + "padding: 3px 8px; color: white; border: 1px solid black; box-sizing: border-box;}"
+                    + "font-size:12px; padding: 3px 8px; color: white; border: 1px solid black; box-sizing: border-box;}"
                     + "#IssuesListing ul {margin: 0; padding-left: 10px;}"
                     + "#IssuesListing a {display: inline-block; color: orange; }"
                     + "#IssuesListing li:hover {background-color: #435A71;}"
@@ -433,7 +505,7 @@ function SortScriptTable(e)
 
                 ToggleIssuesView(discuss, issues);
             }
-        });
+        }
     }
 
     function getScriptListings(url)
@@ -524,8 +596,14 @@ function SortScriptTable(e)
             headers[i].onclick = SortScriptTable;
         }
 
-        addScriptListingNumbers();
+
         appendHistory();
+
+        var idx = GM_getValue("SortHeader", 3);
+        var SortAscending =  !GM_getValue("SortDescending", true);
+        headers[idx].click();
+        if (SortAscending) headers[idx].click();
+        //addScriptListingNumbers();
     }
 
     function getUID(name, prefix)
@@ -555,7 +633,7 @@ function SortScriptTable(e)
         var meta = GM_getValue("USER-S:" + username);
 
         if (!meta) return;
-        TSL.addStyle("HistoricalColors", ".dStatN {color: red;} .dStatP {color: green;} .dStatP:before { content: '+';}");
+        TSL.addStyle("HistoricalColors", ".dStatN {color: red;} .dStatP {color: green;} .dStatNew {color: blue;} .dStatP:before, .dStatNew:before { content: '+';}");
 
         meta = JSON.parse(meta);
         var oldCurrent = meta.current;
@@ -571,41 +649,43 @@ function SortScriptTable(e)
             data = {};
             data.installs = parseInt(row.querySelector("td:nth-child(2) p").textContent);
             data.rating = parseInt(row.querySelector("td:nth-child(3) p").textContent);
+            row.setAttribute("installs", data.installs);
+            row.setAttribute("rating", data.rating);
             meta.current[scriptID] = data;
         }
 
         meta.current.timestamp = timestamp;
-        if (meta.history.length == 0 || timestamp - meta.history[meta.history.length - 1].timestamp >= 86400000)
+        if (meta.history.length == 0 || timestamp - meta.history[meta.history.length - 1].timestamp >= DAY)
         {
             meta.history.push(meta.current);
         }
 
         DisplayStats(oldCurrent, meta.current);
 
-        var MIN = 3, MAX = 13;
-        if (meta.history.length > MAX) //History Cleanup
+        var MIN = 5, MAX = 15; //First MIN issues are stored
+        if (meta.history.length > MAX) //History Cleanup greater than
         {
-            for (var i = 9, j = MAX - MIN; i > 2; i--, j--)
+            for (var i = MAX-1, j = MAX - MIN; i > 2; i--, j--)
             {
-                if (timestamp - meta.history[i].timestamp > 86400000 * 7 * j)
+                if (timestamp - meta.history[i].timestamp > DAY * 7 * j)
                 {
-                    meta.history = meta.history.splice(i, 1);
+                    meta.history.splice(i, 1);
                     break;
                 }
             }
         }
-        if (meta.history.length > MAX) //History Cleanup
+        if (meta.history.length > MAX) //History Cleanup less than
         {
             for (var i = MIN, j = 1; i < MAX; i++, j++)
             {
-                if (timestamp - meta.history[i].timestamp < 86400000 * 7 * j)
+                if (timestamp - meta.history[i].timestamp < DAY * 7 * j)
                 {
-                    meta.history = meta.history.splice(i, 1);
+                    meta.history.splice(i, 1);
                     break;
                 }
             }
         }
-        if (meta.history.length > MAX) meta.history.unshift();
+        if (meta.history.length > MAX) meta.history.splice(MIN-1,1); //Last Min Date
 
         GM_setValue("USER-S:" + username, JSON.stringify(meta));
 
@@ -654,6 +734,7 @@ function SortScriptTable(e)
             }
         }
         el.firstElementChild.className = "selected";
+        DisplayStats(oldCurrent, meta.current);
 
         function timePassed(old)
         {
@@ -666,10 +747,17 @@ function SortScriptTable(e)
             days = Math.floor(ms / (60 * 60 * 1000 * 24) % 7);
             weeks = Math.floor(ms / (60 * 60 * 1000 * 24) / 7);
 
-            if (weeks) return weeks + "weeks & " + days + "days";
-            if (days) return days + "days & " + hrs + "hrs";
-            if (hrs) return hrs + "hrs & " + mins + "mins";
-            return mins + "mins & " + secs + "secs";
+            if (weeks) return weeks + "week" + isPlural(weeks) + " and " + days + "day" + isPlural(days);
+            if (days) return days + "day" + isPlural(days) + " and " + hrs + "hr" + isPlural(hrs);
+            if (hrs) return hrs + "hr" + isPlural(hrs) + " and " + mins + "min" + isPlural(mins);
+            return mins + "min" + isPlural(mins) + " and " + secs + "sec" + isPlural(secs);
+
+            function isPlural(val)
+            {
+                if (val == 1) return "";
+
+                return "s";
+            }
         }
     }
 
@@ -742,7 +830,7 @@ function SortScriptTable(e)
                 {
                     var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
 
-                    dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
+                    var dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
                     doc = document.implementation.createDocument("", "", dt),
                     documentElement = doc.createElement("html");
                     documentElement.innerHTML = xhr.responseText;
