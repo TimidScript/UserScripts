@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.16
+// @version         1.0.17
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.17 (2014-10-18)
+ - Changed the framing of images to suite smaller images better
+ - Credit link now points to my GF profile rather than OUJS
+ - Added sign-out near the name
+ - Bug fix: add script table only when need
 1.0.16 (2014-09-29)
  - Got rid of the flashing timer
 1.0.15 (2014-09-29)
@@ -99,29 +104,32 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         TSL.addStyle("", "#additional-info {border-radius: 5px;} #additional-info > div {background-color: white;");
         TSL.addStyle("", "header:first-child {background-color:white; padding: 5px 10px;}");
 
-        var ia = document.getElementById("install-area");
+        var notice = document.createElement("div");
+        notice.textContent = "Show your appreciation to the author by favouring the script and giving positive feedback";
+        notice.setAttribute("style", "padding: 3px 10px; border-radius: 4px; background-color: yellow; text-align: center;");
 
-        if (ia)
-        {
-            var notice = document.createElement("span");
-            notice.textContent = "Show your appreciation to the author by favouring the script and giving positive feedback";
-            notice.setAttribute("style", "padding: 0 20px; border-radius: 4px; background-color: yellow;");
-            ia.appendChild(notice);
-            //disco(0);
-        }
+        var el = document.querySelector("#install-area");
+        if (el) el.appendChild(notice);
+
+        el = document.querySelector("#script-content");
+        if (document.URL.match(/\/feedback$/) && el) el.insertBefore(notice, el.firstElementChild);
     }
     else if (document.URL.match(/greasyfork\.org\/scripts/)) //Script Listing
     {
         document.body.setAttribute("PageType", "ListingPage");
         getScripts();
-        createScriptTable();
-        populateScriptTable();
 
-        document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
+        if (scripts.length > 0)
+        {
+            createScriptTable();
+            populateScriptTable();
 
-        selectSortOrder("ListingPage");
+            document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
 
-        TSL.removeNode("browse-script-list");
+            selectSortOrder("ListingPage");
+
+            TSL.removeNode("browse-script-list");
+        }
     }
     else if (document.URL.match(/\/users\/(\w|-)+/)) //Authors Profile Page
     {
@@ -130,13 +138,15 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
         getScripts();
         OrangifyUserPage();
-        createScriptTable();
-        populateScriptTable();
 
-        selectSortOrder(pageType);
+        if (scripts.length > 0)
+        {
+            createScriptTable();
+            populateScriptTable();
+
+            selectSortOrder(pageType);
+        }
     }
-
-
 
     /* Base CSS styling
     ---------------------------------------------------------------------------*/
@@ -156,7 +166,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             var img = document.querySelector(".SiteTitle img");
             img.src = "https://i.imgur.com/RqikjW1.jpg";
             var ts = document.createElement("a");
-            ts.href = "https://openuserjs.org/users/TimidScript";
+            ts.href = "https://greasyfork.org/users/1455-timidscript";
             ts.id = "TS-Link";
             ts.textContent = "TimidScript";
             document.body.appendChild(ts);
@@ -168,13 +178,13 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                           + "#main-header {background-color: orange;} #site-nav a {color: yellow !important;}"
                           + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
                           + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; margin: 0 10px;}"
-                          + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 60px;}"
+                          + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 55px;}"
                           + "#nav-user-info {top: 3px;}"
                           + "pre {background-color: #E9E8E5; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
                           + "code {padding: 2px 4px; font-size: 90%; color: #C7254E; background-color: #F9F2F4; white-space: nowrap; border-radius: 4px; font-family: Menlo,Monaco,Consolas,'Courier New',monospace;}"
                           );
 
-            TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 6px ridge #DF0404; box-shadow: 5px 5px 2px #888888; margin-bottom: 5px;}");
+            TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
             //#endregion
 
             var sname = document.getElementById("site-name");
@@ -184,10 +194,22 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             link.href = "/";
             link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
                             + '<span id="title-text">Greasy Fork&nbsp;</span>'
-                            + '<a id="title-subtext" href="https://openuserjs.org/users/TimidScript">100% Citrusy Goodness by <b>TimidScript</b></span>';
+                            + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
             sname.appendChild(link);
 
             TSL.removeNode("script-list-option-groups");
+
+            if (!document.querySelector(".sign-in-link") && document.querySelector(".user-profile-link"))
+            {
+                var a = document.createElement("a");
+                a.href = "https://greasyfork.org/users/sign_out";
+                a.textContent = "Sign out";
+                a.style.marginLeft = "20px";
+                document.querySelector(".user-profile-link").appendChild(a);
+                //document.querySelector("#nav-user-info").appendChild(document.createElement("br"));
+                //document.querySelector("#nav-user-info").appendChild(a);
+                //document.querySelector("#nav-user-info").style.textAlign = "left";
+            }
         }
     }
 
