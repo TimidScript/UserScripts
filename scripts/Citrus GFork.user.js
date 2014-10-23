@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.17
+// @version         1.0.18
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.18 (2014-10-23)
+ - Bug fix to accommodate new site changes to the URL syntax
 1.0.17 (2014-10-18)
  - Changed the framing of images to suite smaller images better
  - Credit link now points to my GF profile rather than OUJS
@@ -97,11 +99,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
     var scripts = new Array();
 
-    if (document.URL.match(/greasyfork\.org\/scripts\/\d+/)) //Script Page
+    if (document.URL.match(/greasyfork\.org\/\w+\/scripts\/\d+/)) //Script Page
     {
         TSL.addStyle("", "#script-content {background-color: #F9ECDB; margin: 0; padding-bottom: 5px;} #script-links > li:hover { background-color: yellow; } .current {background-color: #F9ECDB !important;}");
         TSL.addStyle("", ".install-link {background-color: #F7A207;} .install-help-link {background-color: #F9C565 !important;}");
-        TSL.addStyle("", "#additional-info {border-radius: 5px;} #additional-info > div {background-color: white;");
+        TSL.addStyle("", "#additional-info {border-radius: 5px; background-color: #F9DACD;} #additional-info > div {background-color: white;}");
         TSL.addStyle("", "header:first-child {background-color:white; padding: 5px 10px;}");
 
         var notice = document.createElement("div");
@@ -114,7 +116,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         el = document.querySelector("#script-content");
         if (document.URL.match(/\/feedback$/) && el) el.insertBefore(notice, el.firstElementChild);
     }
-    else if (document.URL.match(/greasyfork\.org\/scripts/)) //Script Listing
+    else if (document.URL.match(/greasyfork\.org\/\w+\/scripts/)) //Script Listing
     {
         document.body.setAttribute("PageType", "ListingPage");
         getScripts();
@@ -531,7 +533,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
 
 
-        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/scripts(\/search)?/)[0] + "?per_page=100";
+        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/\w+\/scripts(\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
 
         var m = document.URL.match(/[^=\?&]+=[^&]+/g);
