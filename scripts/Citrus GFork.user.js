@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.18
+// @version         1.0.19
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.19 (2014-10-23)
+ - Removed sign-out button as it has been added with today's site update
 1.0.18 (2014-10-23)
  - Bug fix to accommodate new site changes to the URL syntax
 1.0.17 (2014-10-18)
@@ -200,18 +202,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             sname.appendChild(link);
 
             TSL.removeNode("script-list-option-groups");
-
-            if (!document.querySelector(".sign-in-link") && document.querySelector(".user-profile-link"))
-            {
-                var a = document.createElement("a");
-                a.href = "https://greasyfork.org/users/sign_out";
-                a.textContent = "Sign out";
-                a.style.marginLeft = "20px";
-                document.querySelector(".user-profile-link").appendChild(a);
-                //document.querySelector("#nav-user-info").appendChild(document.createElement("br"));
-                //document.querySelector("#nav-user-info").appendChild(a);
-                //document.querySelector("#nav-user-info").style.textAlign = "left";
-            }
         }
     }
 
