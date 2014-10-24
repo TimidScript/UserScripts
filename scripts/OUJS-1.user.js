@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.9
+// @version                 1.0.10
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page...
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.10 (2014/10/24)
+ - Bug Fix on history cleanup
+ - Changes in CSS for profile comments
 1.0.9 (2014/10/18)
  - Bug Fix in history cleanup
  - Stats history takes into account deleted and new scripts
@@ -361,7 +364,6 @@ function SortScriptTable(e)
     }
 
     var pathname = document.location.pathname;
-
     if (pathname.match(/^\/$|^\/group\/\w+/))
     {
         addScriptListingNumbers();
@@ -373,6 +375,10 @@ function SortScriptTable(e)
         getScriptListings(document.URL + "/scripts/?p=1");
 
         window.history.pushState(null, "", document.URL + "/scripts"); //Change document URL
+    }
+    else if (pathname.match(/^\/users\/.+\/comments/i)) //User profile comments page
+    {
+        TSL.addStyle("UserScripts", ".topic-title .breadcrumb {margin-bottom: 0px;}");
     }
     else if (pathname.match(/^\/users\/\w+\/scripts/i)) //User script listing
     {
@@ -662,13 +668,21 @@ function SortScriptTable(e)
 
         DisplayStats(oldCurrent, meta.current);
 
+        //alert("Bring Up Console");
         var MIN = 5, MAX = 15; //First MIN issues are stored
+
+        for (var i = MAX-1, j = MAX - MIN; i >= 0; i--, j--)
+        {
+            console.warn(i, timePassed(meta.history[i].timestamp));
+        }
+
         if (meta.history.length > MAX) //History Cleanup greater than
         {
-            for (var i = MAX-1, j = MAX - MIN; i > 2; i--, j--)
+            for (var i = 0, j = MAX - MIN; i < MAX - MIN; i++, j--)
             {
                 if (timestamp - meta.history[i].timestamp > DAY * 7 * j)
                 {
+                    console.log("GREATER", i, timePassed(meta.history[i].timestamp));
                     meta.history.splice(i, 1);
                     break;
                 }
@@ -680,11 +694,13 @@ function SortScriptTable(e)
             {
                 if (timestamp - meta.history[i].timestamp < DAY * 7 * j)
                 {
+                    console.log("LESSER", i, timePassed(meta.history[i].timestamp));
                     meta.history.splice(i, 1);
                     break;
                 }
             }
         }
+        if (meta.history.length > MAX) console.log("mm", timePassed(meta.history[i].timestamp));
         if (meta.history.length > MAX) meta.history.splice(MIN-1,1); //Last Min Date
 
         GM_setValue("USER-S:" + username, JSON.stringify(meta));
