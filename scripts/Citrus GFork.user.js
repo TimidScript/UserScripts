@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.20b
+// @version         1.0.21
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,11 +37,12 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.21 (2014-10-31)
+ - Support for Opera now added. Dozen of browsers open causes confusion.
 1.0.20 (2014-10-31)
  - Change table header "Fans" to "Score"
  - Slight changes to forum CSS
  - Support for Opera and Chrome added.
- - 1.0.20b: Support for Opera now added.
 1.0.19 (2014-10-23)
  - Removed sign-out button as it has been added with today's site update
 1.0.18 (2014-10-23)
@@ -304,13 +305,13 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var headers = ["Name", "Score", "Daily", "Total", "Created", "Updated"];
         var tags = ["name", "fans", "", "total_installs", "created", "updated"];
 
-        cell = row.insertCell();
+        cell = row.insertCell(-1);
         cell.textContent = "#";
 
         var cell;
         for (var i = 0; i < headers.length; i++)
         {
-            cell = row.insertCell();
+            cell = row.insertCell(-1);
             cell.innerHTML = headers[i];
             cell.onclick = onTableHeaderClick;
             cell.setAttribute("tag", tags[i]);
@@ -412,13 +413,13 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
             row = tbody.insertRow(-1);
             row.className = "";
-            cell = row.insertCell();
+            cell = row.insertCell(-1);
 
             var num = i + offset;
             cell.textContent = (prefix + num).slice((-1 * prefix.length));
 
 
-            cell = row.insertCell();
+            cell = row.insertCell(-1);
             var el = document.createElement("div");
             el.className = "thetitle";
             el.innerHTML = "<a href='https://greasyfork.org/scripts/"
@@ -450,11 +451,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             el.textContent = script.description;
             cell.appendChild(el);
 
-            row.insertCell().textContent = script.fans;
-            row.insertCell().textContent = script.installsDaily;
-            row.insertCell().textContent = script.installsTotal;
-            row.insertCell().textContent = script.dateCreated;
-            row.insertCell().textContent = script.dateUpdated;
+            row.insertCell(-1).textContent = script.fans;
+            row.insertCell(-1).textContent = script.installsDaily;
+            row.insertCell(-1).textContent = script.installsTotal;
+            row.insertCell(-1).textContent = script.dateCreated;
+            row.insertCell(-1).textContent = script.dateUpdated;
         }
 
         filterTable();
