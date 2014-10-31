@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.3
-// @description     Auto-pager for DeviantArt gallery/favourites
+// @version         1.0.4
+// @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -30,13 +30,15 @@ Script's Homepage:              Check homepages below
 TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 https://greasyfork.org/users/1455-timidscript
                                 https://monkeyguts.com/author.php?un=timidscript
-                                
+
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
 
 ------------------------------------
  Version History
 ------------------------------------
+1.0.4 (2014-10-31)
+ - Fix to support other browsers beside FireFox
 1.0.3 (2014-08-29)
  - Added GM_update
 1.0.2 (2014-08-19)
@@ -65,6 +67,8 @@ var loading = "data:image/gif;base64,R0lGODlhZABkAPQAAP///+AfH/Cbm+x6euZOTudTU+p
 
 function CheckScrollPosition()
 {
+    //Some browsers do no support window.scrollMaxY
+    window.scrollMaxY = window.scrollMaxY || document.documentElement.scrollHeight;
     if ((window.scrollMaxY - window.scrollY) < (commentHeight + scrollOffset))
     {
         GetNextPage();
@@ -72,17 +76,12 @@ function CheckScrollPosition()
 }
 
 function GetNextPageURL(doc)
-{    
-    var links = doc.getElementsByClassName("away");
-
-    for (var i = 0; a = links[i], i < links.length; i++)
-    {    
-        if (a.id == "gmi-GPageButton" && a.textContent == "Next")
-        {
-            nextPageURL = a.href;
-            //console.log(nextPageURL);
-            return true;
-        }
+{
+    var next = doc.querySelector("li.next a#gmi-GPageButton");
+    if (next)
+    {
+        nextPageURL = next.href;
+        return true;
     }
 
     nextPageURL = null;
@@ -100,21 +99,24 @@ function GetNextPage()
     div.appendChild(img);
     document.body.appendChild(div);
     w = Math.round(img.clientWidth / 2);
-    div.setAttribute("style" , "position: fixed; z-index: 999; bottom: 50%; left: 50%; margin: 0 0 0 -" + w + "px;");
+    div.setAttribute("style", "position: fixed; z-index: 999; bottom: 50%; left: 50%; margin: 0 0 0 -" + w + "px;");
+
 
     var xhr = new XMLHttpRequest();
     xhr.open("GET", nextPageURL, true);
+    //xhr.responseType = "document"; //Causes issues in Opera
     xhr.onload = function (e)
     {
         if (xhr.readyState == 4)
         {
             if (xhr.status == 200)
             {
-                var xdt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd");
-                var xdoc = document.implementation.createDocument("", "", xdt);
-                var elHtml = xdoc.createElement("html");
-                elHtml.innerHTML = xhr.responseText;
-                xdoc.appendChild(elHtml);
+                //var xdoc = xhr.response; //Causes issues in opera;
+                //var xdoc = document.createElement("xml");
+                //xdoc.innerHTML = xhr.responseText;
+
+                var xdoc = document.implementation.createHTMLDocument('MPIV');
+                xdoc.documentElement.innerHTML = xhr.responseText;
 
                 if (addPagination)
                 {
@@ -122,10 +124,9 @@ function GetNextPage()
                     d.setAttribute("style", "text-align:center;");
                     d.appendChild(galleryPager.getElementsByClassName("pagination")[0]);
                     gmi.appendChild(d);
-                    
                 }
                 galleryPager.innerHTML = xdoc.getElementById("gallery_pager").innerHTML;
-                              
+
                 var gmi2 = xdoc.getElementById("gmi-ResourceStream");
                 try
                 {
@@ -134,14 +135,13 @@ function GetNextPage()
                         gmi.appendChild(gmi2.children[0]);
                     }
                 }
-                catch(e){}
+                catch (e) { }
 
-                if (GetNextPageURL(xdoc)) intervalID = setInterval(CheckScrollPosition, 200);                     
-                
+                if (GetNextPageURL(xdoc)) intervalID = setInterval(CheckScrollPosition, 200);
             } else
             {
                 console.error(xhr.statusText);
-            }            
+            }
         }
         document.getElementById("deviantscript").parentNode.removeChild(document.getElementById("deviantscript"));
     };
@@ -152,4 +152,3 @@ function GetNextPage()
     };
     xhr.send(null);
 }
-
