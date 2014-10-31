@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.10
+// @version                 1.0.11
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page...
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.11 (2014/10/31)
+ - Fixed Bug caused by console debug iteration
 1.0.10 (2014/10/24)
  - Bug Fix on history cleanup
  - Changes in CSS for profile comments
@@ -602,7 +604,6 @@ function SortScriptTable(e)
             headers[i].onclick = SortScriptTable;
         }
 
-
         appendHistory();
 
         var idx = GM_getValue("SortHeader", 3);
@@ -670,8 +671,7 @@ function SortScriptTable(e)
 
         //alert("Bring Up Console");
         var MIN = 5, MAX = 15; //First MIN issues are stored
-
-        for (var i = MAX-1, j = MAX - MIN; i >= 0; i--, j--)
+        for (var i = meta.history.length - 1, j = MAX - MIN; i >= 0; i--, j--)
         {
             console.warn(i, timePassed(meta.history[i].timestamp));
         }
@@ -836,6 +836,21 @@ function SortScriptTable(e)
 
     function xhrPage(url, callback)
     {
+        //var xhr = new XMLHttpRequest();
+        //xhr.open("GET", url, true);
+        //xhr.responseType = "document";
+        //xhr.onload = function (e)
+        //{
+        //    if (xhr.readyState == 4 && xhr.status == 200)
+        //    {
+        //        callback(xhr, doc);
+        //    }
+        //    else callback(xhr, doc);
+        //};
+
+        //xhr.send();
+        //return;
+
         GM_xmlhttpRequest({
             url: url,
             method: "GET",
