@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.20
+// @version         1.0.20b
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -41,6 +41,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Change table header "Fans" to "Score"
  - Slight changes to forum CSS
  - Support for Opera and Chrome added.
+ - 1.0.20b: Support for Opera now added.
 1.0.19 (2014-10-23)
  - Removed sign-out button as it has been added with today's site update
 1.0.18 (2014-10-23)
@@ -333,7 +334,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var btns = cell.getElementsByTagName("span");
         for (var i = 0; i < btns.length; i++) btns[i].onclick = onFilterClick;
 
-        scriptTable.createTBody();
+        //scriptTable.createTBody();
+        scriptTable.appendChild(document.createElement("tbody"));
         document.body.appendChild(scriptTable);
 
         TSL.addStyle("CitrusGS_Table", "#script-table {display: block; margin: 0 5px 5px 5px;} body {background-color: #EFEFB1; margin: 0;}"
@@ -373,7 +375,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         if (scripts.length == 0)
         {
             var row = tbody.insertRow(-1);
-            cell = row.insertCell();
+            cell = row.insertCell(-1);
             cell.setAttribute("style", "text-align:center; font-weight: bold; font-style: oblique;");
             cell.textContent = "No Scripts"
             cell.setAttribute("colspan", 7);
@@ -401,7 +403,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                 TSL.addStyle("", "#ToggleDisplayClick {border: 1px solid; background-color: #FBDDD2 !important; color: orangered; cursor: pointer; height: 15px; font-weight: 600;}");
                 separator = true;
                 row = tbody.insertRow(-1);
-                cell = row.insertCell();
+                cell = row.insertCell(-1);
                 cell.id = "ToggleDisplayClick";
                 cell.setAttribute("colspan", 7);
                 cell.textContent = "Click to toggle deleted scripts display";
