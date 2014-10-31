@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.19
-// @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons.
+// @version         1.0.20
+// @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -37,6 +37,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.20 (2014-10-31)
+ - Change table header "Fans" to "Score"
+ - Slight changes to forum CSS
+ - Support for Opera and Chrome added.
 1.0.19 (2014-10-23)
  - Removed sign-out button as it has been added with today's site update
 1.0.18 (2014-10-23)
@@ -166,6 +170,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                     + ".SiteMenu {margin-left: 220px !important;}"
                     + "#TS-Link {position: absolute; transform: rotate(-90deg); font-size:10px; top: 25px; color: yellow; font-weight: 700;}"
                     + "#Head .SiteSearch { float: right; margin-top: -25px !important; }"
+                    + "code {padding: 1px 3px; border-radius: 3px; border: 1px solid; background-color: #F9EBD2; color: #EB5100; margin: 0;}"
                 );
             var img = document.querySelector(".SiteTitle img");
             img.src = "https://i.imgur.com/RqikjW1.jpg";
@@ -295,7 +300,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var thead = scriptTable.createTHead();
         var row = thead.insertRow(-1);
 
-        var headers = ["Name", "Fans", "Daily", "Total", "Created", "Updated"];
+        var headers = ["Name", "Score", "Daily", "Total", "Created", "Updated"];
         var tags = ["name", "fans", "", "total_installs", "created", "updated"];
 
         cell = row.insertCell();
@@ -356,17 +361,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             + "#notice .filterD { background-color: #C0BEBE; float: none; color: black;}"
             + "thetitle {margin-bottom: 3px;} .theauthor{font-size:small;}"
         );
-
-        if (document.body.getAttribute("PageType") == "PersonalProfile")
-        {
-            var notice = document.createElement("div");
-            notice.id = "notice";
-            notice.innerHTML = 'By default deleted scripts are hidden now. Click on <span class="filterD">D</span> to view them. Can be disabled by adding <code>GM_setValue("DisplayDeleted",true)</code> to the script.';
-            document.body.insertBefore(notice, scriptTable);
-
-            //GM_setValue("DisplayDeleted", false);
-            if (!GM_getValue("DisplayDeleted")) document.querySelector("#script-table thead .filterD").click();
-        }
     }
 
     /* Populate the table with scripts
@@ -404,11 +398,12 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             var script = scripts[i];
             if (script.deleted && !separator)
             {
+                TSL.addStyle("", "#ToggleDisplayClick {border: 1px solid; background-color: #FBDDD2 !important; color: orangered; cursor: pointer; height: 15px; font-weight: 600;}");
                 separator = true;
                 row = tbody.insertRow(-1);
                 cell = row.insertCell();
+                cell.id = "ToggleDisplayClick";
                 cell.setAttribute("colspan", 7);
-                cell.setAttribute("style", "background-color: orangered; height: 15px;");
                 cell.textContent = "Click to toggle deleted scripts display";
                 cell.onclick = function (e) { document.querySelector("#script-table span.filterD").click(); };
             }
@@ -483,7 +478,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         TSL.removeNode("ScriptFilter");
         e.stopImmediatePropagation();
         this.style.backgroundColor = (this.style.backgroundColor) ? null : "#C0BEBE";
-
         filterTable();
     }
 
@@ -569,11 +563,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                     scripts = new Array();
                     //var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
 
-                    var dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
-                    doc = document.implementation.createDocument("", "", dt),
-                    documentElement = doc.createElement("html");
-                    documentElement.innerHTML = xhr.responseText;
-                    doc.appendChild(documentElement);
+                    var doc = document.implementation.createHTMLDocument('MPIV');
+                    doc.documentElement.innerHTML = xhr.responseText;
 
                     TSL.removeNode(document.getElementsByClassName("pagination")[0]);
 
