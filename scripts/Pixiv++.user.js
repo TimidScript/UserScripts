@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.63
+// @version             3.1.64
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -40,6 +40,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.64 (2014-10-31)
+ - Removes links when thumbnail is hidden
 3.1.63 (2014-10-04)
  - Bug fixes to handle more changes in pixiv layout
  - Using new embedded images instead of thumbnail images for new layout as it gets full images rather than cropped version
@@ -1367,9 +1369,40 @@ var PaginatorHQ =
                     filterOut = found;
                 }
             }
+
             //Illustration metadata has yet to be retrieved
-            thumbnail.style.display = filterOut ? "none" : null;
+            if (filterOut)
+            {
+                PaginatorHQ.filterThumbnailLinks(thumbnail, true);
+                thumbnail.style.display = "none";
+            }
+            else
+            {
+                PaginatorHQ.filterThumbnailLinks(thumbnail, false);
+                thumbnail.style.display = null;
+            }
         },
+
+        filterThumbnailLinks: function (thumbnail, remove)
+        {
+            var links = thumbnail.querySelectorAll(".pppHotBoxTi, .pppDirectLinks > a");
+            //var links = thumbnail.querySelectorAll("a");
+            if (!links) return;
+
+            for (var i = 0; i < links.length; i++)
+            {
+                if (remove)
+                {
+                    if (!links[i].getAttribute("hrefOriginal")) links[i].setAttribute("hrefOriginal", links[i].href);
+                    links[i].removeAttribute("href");
+                }
+                else if (!links[i].href && links[i].getAttribute("hrefOriginal"))
+                {
+                    links[i].href = links[i].getAttribute("hrefOriginal");
+                }
+            }
+        },
+
 
         filterContainer: function (container)
         {
@@ -1439,6 +1472,7 @@ var PaginatorHQ =
                     //msg.textContent = ("Filtering thumbnail " + (i + 1) + "/" + nodesSnapshot.snapshotLength);
                     thumbPage = thumb.getAttribute("page");
                     if (thumbPage > mainContainerPage) containers[thumbPage - mainContainerPage].appendChild(thumb);
+                    PaginatorHQ.filterThumbnailLinks(thumb, false);
                     thumb.style.display = null;
                 }
             }
@@ -2963,7 +2997,7 @@ to enable caching [3] to make it a lot faster.
 if (window.self === window.top)
     (function ()
     {
-        PaginatorHQ.addStyle("Adjust-Pixiv", "img._thumbnail {color: white; border: 3px ridge; padding: 1px; background-color: white;} a:visited img._thumbnail{color: cyan !important;}");
+        PaginatorHQ.addStyle("Adjust-Pixiv", "img._thumbnail {color: white; border: 3px solid; padding: 1px; background-color: white;} a:visited img._thumbnail{color: cyan !important;}");
 
         console.info("Pixiv Main");
         var counter = 0;
@@ -3010,4 +3044,7 @@ pixiv.context.illustSize       = [514, 487];
 pixiv.context.ugokuIllustData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira600x600.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
 pixiv.context.ugokuIllustFullscreenData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira1920x1080.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
 </script>
+
+
+http://www.pixiv.net/bookmark_detail.php?illust_id=
 */
