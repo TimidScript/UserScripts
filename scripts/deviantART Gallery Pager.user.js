@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.4
+// @version         1.0.5
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
@@ -37,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.5 (2014-11-01)
+ - Bug fix: Check if comments are present in the gallery
+ - Bug fix: Loading icon gets removed now when you change page
 1.0.4 (2014-10-31)
  - Fix to support other browsers beside FireFox
 1.0.3 (2014-08-29)
@@ -47,8 +50,6 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Initial Release
 **************************************************************************************************/
 
-
-
 /************** Variable you can set **************/
 var scrollOffset = 1000; //Autopaging offset for scroll. The higher it is the sooner it loads.
 var addPagination = true; //Adds page divider
@@ -56,7 +57,7 @@ var addPagination = true; //Adds page divider
 
 console.info("DeviantScript Gallery Pager");
 var gmi = document.getElementById("gmi-ResourceStream");
-var commentHeight = document.getElementById("comments").offsetHeight;
+var commentHeight = (document.getElementById("comments")) ? document.getElementById("comments").offsetHeight : 0;
 var intervalID = 0;
 
 var nextPageURL = null;
@@ -97,7 +98,7 @@ function GetNextPage()
     img = document.createElement("img");
     img.src = loading;
     div.appendChild(img);
-    document.body.appendChild(div);
+    document.getElementById("gmi-GPage").appendChild(div);
     w = Math.round(img.clientWidth / 2);
     div.setAttribute("style", "position: fixed; z-index: 999; bottom: 50%; left: 50%; margin: 0 0 0 -" + w + "px;");
 
