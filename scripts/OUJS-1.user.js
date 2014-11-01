@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.11
-// @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page...
+// @version                 1.0.12
+// @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -38,6 +38,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.12 (2014/11/01)
+ - Fixed it so it works on Opera and Chrome
+ - It now displays "History Period Installs Chart" if the length is more than 0 as oppose to 3.
 1.0.11 (2014/10/31)
  - Fixed Bug caused by console debug iteration
 1.0.10 (2014/10/24)
@@ -173,7 +176,7 @@ function DisplayStats(old, current)
             return "";
         })() + "</sup>"));
 
-    if (arr.length < 4) return;
+    if (arr.length == 0) return;
     arr.sort(function(a, b)
     {
         if (a.installs < b.installs) return -1;
@@ -432,11 +435,8 @@ function SortScriptTable(e)
 
         if (window.sessionStorage.getItem("NewIssuesStamp") && Date.now() - window.sessionStorage.getItem("NewIssuesStamp") < 20000)
         {
-            var dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
-            doc = document.implementation.createDocument("", "", dt),
-            documentElement = doc.createElement("html");
-            documentElement.innerHTML = window.sessionStorage.getItem("NewIssuesDoc");
-            doc.appendChild(documentElement);
+            var doc = document.implementation.createHTMLDocument('MPIV');
+            doc.documentElement.innerHTML = window.sessionStorage.getItem("NewIssuesDoc");
             NewIssues(doc);
         }
         else xhrPage("https://openuserjs.org/forum", function (xhr, doc)
@@ -564,9 +564,9 @@ function SortScriptTable(e)
                 if (!added)
                 {
                     added = true;
-                    row2 = tbody.insertRow();
+                    row2 = tbody.insertRow(-1);
                     row2.className = "header_row _library";
-                    cell = row2.insertCell();
+                    cell = row2.insertCell(-1);
                     cell.setAttribute("colspan", 5);
                     cell.textContent = "Libraries";
                 }
@@ -585,9 +585,9 @@ function SortScriptTable(e)
                 if (!added)
                 {
                     added = true;
-                    row2 = tbody.insertRow();
+                    row2 = tbody.insertRow(-1);
                     row2.className = "header_row _defunct";
-                    cell = row2.insertCell();
+                    cell = row2.insertCell(-1);
                     cell.setAttribute("colspan", 5);
                     cell.textContent = "Depreciated scripts that are no longer begin supported";
                 }
@@ -836,37 +836,21 @@ function SortScriptTable(e)
 
     function xhrPage(url, callback)
     {
-        //var xhr = new XMLHttpRequest();
-        //xhr.open("GET", url, true);
-        //xhr.responseType = "document";
-        //xhr.onload = function (e)
-        //{
-        //    if (xhr.readyState == 4 && xhr.status == 200)
-        //    {
-        //        callback(xhr, doc);
-        //    }
-        //    else callback(xhr, doc);
-        //};
-
-        //xhr.send();
-        //return;
-
         GM_xmlhttpRequest({
             url: url,
             method: "GET",
+            //overrideMimeType: 'text/plain; charset=x-user-defined',
+            //overrideMimeType: 'document',
+            //overrideMimeType: "responseXML",
+            //headers: { "User-agent": navigator.userAgent},
             headers: { "User-agent": navigator.userAgent, "Accept": "text/xml" },
             onload: function (xhr)
             {
                 if (xhr.status == 200)
                 {
-                    var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
-
-                    var dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
-                    doc = document.implementation.createDocument("", "", dt),
-                    documentElement = doc.createElement("html");
-                    documentElement.innerHTML = xhr.responseText;
-                    doc.appendChild(documentElement);
-
+                    //var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
+                    var doc = document.implementation.createHTMLDocument('MPIV');
+                    doc.documentElement.innerHTML = xhr.responseText;
                     callback(xhr, doc);
                 }
                 else callback(xhr, null);
