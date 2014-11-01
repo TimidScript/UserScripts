@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.12
+// @version                 1.0.13
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.12 (2014/11/01)
+ - Bug Fix: Copy button text changed from @grant to @require
 1.0.12 (2014/11/01)
  - Fixed it so it works on Opera and Chrome
  - It now displays "History Period Installs Chart" if the length is more than 0 as oppose to 3.
@@ -435,7 +437,7 @@ function SortScriptTable(e)
 
         if (window.sessionStorage.getItem("NewIssuesStamp") && Date.now() - window.sessionStorage.getItem("NewIssuesStamp") < 20000)
         {
-            var doc = document.implementation.createHTMLDocument('MPIV');
+            var doc = document.implementation.createHTMLDocument("OUJS");
             doc.documentElement.innerHTML = window.sessionStorage.getItem("NewIssuesDoc");
             NewIssues(doc);
         }
@@ -798,7 +800,7 @@ function SortScriptTable(e)
         copyBox.id = "copyBox";
         copyBox.innerHTML = "<span id='copyBtn'>Copy to Clipboard</span>";
 
-        copyBox.firstChild.setAttribute("meta", "// @grant\t\t" + require.value);
+        copyBox.firstChild.setAttribute("meta", "// @require\t\t" + require.value);
         copyBox.firstChild.onclick = function (e)
         {
             GM_setClipboard(this.getAttribute("meta"));
@@ -849,7 +851,7 @@ function SortScriptTable(e)
                 if (xhr.status == 200)
                 {
                     //var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
-                    var doc = document.implementation.createHTMLDocument('MPIV');
+                    var doc = document.implementation.createHTMLDocument("OUJS");
                     doc.documentElement.innerHTML = xhr.responseText;
                     callback(xhr, doc);
                 }
