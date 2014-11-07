@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.21
+// @version         1.0.22
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.22 (2014-11-07)
+ - Fix to handle changes in forum URL (localization added)
+ - Add more fonts colours to the forum to distinguish between different types of usernames/links.
 1.0.21 (2014-10-31)
  - Support for Opera now added. Dozen of browsers open causes confusion.
 1.0.20 (2014-10-31)
@@ -46,7 +49,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 1.0.19 (2014-10-23)
  - Removed sign-out button as it has been added with today's site update
 1.0.18 (2014-10-23)
- - Bug fix to accommodate new site changes to the URL syntax
+ - Bug fix to accommodate new site changes to the URL syntax (localization added)
 1.0.17 (2014-10-18)
  - Changed the framing of images to suite smaller images better
  - Credit link now points to my GF profile rather than OUJS
@@ -162,54 +165,43 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     ---------------------------------------------------------------------------*/
     function OrangifyPage()
     {
-        if (document.URL.indexOf("greasyfork.org/forum/") > 0)
+        //#region Adding CSS Styles E3E2E2
+        TSL.addStyle("CitrusGF_Main", "body {font-size: 14px;}"
+                      + "#main-header, #Head {background-color: orange !important;} #Head a, #site-nav a {color: yellow !important;}"
+                      + "#site-name {text-decoration: underline; color: white;}"
+                      + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
+                      + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; font-weight: 400; margin: 0 10px; line-height: 48px;}"
+                      + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 43px; font-weight: 400 !important;}"
+                      + "#nav-user-info {top: 3px;}"
+                      + "pre {background-color: #E9E8E5; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
+                      + "code {padding: 2px 4px; font-size: 90%; color: #C7254E; background-color: #F9F2F4; white-space: nowrap; border-radius: 4px; font-family: Menlo,Monaco,Consolas,'Courier New',monospace;}"
+                      );
+
+        TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
+
+        if (document.location.pathname.match(/\w\/forum\//i))
         {
             TSL.addStyle("CitrusGF_Forum", "body:not(.Settings) a:not(.Button) { color: #F19E06; }"
-                    + "body:not(.Settings) #Head {background-color: orange;}"
-                    + "body:not(.Settings) .SiteTitle, #Head .SiteTitle a {color: black; font-size: 50px;}"
-                    + ".SiteTitle img {height: 60px; border-radius: 20px; margin-top: -10px;}"
-                    + "#Head a {color: yellow;}"
-                    + ".SiteMenu {margin-left: 220px !important;}"
-                    + "#TS-Link {position: absolute; transform: rotate(-90deg); font-size:10px; top: 25px; color: yellow; font-weight: 700;}"
-                    + "#Head .SiteSearch { float: right; margin-top: -25px !important; }"
-                    + "code {padding: 1px 3px; border-radius: 3px; border: 1px solid; background-color: #F9EBD2; color: #EB5100; margin: 0;}"
+                + "body a.Username { color: #E17205 !important; }"
+                + ".QuoteAuthor a[href*='forum/profile/'] { color: #FB4507 !important;}"
+                + "a[href*='forum/profile/'] { color: #25C614 !important; font-weight: 600;}"
+                + "code {padding: 1px 3px; border-radius: 3px; border: 1px solid; background-color: #F9EBD2; color: #EB5100; margin: 0;}"
+                + "#title-subtext {top: 45px;}"
                 );
-            var img = document.querySelector(".SiteTitle img");
-            img.src = "https://i.imgur.com/RqikjW1.jpg";
-            var ts = document.createElement("a");
-            ts.href = "https://greasyfork.org/users/1455-timidscript";
-            ts.id = "TS-Link";
-            ts.textContent = "TimidScript";
-            document.body.appendChild(ts);
         }
-        else
-        {
-            //#region Adding CSS Styles E3E2E2
-            TSL.addStyle("CitrusGF_Main", "body {font-size: 14px;}"
-                          + "#main-header {background-color: orange;} #site-nav a {color: yellow !important;}"
-                          + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
-                          + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; margin: 0 10px;}"
-                          + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 55px;}"
-                          + "#nav-user-info {top: 3px;}"
-                          + "pre {background-color: #E9E8E5; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
-                          + "code {padding: 2px 4px; font-size: 90%; color: #C7254E; background-color: #F9F2F4; white-space: nowrap; border-radius: 4px; font-family: Menlo,Monaco,Consolas,'Courier New',monospace;}"
-                          );
+        //#endregion
 
-            TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
-            //#endregion
+        var sname = document.getElementById("site-name");
+        sname.innerHTML = "";
 
-            var sname = document.getElementById("site-name");
-            sname.innerHTML = "";
+        var link = document.createElement("a");
+        link.href = "/";
+        link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
+                        + '<span id="title-text">Greasy Fork&nbsp;</span>'
+                        + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
+        sname.appendChild(link);
 
-            var link = document.createElement("a");
-            link.href = "/";
-            link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
-                            + '<span id="title-text">Greasy Fork&nbsp;</span>'
-                            + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
-            sname.appendChild(link);
-
-            TSL.removeNode("script-list-option-groups");
-        }
+        TSL.removeNode("script-list-option-groups");
     }
 
     function disco(i)
