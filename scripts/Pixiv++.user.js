@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.64
+// @version             3.1.65
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -40,6 +40,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.65 (2014-11-09)
+ - Default page fetching method is now xmlHttpRequest (2)
+ - Bug fix in document.createHTMLDocument
 3.1.64 (2014-10-31)
  - Removes links when thumbnail is hidden
 3.1.63 (2014-10-04)
@@ -976,11 +979,8 @@ var Pager =
                         if (response.status == 200)
                         {
                             RemoveMessage(msg);
-                            dt = document.implementation.createDocumentType("html", "-//W3C//DTD HTML 4.01 Transitional//EN", "http://www.w3.org/TR/html4/loose.dtd"),
-                            doc = document.implementation.createDocument("", "", dt),
-                            documentElement = doc.createElement("html");
-                            documentElement.innerHTML = response.responseText;
-                            doc.appendChild(documentElement);
+                            var doc = document.implementation.createHTMLDocument("P++");
+                            doc.documentElement.innerHTML = response.responseText;
 
                             //Not supported by Opera
                             //var doc = new DOMParser().parseFromString(response.responseText, "text/html")
@@ -3019,7 +3019,7 @@ if (window.self === window.top)
         //else if (navigator.userAgent.match(/opera/i)) Settings.pageFetchingMethod = 3;
         //else Settings.pageFetchingMethod = GM_getValue("pageFetchingMethod", 3);
 
-        Settings.pageFetchingMethod = GM_getValue("NextPageMethod", 3);
+        Settings.pageFetchingMethod = GM_getValue("NextPageMethod", 2);
         Settings.loadSettings();
 
         if (PAGETYPE >= 0)
