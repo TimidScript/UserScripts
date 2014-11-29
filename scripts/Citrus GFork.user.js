@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.22
+// @version         1.0.23
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.23 (2014-11-29)
+ - Add styling for forum blockquote tag
+ - Changes to deal with new GF layout
 1.0.22 (2014-11-07)
  - Fix to handle changes in forum URL (localization added)
  - Add more fonts colours to the forum to distinguish between different types of usernames/links.
@@ -187,6 +190,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                 + "a[href*='forum/profile/'] { color: #25C614 !important; font-weight: 600;}"
                 + "code {padding: 1px 3px; border-radius: 3px; border: 1px solid; background-color: #F9EBD2; color: #EB5100; margin: 0;}"
                 + "#title-subtext {top: 45px;}"
+                + "blockquote {background-color: #FFFFA4; margin: 5px 0px 5px 30px; padding: 5px;}"
                 );
         }
         //#endregion
@@ -271,14 +275,14 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                 script.author = li.getAttribute("data-script-author-name");
                 script.authorID = li.getAttribute("data-script-author-id");
                 script.description = li.getElementsByClassName("description")[0].textContent.trim();
-                script.fans = li.getAttribute("data-script-fan-score");
+                script.rating = li.getAttribute("data-script-rating-score");
+                script.ratings = li.querySelector("dd.script-list-ratings").innerHTML;
                 script.installsDaily = li.getAttribute("data-script-daily-installs");
                 script.installsTotal = li.getAttribute("data-script-total-installs");
                 script.dateCreated = li.getAttribute("data-script-created-date");
                 script.dateUpdated = li.getAttribute("data-script-updated-date");
                 script.type = li.getAttribute("data-script-type");
                 script.deleted = deleted;
-
                 scripts.push(script);
             }
         }
@@ -294,7 +298,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var thead = scriptTable.createTHead();
         var row = thead.insertRow(-1);
 
-        var headers = ["Name", "Score", "Daily", "Total", "Created", "Updated"];
+        var headers = ["Name", "Ratings", "Daily", "Total", "Created", "Updated"];
         var tags = ["name", "fans", "", "total_installs", "created", "updated"];
 
         cell = row.insertCell(-1);
@@ -336,6 +340,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             + "#script-table thead td:hover {cursor:pointer; background-color: yellow;}"
             + "#script-table thead td:first-child:hover {cursor:default; background-color: orange;}"
             + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"
+            + "#script-table thead tr td:nth-child(3) {width: 90px; display: block;}"
             + "#script-table tbody td {background-color: #FFFBDB;}"
             + "#script-table tbody td:first-child{background-color: #F9D5A6;}"
             + "#script-table tbody td:nth-child(2){width: 99%; background-color: white;text-align:left;}"
@@ -443,7 +448,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             el.textContent = script.description;
             cell.appendChild(el);
 
-            row.insertCell(-1).textContent = script.fans;
+            //row.insertCell(-1).textContent = script.rating;
+            row.insertCell(-1).innerHTML = script.ratings;
             row.insertCell(-1).textContent = script.installsDaily;
             row.insertCell(-1).textContent = script.installsTotal;
             row.insertCell(-1).textContent = script.dateCreated;
