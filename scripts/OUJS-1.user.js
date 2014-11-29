@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.13
+// @version                 1.0.14
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,7 +38,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
-1.0.12 (2014/11/01)
+1.0.14 (2014/11/29)
+ - More visible highlight colour for one's own script discussions on the forum
+ - Bug fixes to deal with new OUJS layout
+ - Bug fix to total count in history chart
+1.0.13 (2014/11/01)
  - Bug Fix: Copy button text changed from @grant to @require
 1.0.12 (2014/11/01)
  - Fixed it so it works on Opera and Chrome
@@ -138,6 +142,7 @@ function DisplayStats(old, current)
         {
             row.tempStamp = tmpStamp;
             var diff = current[scriptID].installs - old[scriptID].installs;
+            if (isNaN(diff)) diff = 0;
             totalI += diff;
             if (diff < 0) totalIN += diff; //Can happen when you remove and then re-add the script
             if (diff) row.querySelector("td:nth-child(2) p").appendChild(TSL.createElementHTML("<sup class='dStat" + ((diff > 0) ? "P" : "N") + "'>" + diff + "</sup>"));
@@ -145,6 +150,7 @@ function DisplayStats(old, current)
             if (diff) arr.push ({name: row.querySelector("b").textContent,  installs : diff} );
 
             diff = current[scriptID].rating - old[scriptID].rating;
+            if (isNaN(diff)) diff = 0;
             totalR += diff;
             if (diff < 0) totalRN += diff;
             if (diff) row.querySelector("td:nth-child(3) p").appendChild(TSL.createElementHTML("<sup class='dStat" + ((diff > 0) ? "P" : "N") + "'>" + diff + "</sup>"));
@@ -404,10 +410,10 @@ function SortScriptTable(e)
 
     function displayNewIssues()
     {
-        if (pathname.match(/^\/forum/))
+        if (pathname.match(/^\/(issues|forum|all)/))
         {
-            TSL.addStyle("ForumHelper", "body .table .userpost:nth-child(2n) td {background-color: #FFD;}"
-                + "body .table .userpost:nth-child(2n+1) td {background-color: #FFF9DD;}"
+            TSL.addStyle("ForumHelper", "body .table .userpost:nth-child(2n) td {background-color: #FBC7BC;}"
+                + "body .table .userpost:nth-child(2n+1) td {background-color: #F5C5D5;}"
                 + "body .table .newposts td:nth-child(4) {color: red;}"
                 + "body .table .newposts td:nth-child(4) sup {color: green;}"
                 + "#newIssues {background-color: #E1F9E6; padding: 1px 20px; font-weight: 600; color: green;}"
@@ -441,7 +447,7 @@ function SortScriptTable(e)
             doc.documentElement.innerHTML = window.sessionStorage.getItem("NewIssuesDoc");
             NewIssues(doc);
         }
-        else xhrPage("https://openuserjs.org/forum", function (xhr, doc)
+        else xhrPage("https://openuserjs.org/issues", function (xhr, doc)
         {
             window.sessionStorage.setItem("NewIssuesDoc", xhr.responseText);
             window.sessionStorage.setItem("NewIssuesStamp", Date.now());
