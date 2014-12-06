@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.23
-// @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
+// @version         1.0.24
+// @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -37,6 +37,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.24 (2014-12-06)
+ - Bug Fix in script paging
+ - Bug Fix due to changes in url flags. Change sort flag from "fans" to "ratings"
+ - Add total rating and provided total score also
+ - Added counter to the number of users that favoured the script, in feedback tab
 1.0.23 (2014-11-29)
  - Add styling for forum blockquote tag
  - Changes to deal with new GF layout
@@ -113,6 +118,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
     var scripts = new Array();
 
+
+    var pathname = decodeURIComponent(document.location.pathname);
     if (document.URL.match(/greasyfork\.org\/\w+\/scripts\/\d+/)) //Script Page
     {
         TSL.addStyle("", "#script-content {background-color: #F9ECDB; margin: 0; padding-bottom: 5px;} #script-links > li:hover { background-color: yellow; } .current {background-color: #F9ECDB !important;}");
@@ -124,11 +131,23 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         notice.textContent = "Show your appreciation to the author by favouring the script and giving positive feedback";
         notice.setAttribute("style", "padding: 3px 10px; border-radius: 4px; background-color: yellow; text-align: center;");
 
-        var el = document.querySelector("#install-area");
-        if (el) el.appendChild(notice);
+        if (pathname.match(/\/scripts\/[^\/]+\/feedback/i))
+        {
+            el = document.querySelector("#script-content");
+            if (el) el.insertBefore(notice, el.firstElementChild);
 
-        el = document.querySelector("#script-content");
-        if (document.URL.match(/\/feedback$/) && el) el.insertBefore(notice, el.firstElementChild);
+            el = document.querySelector(".inline-list");
+
+            var count = el.querySelectorAll("li").length;
+
+            el = document.getElementById("feedback-favoriters");
+            el.innerHTML += " (<span style='color: #F00;'>" + count + "</span>)";
+        }
+        else
+        {
+            var el = document.querySelector("#install-area");
+            if (el) el.appendChild(notice);
+        }
     }
     else if (document.URL.match(/greasyfork\.org\/\w+\/scripts/)) //Script Listing
     {
@@ -299,7 +318,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         var row = thead.insertRow(-1);
 
         var headers = ["Name", "Ratings", "Daily", "Total", "Created", "Updated"];
-        var tags = ["name", "fans", "", "total_installs", "created", "updated"];
+        var tags = ["name", "ratings", "", "total_installs", "created", "updated"];
 
         cell = row.insertCell(-1);
         cell.textContent = "#";
@@ -340,7 +359,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             + "#script-table thead td:hover {cursor:pointer; background-color: yellow;}"
             + "#script-table thead td:first-child:hover {cursor:default; background-color: orange;}"
             + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"
-            + "#script-table thead tr td:nth-child(3) {width: 90px; display: block;}"
+            + "#script-table thead tr td:nth-child(3) {width: 120px; display: block;}"
+            //+ ".total-rating-count {display: inline-block; min-width: 1em; text-align: center; padding: 0px 0.25em; border-radius: 10px;}"
+            + ".total-rating-count, .good-rating-count, .ok-rating-count, .bad-rating-count {display: inline-block; min-width: 1em; padding: 1px 3px; border-radius: 3px;}"
+            + ".total-rating-count {background-color: rgba(0, 0, 255, 0.1);}"
             + "#script-table tbody td {background-color: #FFFBDB;}"
             + "#script-table tbody td:first-child{background-color: #F9D5A6;}"
             + "#script-table tbody td:nth-child(2){width: 99%; background-color: white;text-align:left;}"
@@ -447,9 +469,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             el = document.createElement("div");
             el.textContent = script.description;
             cell.appendChild(el);
-
-            //row.insertCell(-1).textContent = script.rating;
-            row.insertCell(-1).innerHTML = script.ratings;
+            cell = row.insertCell(-1);
+            cell.innerHTML = script.ratings + '<span class="total-rating-count">' + script.rating + '</span>';
+            cell.title = "Favoured plus Good Feedback, OK Feedback, Bad Feedback, Total Score (" + script.rating + ")";
             row.insertCell(-1).textContent = script.installsDaily;
             row.insertCell(-1).textContent = script.installsTotal;
             row.insertCell(-1).textContent = script.dateCreated;
@@ -506,17 +528,16 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         this.parentElement.setAttribute("busy", true);
         this.className = "loadingSort";
 
-        getScriptListing(this.getAttribute("tag"), true);
+        getScriptListing(this.getAttribute("tag"));
     }
 
 
 
     /*   Get script page
     ---------------------------------------------------------------------------*/
-    function getScriptListing(tag, firstPage)
+    function getScriptListing(tag)
     {
         var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
-
 
         if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/\w+\/scripts(\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
@@ -525,7 +546,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
         if (m)
             for (var i = 0; i < m.length; i++)
             {
-                if (!m[i].match(/^(per_page|sort)/) && !(firstPage && m[i].match(/^page/))) url += "&" + m[i];
+                //if (!m[i].match(/^(per_page|sort)/) && !(firstPage && m[i].match(/^page/))) url += "&" + m[i];
+                if (!m[i].match(/^(per_page|sort)/)) url += "&" + m[i];
             }
 
         if (tag) url += "&sort=" + tag;
