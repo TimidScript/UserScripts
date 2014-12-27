@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.24
+// @version         1.0.25
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.25 (2014-12-27)
+ - decembre's request to show favourite sets to script listing
+script-list-set
+ - Bug Fix to support URL local syntax
 1.0.24 (2014-12-06)
  - Bug Fix in script paging
  - Bug Fix due to changes in url flags. Change sort flag from "fans" to "ratings"
@@ -114,13 +118,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
 (function ()
 {
+    var scripts = new Array(),
+        pathname = decodeURIComponent(document.location.pathname);
+
     OrangifyPage();
-
-    var scripts = new Array();
-
-
-    var pathname = decodeURIComponent(document.location.pathname);
-    if (document.URL.match(/greasyfork\.org\/\w+\/scripts\/\d+/)) //Script Page
+    if (pathname.match(/\/[\w-]+\/scripts\/\d+/)) //Script Page
     {
         TSL.addStyle("", "#script-content {background-color: #F9ECDB; margin: 0; padding-bottom: 5px;} #script-links > li:hover { background-color: yellow; } .current {background-color: #F9ECDB !important;}");
         TSL.addStyle("", ".install-link {background-color: #F7A207;} .install-help-link {background-color: #F9C565 !important;}");
@@ -149,7 +151,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             if (el) el.appendChild(notice);
         }
     }
-    else if (document.URL.match(/greasyfork\.org\/\w+\/scripts/)) //Script Listing
+    else if (pathname.match(/\/[\w-]+\/scripts/)) //Script Listing
     {
         document.body.setAttribute("PageType", "ListingPage");
         getScripts();
@@ -159,7 +161,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
             createScriptTable();
             populateScriptTable();
 
-            document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
+            document.body.insertBefore(document.getElementById("script-table"), (document.getElementById("UserSets")) ? document.getElementById("UserSets").nextElementSibling : document.getElementById("main-header").nextElementSibling);
 
             selectSortOrder("ListingPage");
 
@@ -201,7 +203,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 
         TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
 
-        if (document.location.pathname.match(/\w\/forum\//i))
+        if (document.location.pathname.match(/[\w-]+\/forum\//i))
         {
             TSL.addStyle("CitrusGF_Forum", "body:not(.Settings) a:not(.Button) { color: #F19E06; }"
                 + "body a.Username { color: #E17205 !important; }"
@@ -223,6 +225,20 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                         + '<span id="title-text">Greasy Fork&nbsp;</span>'
                         + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
         sname.appendChild(link);
+
+
+        if (pathname.match(/\/[\w-]+\/scripts/)) //Script Listing
+        {
+            TSL.addStyle("", "#UserSets {display: block; background-color: yellow; margin: 2px 10px; border-radius: 5px; padding: 2px 10px;}"
+                + "#UserSets li {display: inline-block; padding: 2px 8px; background-color: white; border-radius: 2px;}"
+                + "#UserSets li + li {margin-left: 1px}"
+                );
+
+            var sets = document.querySelector("#script-list-set ul");
+            var mh = document.getElementById("main-header");
+            sets.id = "UserSets";
+            document.body.insertBefore(sets, document.getElementById("main-header").nextElementSibling);
+        }
 
         TSL.removeNode("script-list-option-groups");
     }
@@ -539,7 +555,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
     {
         var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
 
-        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/\w+\/scripts(\/search)?/)[0] + "?per_page=100";
+        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/[\w-]+\/scripts(\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
 
         var m = document.URL.match(/[^=\?&]+=[^&]+/g);
