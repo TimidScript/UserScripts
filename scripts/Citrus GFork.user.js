@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.25
+// @version         1.0.26
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.26 (2014-12-27)
+ - pre tag bug fix
 1.0.25 (2014-12-27)
  - decembre's request to show favourite sets to script listing
 script-list-set
@@ -197,8 +199,9 @@ script-list-set
                       + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; font-weight: 400; margin: 0 10px; line-height: 48px;}"
                       + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 43px; font-weight: 400 !important;}"
                       + "#nav-user-info {top: 3px;}"
-                      + "pre {background-color: #E9E8E5; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
+                      + "pre {background-color: #FFFF99; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
                       + "code {padding: 2px 4px; font-size: 90%; color: #C7254E; background-color: #F9F2F4; white-space: nowrap; border-radius: 4px; font-family: Menlo,Monaco,Consolas,'Courier New',monospace;}"
+                      + "pre > code {white-space: pre; background-color: transparent;}"
                       );
 
         TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
