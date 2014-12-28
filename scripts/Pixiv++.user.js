@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.65
+// @version             3.1.66
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -11,6 +11,7 @@
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=big&illust_id*
+// @require		        https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
 // @grant               GM_info
@@ -40,6 +41,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.66 (2014-12-27)
+ - Temporary bug fix due to changes in Illustration page layout
+ - Requires "TSL - Generic" Library
+ - Small changes in hotbox
 3.1.65 (2014-11-09)
  - Default page fetching method is now xmlHttpRequest (2)
  - Bug fix in document.createHTMLDocument
@@ -269,9 +274,19 @@ var IllustrationLinker =
 
            PaginatorHQ.displayResultInfo();
 
+
            if (IsIllustrationPage) ////Illustration Page that excludes Novels
            {
                var link = IllustrationLinker.thumbnailLinks.shift();
+               if (!link) //TODO: Temporary Fix for Pixiv Changes
+               {
+                   //Not a link but a div box
+                   link = document.querySelector(".works_display div");
+                   link.href = document.URL;
+                   var data = IllustrationData.createData(link);
+                   document.querySelector(".works_display").setAttribute("name", "pppThumb");
+                   document.querySelector(".works_display").setAttribute("illustration-id", data.illustID);
+               }
 
                //Use API to get missing information such as bookmark count
                IllustrationLinker.setMetadataM1(link, document);
@@ -397,8 +412,8 @@ var IllustrationLinker =
 
        /*
        -------------------------------------------------------------------------------------------
-        Method 1 for extracting metadata. It takes it from the illustration page. Method 2
-        uses Phone API.
+        Method 1 for extracting metadata. It takes it from the illustration page.
+        Method 2 uses Phone API.
        -------------------------------------------------------------------------------------------*/
        setMetadataM1: function (link, doc)
        {
@@ -427,8 +442,8 @@ var IllustrationLinker =
 
        /*
        -------------------------------------------------------------------------------------------
-        Method 2 for extracting metadata. Method 2 uses Phone API while method 1 uses Illustration
-        Page
+        Method 2 uses Phone API.
+        Method 1 for extracting metadata. It takes it from the illustration page.
        -------------------------------------------------------------------------------------------*/
        setMetadataM2: function (link, APIresponse)
        {
@@ -1817,26 +1832,20 @@ var PreviewHQ =
     {
         var metadata = IllustrationData.getIllustrationLinkData(link);
         //var metadata = new METADATA();
-        var hotbox = document.createElement("a");
-        link.appendChild(hotbox);
-        hotbox.name = "HotBox";
-
-        if (metadata.pageCount == 0)
-        {
-            hotbox.className = "pppHotBoxTi";
-            hotbox.href = metadata.illustURL;
-        }
-        else
-        {
-            hotbox.className += "pppHotBoxTm";
-            hotbox.href = "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID; //DirectLink to Manga Page Viewer
-        }
-
         if (IsIllustrationPage)
         {
+            TSL.addStyle("IllustOverwrite", "._work {margin-bottom: 0px !important;}");
+
+            var hotbox = document.createElement("div");
+            hotbox.name = "HotBox";
+
+            var el = document.querySelector("._work");
+            if (el) TSL.removeClass(el, "multiple");
+
+            el = document.querySelector(".works_display")
+            el.insertBefore(hotbox, el.lastElementChild);
+
             console.log("Illustration Page");
-            var br = document.createElement("br");
-            link.insertBefore(br, hotbox);
             hotbox.className = "pppHotBoxI";
             var img = link.getElementsByTagName("img")[0];
             hotbox.style.width = (img.offsetWidth - 4) + "px";
@@ -1850,9 +1859,26 @@ var PreviewHQ =
                 }
             }, 0);
         }
-        else PreviewHQ.adjustHotboxPosition(hotbox);
+        else
+        {
+            var hotbox = document.createElement("a");
+            hotbox.name = "HotBox";
 
-        hotbox.onmouseover = function ()
+            link.appendChild(hotbox);
+            if (metadata.pageCount == 0)
+            {
+                hotbox.className = "pppHotBoxTi";
+                hotbox.href = metadata.illustURL;
+            }
+            else
+            {
+                hotbox.className += "pppHotBoxTm";
+                hotbox.href = "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID; //DirectLink to Manga Page Viewer
+            }
+            PreviewHQ.adjustHotboxPosition(hotbox);
+        }
+
+        hotbox.onmouseenter = function ()
         {
             if (PreviewHQ.delay.iID != metadata.illustID)
             {
@@ -1860,7 +1886,7 @@ var PreviewHQ =
                 {
                     //PreviewHQ.delay = new object();
                     PreviewHQ.onMouseOverHBShowPreview(hotbox);
-                }, 350);
+                }, 250);
             }
 
             if (PreviewHQ.interval)
@@ -1914,7 +1940,7 @@ var PreviewHQ =
     onMouseOverHBShowPreview: function (hotbox)
     {
         //var hotbox = e.target;
-        var pThumb = hotbox.parentElement.parentElement;
+        var pThumb = (IsIllustrationPage) ? hotbox.parentElement : hotbox.parentElement.parentElement;
         var imageID = pThumb.getAttribute("illustration-id");
 
         var metadata = IllustrationData.getIllustrationData(imageID);
@@ -3048,3 +3074,22 @@ pixiv.context.ugokuIllustFullscreenData  = {"src":"http:\/\/i2.pixiv.net\/img-zi
 
 http://www.pixiv.net/bookmark_detail.php?illust_id=
 */
+
+
+/*
+function parseHTML(str)
+{
+    var doc;
+    try
+    {
+        // firefox and chrome 30+，Opera 12 will error
+        doc = new DOMParser().parseFromString(str, "text/html");
+    } catch (ex) { }
+
+    if (!doc)
+    {
+        doc = document.implementation.createHTMLDocument("");
+        doc.querySelector("html").innerHTML = str;
+    }
+    return doc;
+}*/
