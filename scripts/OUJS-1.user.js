@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.14
+// @version                 1.0.15
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.15 (2014/12/27)
+ - Bug fix in sorting installs and ratings in other users profiles
+ - "Discuss" now points to All discussion board.
+ - Change in forum interface to make it better with one click access to other boards.
+ - Changed the dual colour scheme on issues forum to one
 1.0.14 (2014/11/29)
  - More visible highlight colour for one's own script discussions on the forum
  - Bug fixes to deal with new OUJS layout
@@ -303,13 +308,29 @@ function SortScriptTable(e)
         }
         else if (idx == 1)
         {
-            val1 = parseInt(row1.getAttribute("installs"));
-            val2 = parseInt(row2.getAttribute("installs"));
+            if (row1.hasAttribute("installs"))
+            {
+                val1 = parseInt(row1.getAttribute("installs"));
+                val2 = parseInt(row2.getAttribute("installs"));
+            }
+            else
+            {
+                val1 = parseInt(row1.querySelector(selector).textContent);
+                val2 = parseInt(row2.querySelector(selector).textContent);
+            }
         }
         else if (idx == 2)
         {
-            val1 = parseInt(row1.getAttribute("rating"));
-            val2 = parseInt(row2.getAttribute("rating"));
+            if (row1.hasAttribute("rating"))
+            {
+                val1 = parseInt(row1.getAttribute("rating"));
+                val2 = parseInt(row2.getAttribute("rating"));
+            }
+            else
+            {
+                val1 = parseInt(row1.querySelector(selector).textContent);
+                val2 = parseInt(row2.querySelector(selector).textContent);
+            }
         }
         else if (idx == 3)
         {
@@ -376,6 +397,8 @@ function SortScriptTable(e)
         }
     }
 
+
+    document.querySelector("nav a[href='/forum']").href = "/all"; //Change the "Discuss" link to point directly to "All"
     var pathname = document.location.pathname;
     if (pathname.match(/^\/$|^\/group\/\w+/))
     {
@@ -404,6 +427,22 @@ function SortScriptTable(e)
     {
         scriptPageAmendRateArea();
     }
+    else if (pathname.match(/^\/(all|issues|garage|corner|discuss|announcements)$/))
+    {
+        TSL.addStyle("NinjaStyle",".breadcrumb {padding: 8px; }  .breadcrumb > li + li {margin-left: 2px;} .breadcrumb > li + li:before { content: ''; padding: 0px;} .breadcrumb > li {width: 120px; text-align:center; border: 1px solid #CFD2D2; border-radius: 5px; } ");
+        var el = document.querySelector(".breadcrumb");
+        //el.className = "fishMonkey";
+        el.innerHTML = '<li><a href="/all" title="Amalgamation of all discussion boards">All</a></li>' +
+                       '<li><a href="/issues" title="Issues raised on scripts">Script Issues</a></li>' +
+                       '<li><a href="/garage" title="Get help with script development">Developer Help</a></li>' +
+                       '<li><a href="/corner" title="Propose ideas and request user-scripts">Script Requests</a></li>' +
+                       '<li><a href="/discuss" title="Off-topic discussions">General</a></li>' +
+                       '<li><a href="/announcements" title="Official site announcements">Announcements</a></li>';
+
+
+        TSL.addStyle("WoloSD3",".selectedDiscuss {background-color: #CACAF5; border-color: #00F !important;} .selectedDiscuss a {color: #00F;}");
+        el.querySelector("li > a[href='" + pathname + "']").parentNode.className = "selectedDiscuss";
+    }
     else if ((pathname.match(/^\/libs\/[^\/]+\/[^\/]+$/i))) amendLibraryPage();
 
     displayNewIssues();
@@ -412,11 +451,10 @@ function SortScriptTable(e)
     {
         if (pathname.match(/^\/(issues|forum|all)/))
         {
-            TSL.addStyle("ForumHelper", "body .table .userpost:nth-child(2n) td {background-color: #FBC7BC;}"
-                + "body .table .userpost:nth-child(2n+1) td {background-color: #F5C5D5;}"
+            TSL.addStyle("ForumHelper", "body .table .scriptIssues td {background-color: #FDFAD6 !important;}"
                 + "body .table .newposts td:nth-child(4) {color: red;}"
                 + "body .table .newposts td:nth-child(4) sup {color: green;}"
-                + "#newIssues {background-color: #E1F9E6; padding: 1px 20px; font-weight: 600; color: green;}"
+                + "#newIssues {background-color: #D6FDF7; padding: 1px 20px; font-weight: 600; color: green;}"
                 + "#newIssues span {margin-right: 30px;}"
                 );
 
@@ -895,7 +933,7 @@ function SortScriptTable(e)
         for (var i = 0, post; i < posts.length, post = posts[i]; i++)
         {
             while (post.tagName != "TR") post = post.parentElement;
-            if (!doc) TSL.addClass(post, "userpost");
+            if (!doc) TSL.addClass(post, "scriptIssues");
             var replies = parseInt(post.querySelector("td:nth-child(4)").textContent);
             var postTitle = post.querySelector(".tr-link-a").textContent;
             var postID = getUID(postTitle, "p");
