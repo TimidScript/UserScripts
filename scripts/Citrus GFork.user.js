@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.26
+// @version         1.0.27
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.27 (2014-12-28)
+ - Bug fix to changes made in 1.0.25
+ - Changed the sets into a menu. CSS provided by decembre.
 1.0.26 (2014-12-27)
  - pre tag bug fix
 1.0.25 (2014-12-27)
@@ -163,7 +166,19 @@ script-list-set
             createScriptTable();
             populateScriptTable();
 
-            document.body.insertBefore(document.getElementById("script-table"), (document.getElementById("UserSets")) ? document.getElementById("UserSets").nextElementSibling : document.getElementById("main-header").nextElementSibling);
+
+            if (document.getElementById("script-table"))
+            {
+                document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
+
+                //document.querySelector("#script-table tr td:nth-child(2)").appendChild(document.getElementById("UserSets"));
+
+                TSL.addStyle("TheBlackLagoon", "#UserSets {position: fixed !important;display: inline-table !important;float: none !important;left: 30px !important;top: 68px!important;padding: 2px 5px;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility: hidden!important;opacity: 1!important;}"
+                           + "#UserSets:hover {visibility: visible!important;opacity: 1!important;}"
+                           + '#UserSets:before {content: "Sets ▼ " !important;position: fixed !important;display: inline-block !important;left: 40px !important;top: 62px!important;margin: 2px 10px;padding: 1px 10px!important;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility:visible!important;opacity: 1!important;}'
+                           + "#UserSets li {position: relative !important;display: inline !important;float: left!important;clear: both!important;min-width: 200px!important;margin-bottom: 2px!important;padding: 2px 8px;background-color: white;border-radius: 2px; text-align:left;}"
+                           );
+            }
 
             selectSortOrder("ListingPage");
 
@@ -230,9 +245,9 @@ script-list-set
         sname.appendChild(link);
 
 
-        if (pathname.match(/\/[\w-]+\/scripts/)) //Script Listing
+        if (pathname.match(/\/[\w-]+\/scripts/) && document.querySelector("#script-list-set ul")) //Script Listing
         {
-            TSL.addStyle("", "#UserSets {display: block; background-color: yellow; margin: 2px 10px; border-radius: 5px; padding: 2px 10px;}"
+            TSL.addStyle("TheBlackLagoon", "#UserSets {display: block; background-color: yellow; margin: 2px 10px; border-radius: 5px; padding: 2px 10px;}"
                 + "#UserSets li {display: inline-block; padding: 2px 8px; background-color: white; border-radius: 2px;}"
                 + "#UserSets li + li {margin-left: 1px}"
                 );
