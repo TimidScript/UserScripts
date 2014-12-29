@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.66
+// @version             3.1.67
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -41,6 +41,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.67 (2014-12-29)
+ - Illustration page bug fix
 3.1.66 (2014-12-27)
  - Temporary bug fix due to changes in Illustration page layout
  - Requires "TSL - Generic" Library
@@ -1844,7 +1846,7 @@ var PreviewHQ =
 
             el = document.querySelector(".works_display")
             el.insertBefore(hotbox, el.lastElementChild);
-
+            el.insertBefore(document.createElement("br"), hotbox);
             console.log("Illustration Page");
             hotbox.className = "pppHotBoxI";
             var img = link.getElementsByTagName("img")[0];
