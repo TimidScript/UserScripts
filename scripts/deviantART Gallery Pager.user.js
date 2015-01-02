@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.5
+// @version         1.0.6
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
@@ -37,6 +37,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.6 (2015-01-02)
+ - At least from Firefox version 34.0.5 window.scrollMaxY value no longer returns the max scrollable document
+ value. Replaced it with document.documentElement.scrollHeight.
+//From version 34.# of FF scrollMaxY no longer returns
 1.0.5 (2014-11-01)
  - Bug fix: Check if comments are present in the gallery
  - Bug fix: Loading icon gets removed now when you change page
@@ -51,15 +55,15 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 **************************************************************************************************/
 
 /************** Variable you can set **************/
-var scrollOffset = 1000; //Autopaging offset for scroll. The higher it is the sooner it loads.
+var scrollOffset = 750; //Autopaging offset for scroll. The higher it is the sooner it loads.
 var addPagination = true; //Adds page divider
 
 
 console.info("DeviantScript Gallery Pager");
 var gmi = document.getElementById("gmi-ResourceStream");
 var commentHeight = (document.getElementById("comments")) ? document.getElementById("comments").offsetHeight : 0;
-var intervalID = 0;
 
+var intervalID = 0;
 var nextPageURL = null;
 var galleryPager = document.getElementById("gallery_pager");
 if (GetNextPageURL(document)) intervalID = setInterval(CheckScrollPosition, 200);
@@ -68,8 +72,10 @@ var loading = "data:image/gif;base64,R0lGODlhZABkAPQAAP///+AfH/Cbm+x6euZOTudTU+p
 
 function CheckScrollPosition()
 {
+    //console.log(document.scrollMaxY, document.documentElement.scrollHeight);
     //Some browsers do no support window.scrollMaxY
     window.scrollMaxY = window.scrollMaxY || document.documentElement.scrollHeight;
+    window.scrollMaxY = document.documentElement.scrollHeight;
     if ((window.scrollMaxY - window.scrollY) < (commentHeight + scrollOffset))
     {
         GetNextPage();
