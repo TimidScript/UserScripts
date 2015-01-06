@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.15
+// @version                 1.0.16
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.16 (2015-01-04)
+ - Handles Lazy loading of icons in profile page
+ - Created icon for libraries
 1.0.15 (2014/12/27)
  - Bug fix in sorting installs and ratings in other users profiles
  - "Discuss" now points to All discussion board.
@@ -231,7 +234,7 @@ function DisplayStats(old, current)
 
 function addScriptListingNumbers()
 {
-    TSL.addStyle("ScriptNumbers", ".script_number {display: inline-block; background-color: #2C3E50; color: white; padding: 1px 2px 0 2px; margin: 0; border-radius: 3px; font-size: 13px; line-height: 13px; font-family: 'Courier New', Courier, monospace}"
+    TSL.addStyle("ScriptNumbers", ".script_number {display: inline-block; margin: 0 1px 0 0 !important; background-color: #2C3E50; color: white; padding: 1px 2px 0 2px; margin: 0; border-radius: 3px; font-size: 13px; line-height: 13px; font-family: 'Courier New', Courier, monospace;}"
         + ".col-sm-8 .table .tr-link td {vertical-align: middle !important; }"
         + ".col-sm-8 .table .tr-link td .progress { margin-bottom: 0px; }"
         //+ ".col-sm-8 .table .tr-link td:nth-child(2) p {margin-bottom: 14px;}"
@@ -345,7 +348,6 @@ function SortScriptTable(e)
     }
 
     addScriptListingNumbers();
-
     return false;
 }
 
@@ -597,6 +599,7 @@ function SortScriptTable(e)
             + "tr._library {background-color: #F7FDF7;}"
             + "tr.header_row._library {background-color: #ACF9AC; color: green;}"
             );
+
         var tbody = document.querySelector(".table tbody");
         //var tbody = document.createElement("tbody");
         var rows = tbody.querySelectorAll(".tr-link");
@@ -651,6 +654,29 @@ function SortScriptTable(e)
         }
 
         appendHistory();
+
+        //Add library icons
+        TSL.addStyle("IconReplacer",".script-icon, .script-icon img {display:inline-block; height: 16px; width: 16px;}")
+        var els = document.querySelectorAll("._library .script-icon.hidden-xs i");
+        for(var i = 0, el, img; i < els.length; i++)
+        {
+            el = els[i];
+            img = document.createElement("img");
+            img.src = "https://i.imgur.com/pFNqMgL.png"
+            el.parentElement.appendChild(img);
+            TSL.removeNode(el);
+        }
+
+        //Load missing icons. Occurs in profile page
+        els = document.querySelectorAll("i.fa.fa-fw.fa-file-code-o");
+        for(var i = 0, el, img; i < els.length; i++)
+        {
+            el = els[i];
+            img = document.createElement("img");
+            img.src = el.parentElement.getAttribute("data-icon-src");
+            el.parentElement.appendChild(img);
+            TSL.removeNode(el);
+        }
 
         var idx = GM_getValue("SortHeader", 3);
         var SortAscending =  !GM_getValue("SortDescending", true);
