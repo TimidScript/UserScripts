@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.6
+// @version         1.0.7
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
@@ -37,6 +37,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.7 (2015-01-09)
+ - Big fix due favourites paging due to changes in divantArt site
+ - Take into account favourites folders when working out scrollOffsetExtra.
 1.0.6 (2015-01-02)
  - At least from Firefox version 34.0.5 window.scrollMaxY value no longer returns the max scrollable document
  value. Replaced it with document.documentElement.scrollHeight.
@@ -55,13 +58,18 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 **************************************************************************************************/
 
 /************** Variable you can set **************/
-var scrollOffset = 750; //Autopaging offset for scroll. The higher it is the sooner it loads.
-var addPagination = true; //Adds page divider
-
-
 console.info("DeviantScript Gallery Pager");
-var gmi = document.getElementById("gmi-ResourceStream");
-var commentHeight = (document.getElementById("comments")) ? document.getElementById("comments").offsetHeight : 0;
+var addPagination = true; //Adds page divider
+var scrollOffset = 750; //Autopaging offset for scroll. The higher it is the sooner it loads.
+var scrollOffsetExtra = (document.getElementById("comments")) ? document.getElementById("comments").offsetHeight : 0;
+var gmi = document.querySelector("#gmi-ResourceStream, #gmi-EditableResourceStream");
+
+//Favourites folders sometimes section sometimes provides a higher scrollable offset
+if (document.getElementById("gmi-EditableFolderStream"))
+{
+    if (document.getElementById("gmi-EditableFolderStream").offsetHeight - gmi.offsetHeight > scrollOffsetExtra)
+        scrollOffsetExtra = document.getElementById("gmi-EditableFolderStream").offsetHeight - gmi.offsetHeight;
+}
 
 var intervalID = 0;
 var nextPageURL = null;
@@ -76,7 +84,7 @@ function CheckScrollPosition()
     //Some browsers do no support window.scrollMaxY
     window.scrollMaxY = window.scrollMaxY || document.documentElement.scrollHeight;
     window.scrollMaxY = document.documentElement.scrollHeight;
-    if ((window.scrollMaxY - window.scrollY) < (commentHeight + scrollOffset))
+    if ((window.scrollMaxY - window.scrollY) < (scrollOffsetExtra + scrollOffset))
     {
         GetNextPage();
     }
@@ -134,7 +142,7 @@ function GetNextPage()
                 }
                 galleryPager.innerHTML = xdoc.getElementById("gallery_pager").innerHTML;
 
-                var gmi2 = xdoc.getElementById("gmi-ResourceStream");
+                var gmi2 = xdoc.querySelector("#gmi-ResourceStream, #gmi-EditableResourceStream");
                 try
                 {
                     while (gmi2.childNodes.length > 0)
