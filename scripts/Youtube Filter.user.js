@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.0.25
+// @version         1.0.26
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @icon            https://i.imgur.com/E2wQ6Xm.gif
 // @author          TimidScript
@@ -39,6 +39,8 @@ Future Updates:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.26 (2015-01-04)
+ - Bug fix to front page due to changes in youtube
 1.0.25 (2014-12-11)
  - Delay to handle delayed video recommendations
 1.0.24 (2014-08-29)
@@ -179,6 +181,7 @@ function IsFilteredUser(user)
 function BlockUser(e)
 {
     e.stopImmediatePropagation();
+    console.log(this);
     var user = this.title;
 
     if (!IsFilteredUser(user))
@@ -330,7 +333,7 @@ function HideUnwantedUsers()
         for(var i = 0; i < items.length; i++)
         {
             var thumbdata = items[i];
-            var user =  thumbdata.getElementsByClassName("yt-user-name")[0].textContent;
+            var user =  thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
 
             var filtered = IsFilteredUser(user)
             if (filtered)
@@ -342,9 +345,6 @@ function HideUnwantedUsers()
 
             if (!ShowAll && filtered)
             {
-                var h = thumbdata.clientHeight;
-                var w = thumbdata.clientHeight;
-
                 var notice = document.createElement("div");
                 notice.className = "banNotice";
                 notice.style.left = thumbdata.offsetLeft + "px";
@@ -622,12 +622,12 @@ function MainFunc()
         console.info("YTF: Main Page");
         AddOptions();
 
-        var items = document.getElementsByClassName("channels-content-item");
+
         var items = document.getElementsByClassName("yt-lockup");
         for(var i = 0; i < items.length; i++)
         {
             var thumbdata = items[i];
-            var user = thumbdata.getElementsByClassName("yt-user-name")[0].textContent;
+            var user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
             var filters = GetFilters();
 
             var block = document.createElement("span");
