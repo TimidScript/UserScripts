@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.24
+// @version         3.0.25
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -55,6 +55,8 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.25 (2014-01-16)
+ - Temporary fix for FireFox 35 security increase until GreaseMonkey update.  https://github.com/greasemonkey/greasemonkey/issues/2033
 3.0.24 (2014-11-29)
  - Slight changes to html styling
 3.0.23 (2014-10-18)
@@ -1030,7 +1032,8 @@ function GetOrderedRules(runFirstEnabled)
     ruleOrder += "," + GM_getValue("RuleOrderO", "");
 
 
-    var names = GM_listValues();
+    //var names = GM_listValues();
+    var names = cloneInto(GM_listValues(), window);
     //log.log(names);
     for (var i = 0; i < names.length; i++)
     {
