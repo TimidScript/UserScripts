@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.16
+// @version                 1.0.17
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.17 (2015-01-17)
+ - Bug fixes to handle new changes in OUJS layout
+ - Issue count now decrements
+ - Provided a fix for the trash values created due to FireFox 35 breaking of GM_listValues API.
 1.0.16 (2015-01-04)
  - Handles Lazy loading of icons in profile page
  - Created icon for libraries
@@ -89,7 +93,19 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Limits size of image in frame on forum and icon size in library page
 ********************************************************************************************/
 
+
+/*=================================================================================================*/
+//      [VYCS] VARIABLE YOU CAN SET
+//----------------------------------------
+// GM_setValue("HistoryMIN",5); //Stats history, minimum number of consective days stored. Default 5.
+// GM_setValue("HistoryMAX",5); //Stats history, minimum number of mins stored. Default 15
+/*=================================================================================================*/
+
 if (window !== window.top) return;
+var HistoryMIN = parseInt(GM_getValue("HistoryMIN", 5));  //Stats history, minimum number of mins stored
+var HistoryMAX = parseInt(GM_getValue("HistoryMAX", 15)); //Stats histry, maximum number of dates stored
+
+
 console.info("OUJS-1 is Running");
 var DAY = 86400000;
 
@@ -117,6 +133,8 @@ function RemoveNotice(e)
     var meta = JSON.parse(GM_getValue("USER-P:" + this.getAttribute("username")));
     meta[this.postID] = this.postdata;
     GM_setValue("USER-P:" + this.getAttribute("username"), JSON.stringify(meta));
+
+    document.getElementById("newIssues").textContent = (parseInt(document.getElementById("newIssues").textContent) - 1);
 
     TSL.removeNode(this.parentElement);
     if (!document.querySelector("#IssuesListing li")) TSL.removeNode("IssuesListing");
@@ -352,6 +370,95 @@ function SortScriptTable(e)
 }
 
 
+//Fix broken saved data caused by FireFox 35 security issues
+(function()
+{
+    if (GM_getValue("HasBeenFixed", false)) return;
+    alert("Due to changes in FireFox 35 GreaseMonkey GM_listValues got broken and with it, it has ruined OUJS-1 save. This will attempt to fix it. If it fails then remove, restart firefox and install again");
+
+    var scriptIDsPresent = {};
+
+    var usernames = getSavedUsernames();
+    for(var i = 0; i < usernames.length; i++)
+    {
+        UpdateFireFox35BrokenData(usernames[i]);
+    }
+
+
+    var id, ids = cloneInto(GM_listValues(), window);
+    for (var i = ids.length - 1; i >= 0, id = ids[i]; i--)
+    {
+        if (id.match(/s\d\d\d\d/i) && !scriptIDsPresent[id])
+        {
+            GM_deleteValue(id);
+        }
+    }
+    GM_setValue("HasBeenFixed", true);
+
+
+    function UpdateFireFox35BrokenData(username)
+    {
+        var name,
+        remove = false,
+        updated = false,
+        scriptNames = {},
+        meta = JSON.parse(GM_getValue("USER-S:" + username));
+
+        for(var i = 0; i < meta.history.length; i++)
+        {
+            remove = false;
+            for (var key in meta.history[i])
+            {
+                if (key.match(/s\d\d\d\d/i))
+                {
+                    name = GM_getValue(key);
+
+                    if (!scriptNames[name])
+                    {
+                        //console.log(name, key, scriptNames[name]);
+                        scriptNames[name] = key;
+                        scriptIDsPresent[key] = name;
+                    }
+                    else if (scriptNames[name] != key) //Value introduced after FF35 update and is invalid
+                    {
+                        updated = true;
+                        remove = true;
+                    }
+                }
+            }
+
+            if (remove)
+            {
+                meta.history.splice(i,1);
+                i = 0;
+            }
+        }
+
+        if (updated)
+        {
+            meta.current = meta.history[meta.history.length-1];
+            console.log(meta.current);
+            GM_setValue("USER-S:" + username, JSON.stringify(meta));
+        }
+    }
+
+    function getSavedUsernames()
+    {
+        var arr = new Array();
+        var names = cloneInto(GM_listValues(), window);
+
+        for (var i = 0; i < names.length; i++)
+        {
+            if (names[i].match(/^USER-S:/))
+            {
+                arr.push(names[i].substr(7));
+            }
+        }
+
+        return arr;
+    }
+})();
+
 (function ()
 {
     if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="/users/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
@@ -399,11 +506,12 @@ function SortScriptTable(e)
         }
     }
 
-
     document.querySelector("nav a[href='/forum']").href = "/all"; //Change the "Discuss" link to point directly to "All"
     var pathname = document.location.pathname;
+
     if (pathname.match(/^\/$|^\/group\/\w+/))
     {
+        addLibraryIcons();
         addScriptListingNumbers();
     }
     else if (pathname.match(/^\/users\/\w+$/i)) //User profile page
@@ -453,7 +561,7 @@ function SortScriptTable(e)
     {
         if (pathname.match(/^\/(issues|forum|all)/))
         {
-            TSL.addStyle("ForumHelper", "body .table .scriptIssues td {background-color: #FDFAD6 !important;}"
+            TSL.addStyle("ForumHelper", "body .table .scriptIssues td {background-color: #CAF7CA !important;}"
                 + "body .table .newposts td:nth-child(4) {color: red;}"
                 + "body .table .newposts td:nth-child(4) sup {color: green;}"
                 + "#newIssues {background-color: #D6FDF7; padding: 1px 20px; font-weight: 600; color: green;}"
@@ -532,7 +640,7 @@ function SortScriptTable(e)
 
             if (count > 0)
             {
-                var discuss = document.querySelector('.nav a[title="Discuss"]');
+                var discuss = document.querySelector('.nav a[href="/all"]');
                 discuss.innerHTML += " (";
                 var notice = document.createElement("span");
                 notice.setAttribute("style", "color: lime; display:inline-block; font-weight: 600;");
@@ -654,18 +762,7 @@ function SortScriptTable(e)
         }
 
         appendHistory();
-
-        //Add library icons
-        TSL.addStyle("IconReplacer",".script-icon, .script-icon img {display:inline-block; height: 16px; width: 16px;}")
-        var els = document.querySelectorAll("._library .script-icon.hidden-xs i");
-        for(var i = 0, el, img; i < els.length; i++)
-        {
-            el = els[i];
-            img = document.createElement("img");
-            img.src = "https://i.imgur.com/pFNqMgL.png"
-            el.parentElement.appendChild(img);
-            TSL.removeNode(el);
-        }
+        addLibraryIcons();
 
         //Load missing icons. Occurs in profile page
         els = document.querySelectorAll("i.fa.fa-fw.fa-file-code-o");
@@ -685,10 +782,26 @@ function SortScriptTable(e)
         //addScriptListingNumbers();
     }
 
+    function addLibraryIcons()
+    {
+        TSL.addStyle("IconReplacer",".script-icon, .script-icon img {display:inline-block; height: 16px; width: 16px;}")
+        var els = document.querySelectorAll("._library .script-icon.hidden-xs i");
+        if (document.location.search.match(/^\?library=/i)) els = document.querySelectorAll(".script-icon.hidden-xs i");
+        for(var i = 0, el, img; i < els.length; i++)
+        {
+            el = els[i];
+            img = document.createElement("img");
+            img.src = "https://i.imgur.com/pFNqMgL.png"
+            el.parentElement.appendChild(img);
+            TSL.removeNode(el);
+        }
+    }
+
     function getUID(name, prefix)
     {
         if (!prefix) prefix = "s";
         var id, ids = GM_listValues();
+        ids = cloneInto(GM_listValues(), window);
 
         for (var i = 0; i < ids.length, id = ids[i]; i++)
         {
@@ -710,8 +823,8 @@ function SortScriptTable(e)
     {
         var username = document.querySelector(".user-name").textContent;
         var meta = GM_getValue("USER-S:" + username);
-
         if (!meta) return;
+
         TSL.addStyle("HistoricalColors", ".dStatN {color: red;} .dStatP {color: green;} .dStatNew {color: blue;} .dStatP:before, .dStatNew:before { content: '+';}");
 
         meta = JSON.parse(meta);
@@ -742,38 +855,37 @@ function SortScriptTable(e)
         DisplayStats(oldCurrent, meta.current);
 
         //alert("Bring Up Console");
-        var MIN = 5, MAX = 15; //First MIN issues are stored
-        for (var i = meta.history.length - 1, j = MAX - MIN; i >= 0; i--, j--)
-        {
-            console.warn(i, timePassed(meta.history[i].timestamp));
-        }
+        //for (var i = meta.history.length - 1, j = HistoryMAX - HistoryMIN; i >= 0; i--, j--)
+        //{
+        //    console.warn(i, timePassed(meta.history[i].timestamp));
+        //}
 
-        if (meta.history.length > MAX) //History Cleanup greater than
+        if (meta.history.length > HistoryMAX) //History Cleanup greater than
         {
-            for (var i = 0, j = MAX - MIN; i < MAX - MIN; i++, j--)
+            for (var i = 0, j = HistoryMAX - HistoryMIN; i < HistoryMAX - HistoryMIN; i++, j--)
             {
                 if (timestamp - meta.history[i].timestamp > DAY * 7 * j)
                 {
-                    console.log("GREATER", i, timePassed(meta.history[i].timestamp));
+                    //console.log("GREATER", i, timePassed(meta.history[i].timestamp));
                     meta.history.splice(i, 1);
                     break;
                 }
             }
         }
-        if (meta.history.length > MAX) //History Cleanup less than
+        if (meta.history.length > HistoryMAX) //History Cleanup less than
         {
-            for (var i = MIN, j = 1; i < MAX; i++, j++)
+            for (var i = HistoryMIN, j = 1; i < HistoryMAX; i++, j++)
             {
                 if (timestamp - meta.history[i].timestamp < DAY * 7 * j)
                 {
-                    console.log("LESSER", i, timePassed(meta.history[i].timestamp));
+                    //console.log("LESSER", i, timePassed(meta.history[i].timestamp));
                     meta.history.splice(i, 1);
                     break;
                 }
             }
         }
-        if (meta.history.length > MAX) console.log("mm", timePassed(meta.history[i].timestamp));
-        if (meta.history.length > MAX) meta.history.splice(MIN-1,1); //Last Min Date
+        //if (meta.history.length > HistoryMAX) console.log("mm", timePassed(meta.history[i].timestamp));
+        if (meta.history.length > HistoryMAX) meta.history.splice(HistoryMIN-1,1); //Last Min Date
 
         GM_setValue("USER-S:" + username, JSON.stringify(meta));
 
@@ -933,7 +1045,8 @@ function SortScriptTable(e)
     function getSavedUsernames()
     {
         var arr = new Array();
-        var names = GM_listValues();
+        //var names = GM_listValues();
+        var names = cloneInto(GM_listValues(), window);
 
         for (var i = 0; i < names.length; i++)
         {
