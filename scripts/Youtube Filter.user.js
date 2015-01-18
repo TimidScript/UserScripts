@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.0.26
+// @version         1.1.27
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @icon            https://i.imgur.com/E2wQ6Xm.gif
 // @author          TimidScript
@@ -11,6 +11,7 @@
 // @include         *//www.youtube.*
 // @exclude         *//www.youtube.*/embed/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
+// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Filter
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
@@ -34,11 +35,18 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 http://userscripts-mirror.org/users/TimidScript
 
 
-Future Updates:
- - Need to update code to use TimidScript Library.
+Known Issues:
+ - Support for paged front page is not implemented as it seems to cause infinite loop
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.27 (2015-01-18)
+ - Bug fixes to changes in youtube layout (front page and user channel)
+ - Bug fix filter button added to the side of video panel
+ - Added script setting to change the icon size. Search for "VYCS" to get to the Section
+ - Changed the scroll functionality
+ - Generic Library added
+ - Show all video setting is now stored
 1.0.26 (2015-01-04)
  - Bug fix to front page due to changes in youtube
 1.0.25 (2014-12-11)
@@ -106,9 +114,19 @@ Future Updates:
 ********************************************************************************************/
 
 
+/************** [VYCS] Variable you can set **************/
+//CSS Style for video page. It uses smaller text and icon for the block button and image link
+//GM_setValue("PageType2",".blockBox .blockBTN32 {width: 24px; height: 24px;} .blockBox a {font-size: 10px;}"
+//                + "body #watch7-sidebar-contents {padding: 15px 0px 15px 5px !important;}"
+//                + "#watch7-sidebar-contents .video-list-item.related-list-item {padding-right: 24px;}");
+
+//CSS Style that limites the size of the search list width, if increased by "Youtube Center"
+//GM_setValue("PageType1",".ytcenter-site-search .yt-card.clearfix{width: 700px !important;}");
+/**************************************************/
+
 if (window.self !== window.top) return;
 console.info("Youtube Filter");
-var ShowAll = false;
+var intervalID;
 var AutoPaging = GM_getValue("AutoPaging",true);
 //0 Main Page; 1 Search Result; 2 Video Page; 3 Channel Video Page
 var PageTYPE = null; //Video Page
@@ -134,15 +152,8 @@ function GetPageType()
     PageTYPE  = null;
     if (document.URL.match(/\.youtube\.[^\/]+\/?$/i)) PageTYPE  = 0; //Main Page
     else if (document.URL.match(/youtube\.[^\/]+\/result/gi)) PageTYPE  = 1; //Search Result
-    else if (document.URL.match(/youtube\.[^\/]+\/watch/gi)) PageTYPE  = 2; //Video
-    else if (document.URL.match(/youtube\.[^\/]+\/(user|channel)\/.+\/videos/gi)) PageTYPE  = 3; //Video
-}
-
-
-function removeNode(node)
-{
-    if (typeof node == "string") node = document.getElementById(node);
-    if (node && node.parentElement) node.parentElement.removeChild(node);
+    else if (document.URL.match(/youtube\.[^\/]+\/watch/gi)) PageTYPE  = 2; //Video Page
+    else if (document.URL.match(/youtube\.[^\/]+\/(user|channel)\/.+\/videos/gi)) PageTYPE  = 3; //User Channel
 }
 
 function GetUserData(link)
@@ -152,19 +163,6 @@ function GetUserData(link)
     user.url = link.href.replace(/.+youtube\.[a-z]+/, "");
 
     return user;
-}
-
-function AddStyle(id, script)
-{
-    var style = document.createElement("style");
-    style.type = "text/css";
-    if (id)
-    {
-        style.id = id;
-        removeNode(id);
-    }
-    style.innerHTML = script;
-    document.head.appendChild(style);
 }
 
 function IsFilteredUser(user)
@@ -230,12 +228,21 @@ function AddBlockButton(li)
     else btn.title = li.getElementsByClassName("g-hovercard")[1].textContent;
 
     var span = document.createElement("span");
-    span.setAttribute("style","float:right;");
-    li.firstElementChild.insertBefore(span, li.firstElementChild.firstElementChild);
-    //li.insertBefore(span, li.firstElementChild);
+
+    if (PageTYPE == 2)
+    {
+        span.setAttribute("style","position:absolute; right:0px;");
+        li.insertBefore(span, li.firstElementChild);
+    }
+    else
+    {
+        span.setAttribute("style","float:right;");
+        li.firstElementChild.insertBefore(span, li.firstElementChild.firstElementChild);
+    }
 
     btn.onclick = BlockUser;
     span.appendChild(btn);
+    span.className = "blockBox";
 
     var href = li.getElementsByTagName("a")[0].href;
     if (href.indexOf("/watch?v=") > 0)
@@ -265,7 +272,7 @@ function ScrollCheck()
 
     if (loc < document.documentElement.scrollTop)
     {
-        window.onscroll = null;
+        clearInterval(intervalID);
         var url = NextPageURL();
 
         var xhr = new XMLHttpRequest();
@@ -305,7 +312,7 @@ function ScrollCheck()
             }
 
             HideUnwantedUsers();
-            EnablePager();
+            setTimeout(EnablePager, 1500);
         };
         xhr.send();
     }
@@ -313,8 +320,8 @@ function ScrollCheck()
 
 function EnablePager()
 {
-    if (AutoPaging && NextPageURL()) window.onscroll = ScrollCheck;
-    else window.onscroll = null;
+    if (AutoPaging && NextPageURL()) intervalID = setInterval(ScrollCheck, 500);
+    else clearInterval(intervalID);
 }
 
 function HideUnwantedUsers()
@@ -324,28 +331,22 @@ function HideUnwantedUsers()
 
     if (PageTYPE == 0) //Main Page
     {
-        var bans = document.getElementsByClassName("banNotice");
-        while(bans.length > 0) removeNode(bans[0]);
-
         //var items = document.getElementsByClassName("channels-content-item");
         var items = document.getElementsByClassName("yt-lockup-video");
 
         for(var i = 0; i < items.length; i++)
         {
-            var thumbdata = items[i];
-            var user =  thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
+            var thumbdata = items[i],
+            user =  thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent,
+            filtered = IsFilteredUser(user),
+            notice = thumbdata.parentNode.querySelector(".banNotice");
 
-            var filtered = IsFilteredUser(user)
-            if (filtered)
+            if (filtered && !notice)
             {
                 FilteredUsers.push(user);
-                thumbdata.style.backgroundColor = "#FBE8E5";
-            }
-            else thumbdata.style.backgroundColor  = null;
+                TSL.addClass(thumbdata,"blockedVideoBG");
 
-            if (!ShowAll && filtered)
-            {
-                var notice = document.createElement("div");
+                notice = document.createElement("div");
                 notice.className = "banNotice";
                 notice.style.left = thumbdata.offsetLeft + "px";
 
@@ -359,6 +360,11 @@ function HideUnwantedUsers()
                 txt.style.width = thumbdata.clientWidth + "px";
                 notice.appendChild(txt);
                 thumbdata.parentNode.insertBefore(notice, thumbdata);
+            }
+            else if (!filtered && notice)
+            {
+                TSL.removeClass(thumbdata,"blockedVideoBG");
+                TSL.removeNode(notice);
             }
         }
     }
@@ -382,19 +388,19 @@ function HideUnwantedUsers()
                 if (filtered)
                 {
                     FilteredUsers.push(user);
-                    vid.style.backgroundColor = "#FBE8E5";
+                    TSL.addClass(vid,"blockedVideo");
                 }
-                else vid.style.backgroundColor = null;
-
-                if (!ShowAll && filtered) vid.style.display = "none";
-                else vid.style.display = null;
+                else
+                {
+                    TSL.removeClass(vid,"blockedVideo");
+                }
             }
             catch (e) { console.warn(e); }
         }
     }
 
-    if (FilteredUsers.length > 0) AddStyle("OptSelect","#OptionsButton, #OptionsButton2{background-color: #FBE8E5;} #OptionsButton:hover{background-color: #FBD5CF}");
-    else removeNode("OptSelect");
+    if (FilteredUsers.length > 0) TSL.addStyle("OptSelect","#OptionsButton, #OptionsButton2{background-color: #FBE8E5;} #OptionsButton:hover{background-color: #FBD5CF}");
+    else TSL.removeNode("OptSelect");
 }
 
 function GetFilters()
@@ -405,10 +411,25 @@ function GetFilters()
     return JSON.parse(filters);
 }
 
+
+function ShowAllVideos()
+{
+    if (Boolean(GM_getValue("ShowAllVideos",false)))
+    {
+        TSL.removeNode("BlockVideos");
+        TSL.addStyle("ShowAllVideos",".banNotice {display: none;}");
+    }
+    else
+    {
+        TSL.addStyle("BlockVideos",".blockedVideo {display:none;}");
+        TSL.removeNode("ShowAllVideos");
+    }
+}
+
 function CreateFilterWindow()
 {
     var fwin = document.getElementById("FilterWindow");
-    if (fwin) removeNode(fwin);
+    if (fwin) TSL.removeNode(fwin);
 
     var userFilters = GetFilters();
 
@@ -444,7 +465,7 @@ function CreateFilterWindow()
                 }
             }
 
-            removeNode(this.parentElement.parentElement);
+            TSL.removeNode(this.parentElement.parentElement);
             HideUnwantedUsers();
         };
 
@@ -484,11 +505,11 @@ function CreateFilterWindow()
     {
         b.type = "button";
         b.value = "Auto-Page";
-        b.style.backgroundColor = (AutoPaging) ? "lime" : null;
+        b.style.backgroundColor = (AutoPaging) ? "lime" : "gray";
         b.onclick = function ()
         {
             AutoPaging = !AutoPaging;
-            this.style.backgroundColor = (AutoPaging) ? "lime" : null;
+            this.style.backgroundColor = (AutoPaging) ? "lime" : "gray";
             EnablePager();
 
             GM_setValue("AutoPaging",AutoPaging);
@@ -499,19 +520,20 @@ function CreateFilterWindow()
     b = document.createElement("input");
     b.type = "button";
     b.value = "Show All";
-    b.style.backgroundColor = (ShowAll) ? "lime" : null;
+    b.style.backgroundColor = Boolean(GM_getValue("ShowAllVideos",false)) ? "lime" : "gray";
     b.onclick = function ()
     {
-        ShowAll = !ShowAll;
-        HideUnwantedUsers();
-        this.style.backgroundColor = (ShowAll) ? "lime" : null;
+        var show = !Boolean(GM_getValue("ShowAllVideos",false));
+        this.style.backgroundColor = show ? "lime" : "gray";
+        GM_setValue("ShowAllVideos", show);
+        ShowAllVideos(show);
     };
     d.appendChild(b);
 
     b = document.createElement("input");
     b.type = "button";
     b.value = "Close";
-    b.onclick = function () { removeNode("FilterWindow");};
+    b.onclick = function () { TSL.removeNode("FilterWindow");};
 
     d.appendChild(b);
     fwin.appendChild(d);
@@ -548,6 +570,7 @@ function AdjustSearchResult()
 
 function AddOptions()
 {
+    if (document.getElementById("OptionsButton")) return;
     var masthead = document.getElementById("yt-masthead-signin");
 
     if (masthead)
@@ -559,7 +582,7 @@ function AddOptions()
         options.onclick = function ()
         {
             var fwin = document.getElementById("FilterWindow");
-            if (fwin) removeNode(fwin);
+            if (fwin) TSL.removeNode(fwin);
             else CreateFilterWindow();
         };
         masthead.insertBefore(options, masthead.firstElementChild);
@@ -577,7 +600,7 @@ function AddOptions()
         options.onclick = function ()
         {
             var fwin = document.getElementById("FilterWindow");
-            if (fwin) removeNode(fwin);
+            if (fwin) TSL.removeNode(fwin);
             else CreateFilterWindow();
         };
 
@@ -617,78 +640,54 @@ var MO =
 function MainFunc()
 {
     GetPageType();
-    if (PageTYPE == 0)
+    switch(PageTYPE)
     {
-        console.info("YTF: Main Page");
-        AddOptions();
+        case 0: //Main Page
+            console.info("YTF: Main Page");
+            //MO.disconnect();
+            AddOptions();
 
-
-        var items = document.getElementsByClassName("yt-lockup");
-        for(var i = 0; i < items.length; i++)
-        {
-            var thumbdata = items[i];
-            var user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
-            var filters = GetFilters();
-
-            var block = document.createElement("span");
-            block.className = "blockLINKS";
-
-            var blockBtn = document.createElement("a");
-            blockBtn.className = "blockBTN16";
-            blockBtn.title = user;
-            blockBtn.onclick = BlockUser;
-            block.appendChild(blockBtn);
-
-            var link = thumbdata.getElementsByTagName("a")[0];
-            link.appendChild(block);
-            link.className += " aaTT";
-
-            var ss = CreateScreenshotLink(link.href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
-            block.appendChild(ss);
-        }
-
-        HideUnwantedUsers();
-    }
-    else if (PageTYPE == 3)
-    {
-        console.info("YTF: User Channel");
-        MO.disconnect();
-        var vthumbs = document.getElementsByClassName("ux-thumb-wrap");
-
-        for(var i = 0; i < vthumbs.length; i++)
-        {
-            var  link = vthumbs[i];
-
-
-            if (!link.className.match("aaTT"))
+            var items = document.getElementsByClassName("yt-lockup");
+            for(var i = 0; i < items.length; i++)
             {
-                link.className += " aaTT";
+                var thumbdata = items[i];
+                if (thumbdata.parsed) continue;
+                thumbdata.parsed = true;
+
+                var user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
+                var filters = GetFilters();
 
                 var block = document.createElement("span");
                 block.className = "blockLINKS";
-                block.style.top = "10px";
-                link.appendChild(block);
 
+                var blockBtn = document.createElement("a");
+                blockBtn.className = "blockBTN16";
+                blockBtn.title = user;
+                blockBtn.onclick = BlockUser;
+                block.appendChild(blockBtn);
+
+                var link = thumbdata.getElementsByTagName("a")[0];
+                link.appendChild(block);
+                link.className += " aaTT";
 
                 var ss = CreateScreenshotLink(link.href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
-                ss.style.backgroundColor = "yellow";
-                ss.style.border = "1px solid black";
                 block.appendChild(ss);
             }
-        }
 
-        MO.monitorBody();
-    }
-    else
-    {
-        //console.info("YTF: Search Result");
-        AddOptions();
-        AdjustSearchResult();
-
-
-        if (PageTYPE == 2) //Video Page
-        {
+            HideUnwantedUsers();
+            //setTimeout(MO.monitorBody, 1000);
+            break;
+        case 1: //Search Result
+            console.info("YTF: Search Result");
+            AddOptions();
+            AdjustSearchResult();
+            break;
+        case 2: // Video Page
+            //TSL.addStyle("YT_RELATED",".related-list-item .content-link {width:170px; background-color:red;}");
             console.info("YTF: Video Page");
+            AddOptions();
+            AdjustSearchResult();
+
             //Adds sceenshot
             var player = document.getElementById("watch7-headline");
             if (!player.getAttribute("screenshot"))
@@ -710,11 +709,35 @@ function MainFunc()
 
                 //var player = document.getElementById("player");
             }, 2500);
-        }
+            break;
+        case 3: //User Channel
+            console.info("YTF: User Channel");
+            MO.disconnect();
+            var vthumbs = document.getElementsByClassName("ux-thumb-wrap");
+
+            for(var i = 0, thumb; i < vthumbs.length, thumb = vthumbs[i]; i++)
+            {
+                if (!thumb.className.match("aaTT"))
+                {
+                    thumb.className += " aaTT";
+
+                    var block = document.createElement("span");
+                    block.className = "blockLINKS";
+                    block.style.visibility = "visible";
+                    block.style.top = "10px";
+                    thumb.appendChild(block);
+
+                    var ss = CreateScreenshotLink(thumb.querySelector("a").href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
+                    ss.style.backgroundColor = "yellow";
+                    ss.style.border = "1px solid black";
+                    block.appendChild(ss);
+                }
+            }
+
+            MO.monitorBody();
+            break;
     }
 }
-
-
 
 var URL = document.URL;
 (function ()
@@ -741,27 +764,43 @@ var URL = document.URL;
         GM_setValue("Version", CURRENTVERSION);
     }
 
-    AddStyle(null, "#OptionsButton {background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADPUlEQVR42u3XX0xSURwH8N/lzwUVxED+mpW5HtQ0ptJspBPkKmVzTtfafKunntqa9d67bD219dZLPrVmc22mglhSul2FnEtfMjf/C4oCCpfLvw7XbGXxT5q98HuBO845389+nMs9YPCfC0t3oF6vl6DBpWwMk0Si0TMxDMtD17z4ZzGAIBaLBdhs9m4kEtkBFmvFYrHsnBig1WpxHo4TGIYRMplMU1Z2sVqpVAilUhkUigpBKBQCzsWBw+Ew48PhMNAhGnw+H3g9XnC6nLC5seH7trQ053I6yVgsNoKQZqvVSqcEXGtoIK6o1S86OjpK6uvrQSyWZNVit3sHpslpGBwcXJ2d/Xx3cmrKnBTQ3dX15WV/fyWO41kFHy+apqGnp2d+YGCgKingenv3fOmliorbTbWg0WhApSrJKnh9fQ1IkoRXY3ZYWVxYsA29rkwKaGzvtpKdz5r53g0Qr87AudAmVIsAzhfxQCaXg0gkOtwD+LE9QB/uAY/HA1tbW7C8G4S5bYBlUIC7uA5oXAJ1kw+GJ4bfGJMCDHq9/KBQZXHcNFVRBXJmi0MUgBUKAH/fBVzKC5zgPrDCNLAiYWZOFDgQZeEQ5gogxBUBxZeiaz4zLz4/b38VaqcekXzK1WoZG9tLCogXuuVkAaHSjBDVVIHi50JHmN9eU7xnwif/Hp4Q8AMhpYRKi93YhxDKEwHyfCj8U+LwpADm62hulvoLVWZ7m6mGEigzAjDhH3tJ3O9stY6P7yXKSPlLiPZEsb9APupo61MHBCVpAZhwW+rwtADx0ul0ElogN9sJ0yEiWdu9KHyidwaFG1KFpw1gOmEwSAJ8yYjdYKoNCM8mbvt7JpxA4bvprJs2IF4ter2YypeOOFr66vyC0j/bHg8/SD88Y8ARIpAvs5DG5+oQLmIAXMoDmtH7jgJq2zBqNrszWS9jQLwIg8E4d/Xx0OaFVgagWBqGsvEnN9CD5l2ma50IgLrQuKB5+GG9/BYDUH19CxUzT5vQvT6RA+QAOUAOkAOcFkC7Vt5uW6y5ByG86PQB6GzA5vF4LYFg6M5u8eVOdBoWy9Zspwf4tQiC4EbCYR3GYpHoD2na54B/Bsi2vgPc5hg/VHiJIwAAAABJRU5ErkJggg==); background-size:24px 24px; background-repeat:no-repeat; background-position:center;}");
+    TSL.addStyle(null, "#OptionsButton {background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADPUlEQVR42u3XX0xSURwH8N/lzwUVxED+mpW5HtQ0ptJspBPkKmVzTtfafKunntqa9d67bD219dZLPrVmc22mglhSul2FnEtfMjf/C4oCCpfLvw7XbGXxT5q98HuBO845389+nMs9YPCfC0t3oF6vl6DBpWwMk0Si0TMxDMtD17z4ZzGAIBaLBdhs9m4kEtkBFmvFYrHsnBig1WpxHo4TGIYRMplMU1Z2sVqpVAilUhkUigpBKBQCzsWBw+Ew48PhMNAhGnw+H3g9XnC6nLC5seH7trQ053I6yVgsNoKQZqvVSqcEXGtoIK6o1S86OjpK6uvrQSyWZNVit3sHpslpGBwcXJ2d/Xx3cmrKnBTQ3dX15WV/fyWO41kFHy+apqGnp2d+YGCgKingenv3fOmliorbTbWg0WhApSrJKnh9fQ1IkoRXY3ZYWVxYsA29rkwKaGzvtpKdz5r53g0Qr87AudAmVIsAzhfxQCaXg0gkOtwD+LE9QB/uAY/HA1tbW7C8G4S5bYBlUIC7uA5oXAJ1kw+GJ4bfGJMCDHq9/KBQZXHcNFVRBXJmi0MUgBUKAH/fBVzKC5zgPrDCNLAiYWZOFDgQZeEQ5gogxBUBxZeiaz4zLz4/b38VaqcekXzK1WoZG9tLCogXuuVkAaHSjBDVVIHi50JHmN9eU7xnwif/Hp4Q8AMhpYRKi93YhxDKEwHyfCj8U+LwpADm62hulvoLVWZ7m6mGEigzAjDhH3tJ3O9stY6P7yXKSPlLiPZEsb9APupo61MHBCVpAZhwW+rwtADx0ul0ElogN9sJ0yEiWdu9KHyidwaFG1KFpw1gOmEwSAJ8yYjdYKoNCM8mbvt7JpxA4bvprJs2IF4ter2YypeOOFr66vyC0j/bHg8/SD88Y8ARIpAvs5DG5+oQLmIAXMoDmtH7jgJq2zBqNrszWS9jQLwIg8E4d/Xx0OaFVgagWBqGsvEnN9CD5l2ma50IgLrQuKB5+GG9/BYDUH19CxUzT5vQvT6RA+QAOUAOkAOcFkC7Vt5uW6y5ByG86PQB6GzA5vF4LYFg6M5u8eVOdBoWy9Zspwf4tQiC4EbCYR3GYpHoD2na54B/Bsi2vgPc5hg/VHiJIwAAAABJRU5ErkJggg==); background-size:24px 24px; background-repeat:no-repeat; background-position:center;}");
     if (document.getElementById("yt-masthead-signin"))
     {
-        AddStyle("YTF_FW", "#FilterWindow{position: fixed;z-index: 9999999999999; right: 50px;top: 50px;background-color: #E9EAEA;border: 1px solid black;}#FilterWindow div{color: gray;text-decoration-style: none;padding: 3px 5px;}#FilterWindow tr:hover{text-decoration-style: none;background-color: lightgray;color: black;}");
-        AddStyle(null, "#OptionsButton {margin-right: 10px; height: 28px; width: 32px; background-size:15px 15px; background-repeat:no-repeat; background-position:center;}");
+        TSL.addStyle("YTF_FW", "#FilterWindow{position: fixed;z-index: 9999999999999; right: 50px;top: 50px;background-color: #E9EAEA;border: 1px solid black;}#FilterWindow div{color: gray;text-decoration-style: none;padding: 3px 5px;}#FilterWindow tr:hover{text-decoration-style: none;background-color: lightgray;color: black;}");
+        TSL.addStyle(null, "#OptionsButton {margin-right: 10px; height: 28px; width: 32px; background-size:15px 15px; background-repeat:no-repeat; background-position:center;}");
     }
     else
     {
-        AddStyle("YTF_FW", "#FilterWindow{position: fixed;z-index: 9999999999999; right: 10px;top: 95px;background-color: #E9EAEA;border: 1px solid black;}#FilterWindow div{color: gray;text-decoration-style: none;padding: 3px 5px;}#FilterWindow tr:hover{text-decoration-style: none;background-color: lightgray;color: black;}");
-        AddStyle(null, "#OptionsButton{height: 32px; width: 32px; margin: 0; padding: 0; position: fixed;color: #777979; right: 10px;top: 60px;border-radius: 3px;background-color: lightgray;border: 1px solid darkgray;cursor: pointer; z-index:99999999999999999;}#OptionsButton:hover{background-color: darkgray;color: black;}");
+        TSL.addStyle("YTF_FW", "#FilterWindow{position: fixed;z-index: 9999999999999; right: 10px;top: 95px;background-color: #E9EAEA;border: 1px solid black;}#FilterWindow div{color: gray;text-decoration-style: none;padding: 3px 5px;}#FilterWindow tr:hover{text-decoration-style: none;background-color: lightgray;color: black;}");
+        TSL.addStyle(null, "#OptionsButton{height: 32px; width: 32px; margin: 0; padding: 0; position: fixed;color: #777979; right: 10px;top: 60px;border-radius: 3px;background-color: lightgray;border: 1px solid darkgray;cursor: pointer; z-index:99999999999999999;}#OptionsButton:hover{background-color: darkgray;color: black;}");
     }
-    AddStyle(null, ".blockBTN32, .blockBTN16, .unblockBTN{cursor:pointer; background-image: url(data:image/png;base64,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);background-size: contain;z-index: 100;}");
-    AddStyle("YTF_BT",".unblockBTN{display: inline-block;width: 16px;height: 16px;} .blockBTN32{display: block;width: 32px;height: 32px;}a.aaTT:hover .blockLINKS{visibility: visible;} .blockBTN16 {display:block; background-color: black;border: 1px solid red;height: 24px;width: 24px;}");
-    AddStyle("YTF_BL", ".blockLINKS{position: absolute;top: 2px;visibility: hidden; z-index: 100; right: 2px;} .blockLINKS a:nth-child(2){line-height:normal; background-color:yellow; border: 1px solid blue; display:block;text-align:center;}");
-    AddStyle("YTF_NB", ".banNotice {position:absolute; z-index: 1000; font-size:medium;} .banNotice > span { display:table-cell; background-color:yellow; text-align: center; vertical-align: middle; }");
-    AddStyle("YTF_PC", "#FloatArea{position: fixed; right: 0px; top:10px; border: none; visibility:hidden; height: 200px; width:140px;}");
+    TSL.addStyle(null, ".blockBTN32, .blockBTN16, .unblockBTN{background-repeat:no-repeat; cursor:pointer; background-image: url(data:image/png;base64,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);background-size: contain;z-index: 100;}");
+    TSL.addStyle("YTF_BT",".unblockBTN{display: inline-block;width: 16px;height: 16px; padding-right: 3px;} .blockBTN32{display: block;width: 32px;height: 32px;}a.aaTT:hover .blockLINKS{visibility: visible;} .blockBTN16 {display:block; background-color: black;border: 1px solid red;height: 24px;width: 24px;}");
+    TSL.addStyle("YTF_BL", ".blockLINKS{position: absolute;top: 2px;visibility: hidden; z-index: 100; right: 2px;} .blockLINKS a:nth-child(2){line-height:normal; background-color:yellow; border: 1px solid blue; display:block;text-align:center;}");
+    TSL.addStyle("YTF_NB", ".banNotice {position:absolute; z-index: 1000; font-size:medium;} .banNotice > span { display:table-cell; background-color:yellow; text-align: center; vertical-align: middle; }");
+    TSL.addStyle("YTF_PC", "#FloatArea{position: fixed; right: 0px; top:10px; border: none; visibility:hidden; height: 200px; width:140px;}");
+    TSL.addStyle("YTF_BX", ".blockBox {text-align:center;}");
+
+
+    ShowAllVideos();
+    TSL.addStyle("BlockVideoBG",".blockedVideo, .blockedVideoBG {background-color:#FBE8E5;}");
+
+
+    if (PageTYPE == 2)
+    {
+        if (GM_getValue("PageType2",false))
+            TSL.addStyle("",GM_getValue("PageType2"));
+        else TSL.addStyle("","body #watch7-sidebar-contents {padding: 15px 0px 15px 5px !important;}"
+                + "#watch7-sidebar-contents .video-list-item.related-list-item {padding-right: 35px;}");
+    }
+    else if (PageTYPE == 1 && GM_getValue("PageType1",false))
+    {
+        TSL.addStyle("",GM_getValue("PageType1"));
+    }
 
     MainFunc();
 })();
-
-
 
 /*
 1-3, Default is same as HQdefault but thumbnail size
