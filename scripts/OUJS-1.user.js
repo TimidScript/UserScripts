@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.17
+// @version                 1.0.18
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.18 (2015-01-22)
+ - Bug fix for version 1.0.17 which broke support for other browsers.
+ - Bug fix to support querySelector in Opera and Chrome. "Discussions" links use ".getAttribute" instead of ".href"
 1.0.17 (2015-01-17)
  - Bug fixes to handle new changes in OUJS layout
  - Issue count now decrements
@@ -107,6 +110,14 @@ var HistoryMAX = parseInt(GM_getValue("HistoryMAX", 15)); //Stats histry, maximu
 
 
 console.info("OUJS-1 is Running");
+
+
+if (typeof cloneInto == "undefined")
+{
+    cloneInto = function(a, b) { return a;};
+}
+
+
 var DAY = 86400000;
 
 function ToggleIssuesView(discuss, issues)
@@ -1091,7 +1102,7 @@ function SortScriptTable(e)
                     else diff.textContent = "+" + ((meta[postID].replies == undefined) ? replies : replies - meta[postID].replies);
                 }
 
-                var val = { postID: postID, postTitle: postTitle, replies: replies, url: post.querySelector(".tr-link-a").href };
+                var val = { postID: postID, postTitle: postTitle, replies: replies, url: post.querySelector(".tr-link-a").getAttribute("href")};
                 if (post.querySelector("td:nth-child(3) .label:last-child").textContent != username) arr.push(val);
                 else
                 {
