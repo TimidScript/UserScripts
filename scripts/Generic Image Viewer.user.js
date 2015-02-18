@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.0.24
+// @version         1.0.25
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -46,6 +46,8 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
+1.1.25 (2015-02-18)
+ - Bug fix: Limit Width/Height buttons weren't working
 1.0.24 (2015-01-18)
  - Resize functions take into account image rotation
  - Added reverse rotation
@@ -524,6 +526,9 @@ var ControlHQ =
         {
             img.style.height = null;
             img.style.width = null;
+            
+            if (ResizeMode & 2 && document.body.scrollWidth > document.body.clientWidth) img.style.maxHeight = (window.innerHeight - ScrollBarThickness) + "px";
+            if (ResizeMode & 4 && document.body.scrollHeight > document.body.clientHeight) img.style.maxWidth = (window.innerWidth - ScrollBarThickness) + "px";
         }
 
         //console.log(ResizeMode);
