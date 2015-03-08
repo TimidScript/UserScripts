@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.67
+// @version             3.1.68
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -41,6 +41,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.68 (2015-03-08)
+ - CSS styles for visited pages added to illustration page before & next thumbnails
+ - Correction for manga illustration page with small width
 3.1.67 (2014-12-29)
  - Illustration page bug fix
 3.1.66 (2014-12-27)
@@ -1216,6 +1219,7 @@ var PaginatorHQ =
             PaginatorHQ.addStyle("pppVisitedIllusPage", ".image-item > a.work:visited > img { border: 22px solid red; !important}");
 
 
+
             //Used to fix broken artist and bookmarks pages
             PaginatorHQ.addStyle(null, ".pppPage1 > li, .pppPage2 > li, .pppPage0 > li { clear: none; float: none !important; display:inline-block;}");
             PaginatorHQ.addStyle(null, ".paginator li {clear:none;float:none;display:inline:block; width:auto;}");
@@ -1846,7 +1850,10 @@ var PreviewHQ =
 
             el = document.querySelector(".works_display")
             el.insertBefore(hotbox, el.lastElementChild);
+
             el.insertBefore(document.createElement("br"), hotbox);
+            el.insertBefore(document.createElement("br"), hotbox.nextElementSibling);
+
             console.log("Illustration Page");
             hotbox.className = "pppHotBoxI";
             var img = link.getElementsByTagName("img")[0];
@@ -3025,7 +3032,9 @@ to enable caching [3] to make it a lot faster.
 if (window.self === window.top)
     (function ()
     {
-        PaginatorHQ.addStyle("Adjust-Pixiv", "img._thumbnail {color: white; border: 3px solid; padding: 1px; background-color: white;} a:visited img._thumbnail{color: cyan !important;}");
+        PaginatorHQ.addStyle("Adjust-Pixiv", "li.before a img, li.after a img, img._thumbnail {color: white; border: 3px solid; padding: 1px; background-color: white;}"
+                                + "li.before a:visited img, li.after a:visited img, a:visited img._thumbnail{color: cyan !important;}"
+                            );
 
         console.info("Pixiv Main");
         var counter = 0;
