@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.0.25
+// @version         1.1.26
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -46,9 +46,11 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
+1.1.26 (2015-03-17)
+ - Direct link to youtube video from image
 1.1.25 (2015-02-18)
  - Bug fix: Limit Width/Height buttons weren't working
-1.0.24 (2015-01-18)
+1.1.24 (2015-01-18)
  - Resize functions take into account image rotation
  - Added reverse rotation
  - Default colour changed and increased options
@@ -56,6 +58,7 @@ Hotkeys:
  This is a work in progress and site support will be added as I learn about them.
  - Set favourite icon as image as some sites override icon
  - FireFox 35 has broken the styling. Not sure how to fix it and I am not able to get any errors.
+ - Minor increased. Should have increased in the previous version.
 1.0.23 (2014-12-27)
  - Rotation and image flipping added
  - Slight change in interface
@@ -475,7 +478,6 @@ var ControlHQ =
         div.style.width = window.innerWidth + "px";
 
         var reverse = (document.getElementsByClassName("transformBTN")[0].value % 2 == 1);
-
         // 2=Height, 4=Width, 8=Stretch, 16=Fit
         if (!reverse)
         {
@@ -526,7 +528,7 @@ var ControlHQ =
         {
             img.style.height = null;
             img.style.width = null;
-            
+
             if (ResizeMode & 2 && document.body.scrollWidth > document.body.clientWidth) img.style.maxHeight = (window.innerHeight - ScrollBarThickness) + "px";
             if (ResizeMode & 4 && document.body.scrollHeight > document.body.clientHeight) img.style.maxWidth = (window.innerWidth - ScrollBarThickness) + "px";
         }
@@ -794,13 +796,23 @@ var ControlHQ =
 
         ControlHQ.createLinkPanel();
     }
-    else if (document.URL.match(/http:\/\/[^\.]+\.nicoseiga\.jp/gi)) //Nico Nico Seiga
+    else if (document.URL.match(/http:\/\/[^\.]+\.nicoseiga\.jp/i)) //Nico Nico Seiga
     {
         console.info("GIViewer: Nico Nico Seiga");
 
-        var id = document.URL.replace(/.+\/(\d+)(\?[^\/\\]+)?$/gi, "$1");
+        var id = document.URL.replace(/.+\/(\d+)(\?[^\/\\]+)?$/i, "$1");
         ControlHQ.data.imgTitle = id;
         ControlHQ.data.imgURL = "http://seiga.nicovideo.jp/seiga/im" + id;
+
+        ControlHQ.createLinkPanel();
+    }
+    else if (document.URL.match(/https?:\/\/img\.youtube\..+\/vi\//i)) //Nico Nico Seiga
+    {
+        console.info("GIViewer: Youtube");
+
+        var id = document.URL.match(/\/vi\/([^\/]+)/i)[1];
+        ControlHQ.data.imgTitle = "Video Page";
+        ControlHQ.data.imgURL = "https://www.youtube.com/watch?v=" + id;
 
         ControlHQ.createLinkPanel();
     }
