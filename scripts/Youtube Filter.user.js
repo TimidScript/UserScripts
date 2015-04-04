@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.27
+// @version         1.1.28
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @icon            https://i.imgur.com/E2wQ6Xm.gif
 // @author          TimidScript
@@ -40,6 +40,8 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.28 (2015-04-04)
+ - Bug Fix: Now able to pickup changes in main page and by extension search result page.
 1.1.27 (2015-01-18)
  - Bug fixes to changes in youtube layout (front page and user channel)
  - Bug fix filter button added to the side of video panel
@@ -326,7 +328,6 @@ function EnablePager()
 
 function HideUnwantedUsers()
 {
-    var userFilters = GetFilters();
     FilteredUsers = new Array();
 
     if (PageTYPE == 0) //Main Page
@@ -370,8 +371,7 @@ function HideUnwantedUsers()
     }
     else //Search Result & Video Page
     {
-        var results;
-        var user;
+        var results, user;
         if (PageTYPE == 1) results = document.getElementsByClassName("item-section")[0].children;
         else results = document.getElementsByClassName("video-list-item");
 
@@ -637,6 +637,7 @@ var MO =
     }
 };
 
+var MainItemPageCount = 0;
 function MainFunc()
 {
     GetPageType();
@@ -644,43 +645,51 @@ function MainFunc()
     {
         case 0: //Main Page
             console.info("YTF: Main Page");
-            //MO.disconnect();
+            MO.disconnect();
             AddOptions();
 
             var items = document.getElementsByClassName("yt-lockup");
-            for(var i = 0; i < items.length; i++)
+            if (MainItemPageCount != items.length)
             {
-                var thumbdata = items[i];
-                if (thumbdata.parsed) continue;
-                thumbdata.parsed = true;
+                MainItemPageCount = items.length;
 
-                var user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
-                var filters = GetFilters();
+                for(var i = 0; i < items.length; i++)
+                {
+                    var thumbdata = items[i];
+                    if (thumbdata.parsed) continue;
+                    thumbdata.parsed = true;
 
-                var block = document.createElement("span");
-                block.className = "blockLINKS";
+                    var user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
+                    var filters = GetFilters();
 
-                var blockBtn = document.createElement("a");
-                blockBtn.className = "blockBTN16";
-                blockBtn.title = user;
-                blockBtn.onclick = BlockUser;
-                block.appendChild(blockBtn);
+                    var block = document.createElement("span");
+                    block.className = "blockLINKS";
 
-                var link = thumbdata.getElementsByTagName("a")[0];
-                link.appendChild(block);
-                link.className += " aaTT";
+                    var blockBtn = document.createElement("a");
+                    blockBtn.className = "blockBTN16";
+                    blockBtn.title = user;
+                    blockBtn.onclick = BlockUser;
+                    block.appendChild(blockBtn);
 
-                var ss = CreateScreenshotLink(link.href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
-                block.appendChild(ss);
+                    var link = thumbdata.getElementsByTagName("a")[0];
+                    link.appendChild(block);
+                    link.className += " aaTT";
+
+                    var ss = CreateScreenshotLink(link.href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
+                    block.appendChild(ss);
+                }
+
+                HideUnwantedUsers();
             }
-
-            HideUnwantedUsers();
             //setTimeout(MO.monitorBody, 1000);
+            MO.monitorBody();
             break;
         case 1: //Search Result
             console.info("YTF: Search Result");
+            MO.disconnect();
             AddOptions();
             AdjustSearchResult();
+            MO.monitorBody();
             break;
         case 2: // Video Page
             //TSL.addStyle("YT_RELATED",".related-list-item .content-link {width:170px; background-color:red;}");
