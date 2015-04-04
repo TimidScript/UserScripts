@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.27
+// @version         1.0.28
 // @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -37,6 +37,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.28 (2015-04-04)
+ - Bug fix to handle site searches
 1.0.27 (2014-12-28)
  - Bug fix to changes made in 1.0.25
  - Changed the sets into a menu. CSS provided by decembre.
@@ -573,7 +575,7 @@ script-list-set
     {
         var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
 
-        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/[\w-]+\/scripts(\/search)?/)[0] + "?per_page=100";
+        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/[\w-]+\/scripts(\/by-site\/[\w\.-_]+|\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
 
         var m = document.URL.match(/[^=\?&]+=[^&]+/g);
