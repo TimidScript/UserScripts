@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.28
+// @version         1.1.29
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @icon            https://i.imgur.com/E2wQ6Xm.gif
 // @author          TimidScript
@@ -40,6 +40,9 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.29 (2015-04-06)
+ - Bug Fix: Removed monitor of search result
+ - Bug Fix: Search results checks item count before parsing.
 1.1.28 (2015-04-04)
  - Bug Fix: Now able to pickup changes in main page and by extension search result page.
 1.1.27 (2015-01-18)
@@ -546,11 +549,15 @@ function CreateFilterWindow()
 }
 
 
+var SearchCount = 0;
 function AdjustSearchResult()
 {
     var results;
     if (PageTYPE == 1) results = document.getElementsByClassName("item-section")[0].children;
     else results = document.getElementsByClassName("video-list-item");
+
+    if (SearchCount == results.length) return;
+    SearchCount = results.length;
 
     for (var i = 0; i < results.length; i++)
     {
@@ -686,10 +693,10 @@ function MainFunc()
             break;
         case 1: //Search Result
             console.info("YTF: Search Result");
-            MO.disconnect();
+            //MO.disconnect();
             AddOptions();
             AdjustSearchResult();
-            MO.monitorBody();
+            //MO.monitorBody();
             break;
         case 2: // Video Page
             //TSL.addStyle("YT_RELATED",".related-list-item .content-link {width:170px; background-color:red;}");
