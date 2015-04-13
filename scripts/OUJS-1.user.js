@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.18
+// @version                 1.0.19
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.19 (2015-04-13)
+ - Added ability to remove a history record. This is used when certain dates get corrupted.
 1.0.18 (2015-01-22)
  - Bug fix for version 1.0.17 which broke support for other browsers.
  - Bug fix to support querySelector in Opera and Chrome. "Discussions" links use ".getAttribute" instead of ".href"
@@ -933,7 +935,7 @@ function SortScriptTable(e)
         li.onclick = ClickedHistory;
         el.appendChild(li);
 
-        for (var i = meta.history.length - 1, li; i >= 0; i--)
+        for (var i = meta.history.length - 1, li, remove; i >= 0; i--)
         {
             if (meta.history[i].timestamp != meta.current.timestamp && meta.history[i].timestamp != oldCurrent.timestamp)
             {
@@ -941,11 +943,41 @@ function SortScriptTable(e)
                 li.textContent = timePassed(meta.history[i].timestamp);
                 li.data = meta.history[i];
                 li.onclick = ClickedHistory;
+
+                remove = document.createElement("span");
+                remove.textContent = "❌"; //❎❌
+                remove.setAttribute("style", "float: right; color: red;");
+                remove.onclick = removeRecord;
+                li.appendChild(remove);
                 el.appendChild(li);
             }
         }
+
         el.firstElementChild.className = "selected";
         DisplayStats(oldCurrent, meta.current);
+
+        function removeRecord(e)
+        {
+            e.stopImmediatePropagation();
+
+            if (!confirm("Do you want to remove this history record?")) return;
+
+            var meta = GM_getValue("USER-S:" + username);
+            meta = JSON.parse(meta);
+            var record = this.parentElement.data.timestamp;
+
+            for(var i = 0; i < meta.history.length; i++)
+            {
+                if (meta.history[i].timestamp == record)
+                {
+                    meta.history.splice(i, 1);
+                    GM_setValue("USER-S:" + username, JSON.stringify(meta));
+                    TSL.removeNode(this.parentElement);
+                    break;
+                }
+            }
+        }
+
 
         function timePassed(old)
         {
