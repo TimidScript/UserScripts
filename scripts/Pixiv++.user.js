@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.68
+// @version             3.1.69
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -41,6 +41,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.69 (2015-04-14)
+ - Hidden comix ads from the illustration page
+ - Changed the illustration page interface. Illustration information is always shown and thumbnails for
+ pages are bellow the illustration.
 3.1.68 (2015-03-08)
  - CSS styles for visited pages added to illustration page before & next thumbnails
  - Correction for manga illustration page with small width
@@ -622,17 +626,24 @@ var IllustrationLinker =
        -------------------------------------------------------------------------------------------*/
        createLinksBox: function (link)
        {
-           var thumbnail = link.parentNode;
-           var metadata = IllustrationData.getIllustrationLinkData(link);
+           var thumbnail = link.parentNode,
+               metadata = IllustrationData.getIllustrationLinkData(link);
+
            //var metadata = new METADATA();
 
            PaginatorHQ.tidyThumbnail(link);
            var linksBox = document.createElement("div");
            linksBox.className = "pppLinksBox";
            var directLinks = document.createElement("span");
-           thumbnail.insertBefore(linksBox, link.nextSibling);
-           linksBox.appendChild(directLinks);
 
+           if (IsIllustrationPage)
+           {
+               TSL.addStyle("LINXBOX", ".pppLinksBox {margin: 0 50px; text-align: center;}");
+               var el = document.querySelector(".works_display");
+               el.parentNode.insertBefore(linksBox, el.nextSibling);
+           }
+           else thumbnail.insertBefore(linksBox, link.nextSibling);
+           linksBox.appendChild(directLinks);
            directLinks.className = "pppDirectLinks";
 
 
@@ -681,23 +692,77 @@ var IllustrationLinker =
 
                mangaLinks = mangaLinks.replace(/ | $/, "") + "]";
 
-               if (IsIllustrationPage) directLinks.innerHTML = mangaLinks;
+               if (IsIllustrationPage)
+               {
+                   directLinks.innerHTML = mangaLinks;
+                   directLinks.setAttribute("style", "font-size:small");
+               }
                else directLinks.innerHTML = mangaLinks;
 
 
                if (!Settings.display.mangaLinks) directLinks.style.display = "none";
            }
 
-           if (!IsIllustrationPage)
+           if (IsIllustrationPage)
+           {
+               TSL.addStyle("RemoveAds", ".ads_anchor {display:none;}");
+               TSL.addStyle("AddBorder", ".work-tags, .works_display  {margin-bottom: 0px;}");
+               //TSL.addStyle("VLB", "#VisibleLinkBox {background-color: red; height: 40px; margin: 5px 20px 10px 20px;}");
+               TSL.addStyle("VLB", "#VisibleLinkBox {margin: 1px 20px 10px 20px; background-color: gray;}");
+               var linkbox = document.createElement("section");
+               linkbox.id = "VisibleLinkBox";
+               linkbox.className = "work-tags";
+
+               var metascore = [metadata.bookmarkCount, metadata.viewCount, metadata.ratings, metadata.totalRatings, metadata.responseCount];
+               var metaname = ["★", "Views", "Rating", "Total", "Response"];
+
+               linkbox.innerHTML = "<a class='bookmark-count' style='background-color:#FFFD00;' href='http://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>"
+               + '<a href="/response.php?type=illust&amp;id=' + metadata.illustID + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metascore[4] + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metascore[4] + '</a>'
+               + '<a href="/bookmark_detail.php?illust_id=' + metadata.illustID + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metascore[0] + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metascore[0] + '</a>';
+
+               for (var i = 1; i < 4; i++) linkbox.innerHTML += "<span class='bookmark-count' style='background-color:#FDFDFB;'>" + metaname[i] + " " + metascore[i] + "</span>";
+
+               var el = document.querySelector(".work-tags");
+               el.parentNode.insertBefore(linkbox, el.nextElementSibling);
+
+               if (metadata.illustType == 2) //Manga
+               {
+                   var ShowThumbs = document.createElement("button");
+                   ShowThumbs.textContent = "Show Thumbnails";
+                   ShowThumbs.setAttribute("style", "padding: 5px; display: inline-block; width: 300px; margin: 10px 0 20px 0;");
+                   linksBox.appendChild(document.createElement("br"));
+                   linksBox.appendChild(ShowThumbs);
+
+                   ShowThumbs.onclick = function ()
+                   {
+                       TSL.addStyle("MangaT", "#MangaThumbnails img {max-height: 150px; max-width: 150px; margin: 5px; box-shadow: 5px 5px 3px #888888;}");
+                       var thumbs = document.createElement("section");
+                       thumbs.id = "MangaThumbnails";
+                       thumbs.setAttribute("style", "margin: 10px 30px;");
+                       linksBox.parentElement.insertBefore(thumbs, linksBox.nextElementSibling);
+                       for (var i = 0; i < metadata.pageCount; i++)
+                       {
+                           el = document.createElement("a");
+
+                           el.href = metadata.illustURL.replace(/\/(\d+|\d+_big)_p\d+/i, "/$1_p" + i);
+                           el.innerHTML = "<img src='" + metadata.illust150URL.replace(/_p\d+/i, "_p" + i) + "'/>";
+                           thumbs.appendChild(el);
+                       }
+
+                       TSL.removeNode(this);
+                   }
+               }
+           }
+           else
            {
                var IQDBLink = document.createElement("a");
                IQDBLink.textContent = "IQDB";
                IQDBLink.className = "IQDBLink";
                linksBox.appendChild(IQDBLink);
                PaginatorHQ.updateIQDBLink(linksBox);
+               PreviewHQ.createHotBox(link);
            }
 
-           PreviewHQ.createHotBox(link);
            if (PAGETYPE > 1) PaginatorHQ.filterThumbnail(thumbnail);
        },
 
@@ -2014,15 +2079,8 @@ var PreviewHQ =
 
         var links;
         links = pThumb.getElementsByClassName("pppDirectLinks")[0].getElementsByTagName("a");
-        if (metadata.illustType == 3)
-        {
-            data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='" + IQDBPrefix + pThumb.getElementsByTagName("img")[0].src + "&'>IQDB<a>";
-        }
-        else
-        {
-            data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='" + IQDBPrefix + pThumb.getElementsByTagName("img")[0].src
-                + "&fullimage=" + links[0].href + "&'>IQDB<a>";
-        }
+
+        data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='http://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>";
 
         data.setAttribute("style", "padding: 2px 5px 2px 5px; text-decoration: none; color: #FFF; font-weight:bold;");
 
