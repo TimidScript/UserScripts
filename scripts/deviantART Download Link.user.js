@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] deviantArt Download Link
 // @namespace       TimidScript
-// @version         1.1.9
-// @description     Adds the Download Link on illustration page if missing and also removes open in new tab
+// @version         1.1.9b
+// @description     Adds the Download Link on illustration page if missing, option to redirect to image file, removes open in new tab.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
