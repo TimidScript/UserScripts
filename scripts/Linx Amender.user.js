@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.25
+// @version         3.0.26
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -55,6 +55,9 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.26 (2015-04-22)
+ - Bug Fix: MO does not always capture changes when document is loaded in background. Added onload event which parses
+ all links.
 3.0.25 (2014-01-16)
  - Temporary fix for FireFox 35 security increase until GreaseMonkey update.  https://github.com/greasemonkey/greasemonkey/issues/2033
 3.0.24 (2014-11-29)
@@ -1451,8 +1454,8 @@ var MO =
 
         if (MO.Observer && MO.disconnected)
         {
-            MO.disconnected = false;
             MO.Observer.observe(document, { subtree: true, childList: true });
+            MO.disconnected = false;
         }
     },
 
@@ -1503,5 +1506,15 @@ else
         window.addEventListener("keyup", function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); }, true);
     }
 
+    window.onload = function ()
+    {
+        try
+        {
+            MO.Observer.disconnect();
+            MO.disconnected = true;
+        }
+        catch (err) { };
+        ParseNodes();
+    }
     setTimeout(ParseNodes, 250);
 })();
