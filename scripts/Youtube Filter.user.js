@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.29
+// @version         1.1.30
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @icon            https://i.imgur.com/E2wQ6Xm.gif
 // @author          TimidScript
@@ -40,6 +40,8 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.30 (2015-04-25)
+ - Bug Fix: Make it compatible with "Youtube Center" as it changes some of the classes script queries.
 1.1.29 (2015-04-06)
  - Bug Fix: Removed monitor of search result
  - Bug Fix: Search results checks item count before parsing.
@@ -659,14 +661,13 @@ function MainFunc()
             if (MainItemPageCount != items.length)
             {
                 MainItemPageCount = items.length;
-
                 for(var i = 0; i < items.length; i++)
                 {
                     var thumbdata = items[i];
                     if (thumbdata.parsed) continue;
                     thumbdata.parsed = true;
 
-                    var user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent;
+                    var user = thumbdata.querySelector(".yt-uix-sessionlink.g-hovercard").textContent;
                     var filters = GetFilters();
 
                     var block = document.createElement("span");
