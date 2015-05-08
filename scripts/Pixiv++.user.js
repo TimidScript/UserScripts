@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.1.69
+// @version             3.1.70
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -41,6 +41,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.1.70 (2015-05-08)
+ - Page count added in information box
 3.1.69 (2015-04-14)
  - Hidden comix ads from the illustration page
  - Changed the illustration page interface. Illustration information is always shown and thumbnails for
@@ -719,6 +721,10 @@ var IllustrationLinker =
                linkbox.innerHTML = "<a class='bookmark-count' style='background-color:#FFFD00;' href='http://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>"
                + '<a href="/response.php?type=illust&amp;id=' + metadata.illustID + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metascore[4] + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metascore[4] + '</a>'
                + '<a href="/bookmark_detail.php?illust_id=' + metadata.illustID + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metascore[0] + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metascore[0] + '</a>';
+
+               if (metadata.pageCount > 1)
+                   linkbox.innerHTML = "<a class='bookmark-count' style='background-color:#81FF00;'>P" + metadata.pageCount + "</a>" + linkbox.innerHTML;
+
 
                for (var i = 1; i < 4; i++) linkbox.innerHTML += "<span class='bookmark-count' style='background-color:#FDFDFB;'>" + metaname[i] + " " + metascore[i] + "</span>";
 
@@ -2079,6 +2085,9 @@ var PreviewHQ =
 
         var links;
         links = pThumb.getElementsByClassName("pppDirectLinks")[0].getElementsByTagName("a");
+
+
+        if (metadata.pageCount > 1) data.innerHTML = "<a class='bookmark-count' style='background-color:#81FF00;'>P" + metadata.pageCount + "</a>";
 
         data.innerHTML += "<a class='bookmark-count' style='background-color:#FFFD00;' href='http://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>";
 
