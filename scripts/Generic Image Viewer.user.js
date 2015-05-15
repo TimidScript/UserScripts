@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.1.26
+// @version         1.2.27
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -39,46 +39,17 @@ Hotkeys:
   1 = Num 1 => Auto-Height
   2 = Num 2 => Auto-Width
   3 = Num 3 => Auto-Stretch
-  4 = Num 5 => Enlarge/Shrink to Client Area
+  4 = Num 4 => Enlarge/Shrink to Client Area
   ` = Num 0 => Reset Size
-  5 = Num 4 => Change Background Colours
+  5 = Num 5 => Change Background Colours
 
 ------------------------------------
  Version History
 ------------------------------------
-1.1.26 (2015-03-17)
- - Direct link to youtube video from image
-1.1.25 (2015-02-18)
- - Bug fix: Limit Width/Height buttons weren't working
-1.1.24 (2015-01-18)
- - Resize functions take into account image rotation
- - Added reverse rotation
- - Default colour changed and increased options
- - Does not always remove "?*" postfix on image source as it can break in certain sites.
- This is a work in progress and site support will be added as I learn about them.
- - Set favourite icon as image as some sites override icon
- - FireFox 35 has broken the styling. Not sure how to fix it and I am not able to get any errors.
- - Minor increased. Should have increased in the previous version.
-1.0.23 (2014-12-27)
- - Rotation and image flipping added
- - Slight change in interface
-1.0.22 (2014-09-08)
- - Bug Fix: Due to changes to TSL-Generic.
- - Bug Fix: Made match url case insensitive
-1.0.21 (2014-08-29)
- - Added GM_update
-1.0.20 (2014-08-19)
- - Cleaned up header for OUJS
- - Removed old history
-1.0.19 (2014-05-20)
- - Youtube Screenshot support that works with "[TS] Youtube Filter" version 1.0.12 and later (2014-05-17)
-1.0.18 (2014-05-15)
- - Semi support for Nico Nico Seiga and Nijie.info added
-1.0.17 (2014-05-15)
- - Bug Fix: Illustration, Gallery and User page fixed
-1.0.16 (2014-05-12)
- - Capture more images link that end with extra information
- - Removed Image Search Links when hidden
+1.2.27 (2015-05-14)
+ - As of 11/05/2015 the Phone API (SPAPI) is dead. Using TSL-Pixiv library to get information from HTML.
+ - Avoided the usage of Public API to bypass multiple login and timeout
+ - Changed the hotkeys to match Pixiv Manga Viewer
 .
 .
 .
@@ -250,6 +221,7 @@ var ControlHQ =
 
     createLinkPanel: function ()
     {
+        TSL.removeNode("LinkPanel");
         var panel;
         var linkPanel = document.createElement("div");
         linkPanel.id = "LinkPanel";
@@ -360,7 +332,7 @@ var ControlHQ =
         btns[1].title = "Auto-Fit Width (2, Num 2)";
         btns[2].style.backgroundImage = "URL('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAs0lEQVR42u2XYQqAIAyF804ep05Xx/FOlZAgw7k5zSW5P4L43j5zyjKLcpgJUCN2zp1+tNaKfcTCkDyEFEIkgslrIIoFWHIpRNFiKrkEYswa+A+AT4IZcwFyHlmAFo8Mx4fcXSsAzMvkBKkIJve6HcxvJfokAOeeA4D1mT64ABDiWwAln/CVI0hBdC9CKFS5hrFY7SHi7owCoGICjNeQqLZkFESXphSD6F6EMYTKj0mrmAAX79KqIbEwc3wAAAAASUVORK5CYII=')";
         btns[2].title = "Stretch (3, Num 3)";
-        btns[3].title = "Fill Client Area while keeping ratio (4, Num 5)";
+        btns[3].title = "Fill Client Area while keeping ratio (4, Num 4)";
 
         for (var i = 0; i < 4; i++)
         {
@@ -574,15 +546,15 @@ var ControlHQ =
         //Hotkeys Set 1     : `, 1, 2, 3 & 4
         //Hotkeys Num Keys  : 0, 1, 2, 3 & 5
 
-        if (e.keyCode == 53 || e.keyCode == 100)
+        if (e.keyCode == 53 || e.keyCode == 101)
         {
             ControlHQ.setBGColor(true);
             return false;
         }
 
         var mode = e.keyCode - 48;
-        if (e.keyCode == 101) mode = 4;
-        else if (e.keyCode != 100 && mode > 10) mode = mode - 48;
+        if (e.keyCode == 100) mode = 4;
+        else if (e.keyCode != 101 && mode > 10) mode = mode - 48;
         if (e.keyCode == 192 || e.keyCode == 96) mode = 0;
 
         //console.log(mode, e.keyCode);
@@ -669,82 +641,53 @@ var ControlHQ =
     }
     else return;
 
+
     if (document.URL.match(/http:\/\/[^\.]+\.pixiv\.net/gi))  //Pixiv Site
     {
         console.info("GIViewer: Pixiv");
-        var APIMetaNames = "illustID userID illustExt illustTitle unknown1 userName illust128URL unused1 unused2 illust480URL unused3 unused4 time tags software ratings totalRatings viewCount description pageCount unused5 unused6 bookmarkCount unknown2 userLoginName unused7 unknown3 unused8 unused9 userProfileImageURL endMarker";
-        var APIDataFull = makeStruct(APIMetaNames);
-        var MangaData = new (makeStruct("userID userName userProfileImageURL illustID illustTitle illustBaseURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount"))();
-
-        //http://www.pixiv.net/member_illust.php?mode=medium&illust_id=34645665
-        //http://spapi.pixiv.net/iphone/illust.php?illust_id=34117192
-        //http://spapi.pixiv.net/iphone/illust.php?PHPSESSID=673982_98a848b3f187cdb7b45df373a1c7d7e2&illust_id=34117192
-
-        var id = document.URL.replace(/.*big&illust_id=(\d+).*$/, "$1");
-        id = id.replace(/.*\/(\d+)((_big_p\d+)?|(_p\d+)?)\.(png|jpg|gif)$/, "$1");
-
+        var id = document.URL.replace(/.+i\d+\.pixiv\.net\/(img|c\/).+\/(\d+)(_.+)?\.\w+(\?.+)?/, "$2");
         if (isNaN(id)) return;
-        var m = document.cookie.match(/PHPSESSID=[^;]+/);
-        var sessionID = (m[0] != null) ? (m[0].split("=")[1]) : "";
-        var apiLink = "http://spapi.pixiv.net/iphone/illust.php?PHPSESSID=" + sessionID + "&illust_id=" + id;
 
+        if (document.URL.match("/profile/"))
+        {
+            ControlHQ.data.userName = id;
+            ControlHQ.data.userHome = "http://www.pixiv.net/member.php?id=" + id;
+            ControlHQ.data.userGallery = "http://www.pixiv.net/member_illust.php?id=" + id;
+            ControlHQ.data.userIcon = document.URL;
+            ControlHQ.createLinkPanel();
+        }
+        else
+        {
+            ControlHQ.data.imgTitle = id;
+            ControlHQ.data.imgURL = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id;
+            ControlHQ.createLinkPanel();
 
-        //Does not work with XMLHttpRequest as you are unable to set the Referer.
-        GM_xmlhttpRequest({
-            url: apiLink,
-            method: "GET",
-            timeout: 15000,
-            headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
-            onload: function (response)
-            {
-                if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
+            GM_xmlhttpRequest({
+                url: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id,
+                method: "GET",
+                timeout: 15000,
+                headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
+                onload: function (response)
                 {
-                    var rawlist = response.responseText.split(",");
-                    var datalist = new APIDataFull();
-                    var dataNames = APIMetaNames.split(" ");
-                    for (var i = 0, n = 0; rawdata = rawlist[i], i < rawlist.length; i++)
+                    if (response.status == 200)
                     {
-                        var j = 0;
-
-                        while ((rawdata.split('"').length - 1) % 2 == 1) //Quote number should always be even. If odd then you need to combine
+                        var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                        var script = doc.evaluate("//div[@id='wrapper']//script[contains(text(),'pixiv.context.illustId')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                        if (script)
                         {
-                            j++;
-                            rawdata += "," + rawlist[i + j]; //We add the comma that we removed as it was part of the value
-                        }
-                        i += j; //We appended items
-                        rawdata = rawdata.replace(/^"|"$/g, ""); //We remove any starting or ending quotes
-                        datalist[dataNames[n]] = rawdata;
-                        n++;
-                    }
-
-                    for (var i = 0; i < dataNames.length; i++)
-                    {
-                        //Null if item exists otherwise it would be undefined.
-                        if (MangaData[dataNames[i]] === null)
-                        {
-                            MangaData[dataNames[i]] = datalist[dataNames[i]];
-                            if (MangaData[dataNames[i]].length > 0 && !isNaN(MangaData[dataNames[i]])) MangaData[dataNames[i]] = parseInt(MangaData[dataNames[i]]);
+                            unsafeWindow.eval("pixiv = {}; pixiv.context= {};");
+                            unsafeWindow.eval(script.innerHTML);
+                            ControlHQ.data.imgTitle = unsafeWindow.pixiv.context.illustTitle;
+                            ControlHQ.data.userIcon = doc.querySelector(".user-image").src.replace(".jpg", "_s.jpg");
+                            ControlHQ.data.userHome = "http://www.pixiv.net/member.php?id=" + unsafeWindow.pixiv.context.userId;
+                            ControlHQ.data.userName = unsafeWindow.pixiv.context.userName;
+                            ControlHQ.data.userGallery = "http://www.pixiv.net/member_illust.php?id=" + unsafeWindow.pixiv.context.userId;
+                            ControlHQ.createLinkPanel();
                         }
                     }
-
-                    var baseURL = datalist["illust480URL"];
-                    baseURL = baseURL.replace(/(\/mobile\/)([^\/]+)$/gi, "/$2"); //Remove "Mobile" if one exists
-
-                    if (MangaData.pageCount > 0) MangaData.illustBaseURL = document.URL;
-                    else MangaData.illustBaseURL = baseURL.replace(/(\/\d+)[^\/]+\.(jpe?g|gif|png)(\?\d+)?$/gi, "$1." + datalist.illustExt); //Remove extra information
-
-                    ControlHQ.data.imgTitle = MangaData.illustTitle;
-                    ControlHQ.data.imgURL = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + MangaData.illustID;
-                    ControlHQ.data.userIcon = MangaData.userProfileImageURL;
-                    ControlHQ.data.userHome = "http://www.pixiv.net/member.php?id=" + MangaData.userID;
-                    ControlHQ.data.userName = MangaData.userName;
-                    ControlHQ.data.userGallery = "http://www.pixiv.net/member_illust.php?id=" + MangaData.userID;
-
-                    ControlHQ.createLinkPanel();
                 }
-                else DisplayMessage("An error occurred");
-            }
-        });
+            });
+        }
     }
     else if (document.URL.match(/http:\/\/[^\.]+\.deviantart\.net/gi)) //deviantart
     {
