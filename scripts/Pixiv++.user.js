@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.71
+// @version             3.2.71b
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -11,11 +11,9 @@
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=big&illust_id*
-// @require		        https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
+// @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @require             http://localhost/uso/TimidScript/Libraries/Pixiv.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
-
 // @grant               GM_info
 // @grant               GM_getMetadata
 // @grant               GM_registerMenuCommand
