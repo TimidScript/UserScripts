@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.19
+// @version                 1.0.20
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
@@ -38,6 +38,9 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.20 (2015-05-14)
+ - Closed issues are now in red while open ones are in a brighter green.
+ - Small bug fixes
 1.0.19 (2015-04-13)
  - Added ability to remove a history record. This is used when certain dates get corrupted.
 1.0.18 (2015-01-22)
@@ -574,7 +577,8 @@ function SortScriptTable(e)
     {
         if (pathname.match(/^\/(issues|forum|all)/))
         {
-            TSL.addStyle("ForumHelper", "body .table .scriptIssues td {background-color: #CAF7CA !important;}"
+            TSL.addStyle("ForumHelper", "body .table .scriptIssues td {background-color: #A8FFA8 !important;}"
+                + "body .table .scriptIssues.closed td {background-color: #FDDADA !important;}"
                 + "body .table .newposts td:nth-child(4) {color: red;}"
                 + "body .table .newposts td:nth-child(4) sup {color: green;}"
                 + "#newIssues {background-color: #D6FDF7; padding: 1px 20px; font-weight: 600; color: green;}"
@@ -610,9 +614,12 @@ function SortScriptTable(e)
         }
         else xhrPage("https://openuserjs.org/issues", function (xhr, doc)
         {
-            window.sessionStorage.setItem("NewIssuesDoc", xhr.responseText);
-            window.sessionStorage.setItem("NewIssuesStamp", Date.now());
-            NewIssues(doc);
+            if (doc)
+            {
+                window.sessionStorage.setItem("NewIssuesDoc", xhr.responseText);
+                window.sessionStorage.setItem("NewIssuesStamp", Date.now());
+                NewIssues(doc);
+            }
         });
 
         function NewIssues(doc)
@@ -1115,7 +1122,11 @@ function SortScriptTable(e)
         for (var i = 0, post; i < posts.length, post = posts[i]; i++)
         {
             while (post.tagName != "TR") post = post.parentElement;
-            if (!doc) TSL.addClass(post, "scriptIssues");
+            if (!doc)
+            {
+                TSL.addClass(post, "scriptIssues");
+                if (post.querySelector(".label-danger")) TSL.addClass(post, "closed");
+            }
             var replies = parseInt(post.querySelector("td:nth-child(4)").textContent);
             var postTitle = post.querySelector(".tr-link-a").textContent;
             var postID = getUID(postTitle, "p");
