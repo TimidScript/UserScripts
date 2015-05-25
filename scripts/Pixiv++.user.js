@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.71b
+// @version             3.2.72
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -11,7 +11,7 @@
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/member_illust.php?mode=big&illust_id*
-// @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
+// @require		        https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
 // @grant               GM_info
@@ -41,6 +41,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.2.72 (2015-05-25)
+ - Bug fix: Removes the token information from image link (illustURL)
 3.2.71 (2015-05-16)
  - As of 11/05/2015 the Phone API (SPAPI) is dead. Using public API and HTML instead.
  - Single paged mangas will be marked as illustrations rather than manga as in most cases that is the case
@@ -54,6 +56,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - RequestBoomarkCount setting added
  - Huge amount of optimisation and removal of redundant code
  - IQDB now uses size 240 (240x480)
+ - Need to remove AgeRating searches. Should only be a filter.
 3.1.70 (2015-05-08)
  - Page count added in information box
 3.1.69 (2015-04-14)
@@ -315,7 +318,7 @@ var IllustrationLinker =
            if (el.src.match("/profile/")) metadata.userLoginName = el.src.match(/\/profile\/([^\/])+\//i)[1];
 
            metadata.illustID = id;
-           metadata.illustTitle = context.illustTitle //doc.querySelector('meta[property="og:title"]'); //Translation scripts mess with the title
+           metadata.illustTitle = context.illustTitle; //doc.querySelector('meta[property="og:title"]'); //Translation scripts mess with the title
            metadata.R18 = 0;
            if (doc.querySelector(".r-18")) metadata.R18 = 1;
            if (doc.querySelector(".r-18g")) metadata.R18 = 2;
@@ -358,7 +361,7 @@ var IllustrationLinker =
                if (el) //Single Image
                {
                    metadata.illustType = 1;
-                   metadata.illustURL = el.getAttribute("data-src");
+                   metadata.illustURL = el.getAttribute("data-src").replace(/\?.+/, "");
                }
                else //Manga
                {
