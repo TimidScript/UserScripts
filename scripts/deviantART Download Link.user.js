@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantArt Download Link
 // @namespace       TimidScript
-// @version         1.1.9b
+// @version         1.1.10
 // @description     Adds the Download Link on illustration page if missing, option to redirect to image file, removes open in new tab.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
@@ -38,9 +38,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.1.10 (2015-05-25)
+ - Added timer to direct links.
 1.1.9 (2015-03-21)
  - Bug fix due to changes in layout
- - Color of download button text becomes red if max download dimensions are not available
+ - Color of download button text becomes red if max download dimensions are not available or different
  - Added a button to allow direct open of full sized image
 1.0.8 (2014-08-29)
  - Added GM_update
@@ -66,6 +68,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
  - Add Missing download link
  - Stopped download from opening in new tab
 **************************************************************************************************/
+var Timeout, CurrentURL, DisplayImageOnly = GM_getValue("Open Full Size Image");
 
 function CreateDownloadButton(container, src, imgWidth, imgHeight)
 {
@@ -89,24 +92,33 @@ function CreateDownloadButton(container, src, imgWidth, imgHeight)
         btn.removeAttribute("rel");
         btn.cleaned = true;
 
+
+        btn.addEventListener("click", function (e)
+        {
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+
+            return false;
+        }, true);
+
         //btn.href += btn.href.replace(/\?token=.+/gi, "");
         //hb.button.href = hb.button.href.replace(/\?token.+/i, "");
-        if (GM_getValue("Open Full Size Image") == 1) btn.click();
+        redirectToImage();
     }
     else if (!btn)
     {
         console.log("Adding missing Download Link");
-        var a = document.createElement("a");
-        a.className = "dev-page-button dev-page-button-with-text dev-page-download";
-        a.id = "dDLButton";
+        var btn = document.createElement("a");
+        btn.className = "dev-page-button dev-page-button-with-text dev-page-download";
+        btn.id = "dDLButton";
 
-        if (imgWidth != undefined) a.innerHTML = '<i></i><span class="label" style="color:green;">Download</span><span class="text">' + imgWidth + " × " + imgHeight + '</span>';
-        else a.innerHTML = '<i></i><span class="label" style="color:green;>Download</span><span class="text">Flash</span>';
+        if (imgWidth != undefined) btn.innerHTML = '<i></i><span class="label" style="color:green;">Download</span><span class="text">' + imgWidth + " × " + imgHeight + '</span>';
+        else btn.innerHTML = '<i></i><span class="label" style="color:green;>Download</span><span class="text">Flash</span>';
 
-        a.href = src;
-        holder.appendChild(a);
-        a.cleaned = true;
-        if (GM_getValue("Open Full Size Image") == 1) a.click();
+        btn.href = src;
+        holder.appendChild(btn);
+        btn.cleaned = true;
+        redirectToImage();
     }
 
     if (btn && !btn.sized)
@@ -128,23 +140,18 @@ function CreateDownloadButton(container, src, imgWidth, imgHeight)
         }
     }
 
+    function redirectToImage()
+    {
+        var countdown = GM_getValue("Open Full Size Timer") * 1000;
+        if (DisplayImageOnly == 1 && countdown == 0) btn.click();
+        else Timeout = setTimeout(function ()
+        {
+            if (DisplayImageOnly == 1) btn.click();
+        }, countdown);
+    }
 
-    //if (document.getElementById("downloadLink")) document.getElementById("downloadLink").parentElement.removeChild(document.getElementById("downloadLink"));
-    //var dtc = container.getElementsByClassName("dev-title-container")[0];
-    //if (dtc)
-    //{
-    //    h1 = dtc.getElementsByTagName("h1")[0];
-    //    var dl = document.createElement("a");
-    //    dl.href = src;
-    //    dl.id = "downloadLink";
-    //    dl.textContent = "[❀]";
-    //    dl.style.marginRight = "5px";
-    //    h1.insertBefore(dl, h1.firstElementChild);
-    //}
     MO.observe();
 }
-
-
 
 // MutationObserver Control
 var MO =
@@ -177,33 +184,67 @@ var MO =
 
     callback: function (mutations)
     {
+        if (document.URL == CurrentURL)
+        {
+            CurrentURL = document.URL;
+            clearTimeout(Timeout);
+        }
+
         if (!document.getElementById("oh-menu-direct"))
         {
             GM_addStyle(".mItem {background-image: none; display: block; height: 49px; line-height: 49px; padding: 0px 10px; text-transform: uppercase; cursor: pointer;}");
-            GM_addStyle(".mItem.directImage {color: lime !important;}");
-            GM_addStyle(".mItem:hover {color: white !important;}");
+            GM_addStyle(".mItem > span {background-color:gray; padding: 8px 10px; border-radius: 3px; font-weight: 700;}");
+            GM_addStyle(".mItem > span > span {padding:4px 6px; background-color: lightgray; border-radius: 2px;}");
+            GM_addStyle(".mItem.directImage > span {background-color: #4A9E18 !important; color: white;} .mItem.directImage > span > span {background-color: #82DF4B;}");
+            GM_addStyle(".mItem:hover {background-color: black !important; color: white !important;}");
+            GM_addStyle(".mItem.directImage:hover {color: lime!important;}");
 
             var md = document.createElement("td");
-            md.innerHTML = '<a class="oh-l mItem">Direct</a>';
+            md.innerHTML = '<a class="oh-l mItem"><span>Direct <span>0</span></a>';
             md.className = "oh-keep";
             md.id = "oh-menu-direct";
             var ms = document.getElementById("oh-menu-submit");
             ms.parentElement.insertBefore(md, ms);
 
             if (GM_getValue("Open Full Size Image", 0) == 1) md.firstElementChild.className = "oh-l mItem directImage";
+            md.querySelector("span span").textContent = GM_getValue("Open Full Size Timer", 0);
 
-            md.onclick = function ()
+            md.onclick = function (e)
             {
                 if (GM_getValue("Open Full Size Image", 0) == 0)
                 {
                     GM_setValue("Open Full Size Image", 1);
+                    DisplayImageOnly = 1;
                     md.firstElementChild.className = "oh-l mItem directImage";
                 }
                 else
                 {
                     GM_setValue("Open Full Size Image", 0);
+                    DisplayImageOnly = 0;
                     md.firstElementChild.className = "oh-l mItem";
                 }
+            };
+
+            md.querySelector("span span").onclick = function (e)
+            {
+                e.stopImmediatePropagation();
+                switch (parseInt(this.textContent))
+                {
+                    case 0:
+                        this.textContent = 2;
+                        break;
+                    case 2:
+                        this.textContent = 4;
+                        break;
+                    case 4:
+                        this.textContent = 8;
+                        break;
+                    default:
+                        this.textContent = 0;
+                        break;
+                }
+
+                GM_setValue("Open Full Size Timer", this.textContent);
             };
         }
 
