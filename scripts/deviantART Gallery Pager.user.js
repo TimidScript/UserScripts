@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.9
+// @version         1.0.10
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @icon            https://i.imgur.com/1KiUR7g.png
 // @author          TimidScript
@@ -42,6 +42,8 @@ as a I can remember.
 ------------------------------------
  Version History
 ------------------------------------
+1.0.10 (2015-05-25)
+ - Changed the position of the auto-pager button.
 1.0.9 (2015-01-17)
  - Changed the position of the Auto-Pager button and enlarged.
  - Auto-paging button is always enabled now
@@ -111,15 +113,10 @@ function AddPagerSwitch()
         + "background: -moz-linear-gradient(center top , #A39F9F, #787473) repeat scroll 0% 0% transparent;"
         + "background: -webkit-linear-gradient(center top , #A39F9F, #787473) repeat scroll 0% 0% transparent;"
         + "background: -o-linear-gradient(center top , #A39F9F, #787473) repeat scroll 0% 0% transparent;}"
-        + ".pagerbtn {font-size: 14px !important; padding: 2px 5px;}"
+        + ".pagerbtn {font-size: 14px !important; padding: 2px 50px; margin: 0;}"
         );
 
     GM_addStyle(".smbutton-red2 {bac}");
-
-    var el = document.querySelector(".gruze-sidebar.left-sidebar, #gmi-GZone[gmi-name='sidebar1']");
-    if (el.style.display == "none") el = document.querySelector("#gmi-GMFrame_Gruser");
-    el.insertBefore(holder, el.firstElementChild);
-
 
     pagerSwitch.textContent = "Auto-Paging";
     pagerSwitch.value = GM_getValue("Paging", 1);
@@ -128,7 +125,6 @@ function AddPagerSwitch()
     pagerSwitch.onclick = function ()
     {
         //if (pagerSwitch.value == -1) return;
-
         if (pagerSwitch.value == 1)
         {
             pagerSwitch.value = 0;
@@ -140,6 +136,19 @@ function AddPagerSwitch()
             pagerSwitch.className = "pagerbtn smbutton smbutton-green";
         }
         GM_setValue("Paging", pagerSwitch.value);
+    }
+
+    var holder = document.createElement("div");
+    holder.setAttribute("style", "text-align:center;");
+    holder.appendChild(pagerSwitch);
+
+    var container = document.querySelector(".folderview-art");
+    if (!container) container = document.getElementById("gmi-ResourceStream");
+    //.folderview-art > .pagination-wrapper
+    if (container)
+    {
+        container.appendChild(holder);
+        container.insertBefore(holder, container.firstElementChild);
     }
 }
 
