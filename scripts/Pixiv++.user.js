@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.72
+// @version             3.2.73
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -41,6 +41,12 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.2.73 (2015-05-30)
+ - Outgoing links are direct now
+ - Bug Fix: getIllustID extracts id from unique urls now
+        http://www.pixiv.net/member_illust.php?illust_id=1111111&mode=medium
+        http://www.pixiv.net/member_illust.php?mode=medium&illust_id=1111111
+ - Bug Fix: Bookmark count was not being attained in "Works" page (3)
 3.2.72 (2015-05-25)
  - Bug fix: Removes the token information from image link (illustURL)
 3.2.71 (2015-05-16)
@@ -142,14 +148,14 @@ var IllustrationLinker =
 
        getIllustID: function (url)
        {
-           var id = url.replace(/.+www\.pixiv\.net\/member_illust\.php\?mode=\w+&illust_id=(\d+)(&.+)?/, "$1");
+           var id = url.replace(/.+www\.pixiv\.net\/member_illust\.php(\?.+&|\?)illust_id=(\d+)(&.+)?/, "$2");
            id = id.replace(/.+i\d+\.pixiv\.net\/(img|c\/).+\/(\d+)(_.+)?\.\w+(\?.+)?/, "$2");
            return id;
        },
 
        getIllust: function (id)
        {
-           var properties = "userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illustURL pageCount description time tags software ratings totalRatings viewCount bookmarkCount responseCount R18";
+           var properties = "userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illustURL pageCount description time tags tools ratings totalRatings viewCount bookmarkCount responseCount R18";
            var illust = Illustrations["i" + id];
 
            if (!illust)
@@ -301,6 +307,7 @@ var IllustrationLinker =
        -------------------------------------------------------------------------------------------*/
        setMetadata: function (id, doc)
        {
+           if (IsIllustrationPage) console.warn("Illustration page debugging: ", id);
            var el, m, context
            metadata = IllustrationLinker.getIllust(id),
            script = doc.evaluate("//div[@id='wrapper']//script[contains(text(),'pixiv.context.illustId')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -308,7 +315,6 @@ var IllustrationLinker =
            unsafeWindow.eval("pixiv" + id + "= {}; pixiv" + id + ".context= {};");
            script.innerHTML = script.innerHTML.replace(/pixiv\.context/g, "pixiv" + id + ".context");
            unsafeWindow.eval(script.innerHTML);
-
            context = unsafeWindow["pixiv" + id].context;
 
            el = doc.querySelector(".user-image");
@@ -324,7 +330,7 @@ var IllustrationLinker =
            if (doc.querySelector(".r-18g")) metadata.R18 = 2;
            metadata.pageCount = 1;
 
-           if (doc.querySelector(".tools")) metadata.software = doc.querySelector(".tools").textContent;
+           if (doc.querySelector(".tools")) metadata.tools = doc.querySelector(".tools").textContent;
 
 
            metadata.tags = doc.querySelector('meta[name="keywords"]').getAttribute("content");
@@ -437,7 +443,7 @@ var IllustrationLinker =
            {
                var bm = thumbnail.querySelector(".bookmark-count");
                if (bm) return parseInt(bm.textContent);
-               if (PAGETYPE == 1 || PAGETYPE == 7 || PAGETYPE == 8) return "?"; //Pages that do not contain bookmark information
+               if (PAGETYPE == 1 || PAGETYPE == 3 || PAGETYPE == 7 || PAGETYPE == 8) return "?"; //Pages that do not contain bookmark information
                else return 0;
            }
 
@@ -2708,6 +2714,12 @@ if (window.self === window.top)
         if (PAGETYPE >= 0)
         {
             console.info("Pixiv++ Initalising");
+            var els = document.querySelectorAll("a[href^='/jump']");
+            for (var i = 0; i < els.length; i++)
+            {
+                els[i].href = decodeURIComponent(els[i].href.replace(/.+\/jump\.php\?/, ""));
+                console.log("Direct URL: " + els[i].href);
+            }
             SideBar.initalise();
             PaginatorHQ.intialise();
         }
@@ -2728,25 +2740,5 @@ pixiv.context.ugokuIllustData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/
 pixiv.context.ugokuIllustFullscreenData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira1920x1080.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
 </script>
 
-
-http://www.pixiv.net/bookmark_detail.php?illust_id=
+http://pixiv.me/<userID>
 */
-
-
-/*
-function parseHTML(str)
-{
-    var doc;
-    try
-    {
-        // firefox and chrome 30+，Opera 12 will error
-        doc = new DOMParser().parseFromString(str, "text/html");
-    } catch (ex) { }
-
-    if (!doc)
-    {
-        doc = document.implementation.createHTMLDocument("");
-        doc.querySelector("html").innerHTML = str;
-    }
-    return doc;
-}*/
