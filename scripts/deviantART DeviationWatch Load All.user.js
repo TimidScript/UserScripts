@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.14
+// @version             1.0.15
 // @description         Loads all deviations in Inbox DeviantWatch
 // @icon                https://i.imgur.com/1KiUR7g.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
 // @license             Creative Commons BY-NC-SA + Please notify me if distributing
-// @include             http://www.deviantart.com/messages/*
+// @include             http://www.deviantart.com/notifications/*
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_DeviationWatch_Load_All
 // @grant               GM_xmlhttpRequest
@@ -28,7 +28,7 @@ Script's Homepage:              Check homepages below
 TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 https://greasyfork.org/users/1455-timidscript
                                 https://monkeyguts.com/author.php?un=timidscript
-                                
+
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
 
@@ -36,6 +36,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.15 (2014-06-04)
+ - Bug fix to changes in DeviantArt url from "messages" to "notifications".
 1.0.14 (2014-08-29)
  - Added GM_update
 1.0.13 (2014-08-19)
@@ -61,23 +63,23 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 1.0.6
  -Bug: When you click Deviations for the first time and then the "Display all Devations"
     it does not load the last set of thumbnails. Reason is unknown. You can avoid this by clicking
-    something from the inbox menu then back to "Deviations", after you press the button all 
+    something from the inbox menu then back to "Deviations", after you press the button all
     deviations will load on the table.
  -Small fix, displays a error log if deviations are not all loaded as error is captured now.
 1.0.5 (05-03-2013)
  -Changed the way it gets the thumbnails. It now waits for the nav link bar to be added
-    before it tries to load all thumbnails in once go into the table.         
- -OffSet is set according to the first time the button pressed. Had a mechanism where it was 
-    used but decided to remove it. It is still in place for future assurance. 
- -Increased the time wait between each load to 1000ms    
+    before it tries to load all thumbnails in once go into the table.
+ -OffSet is set according to the first time the button pressed. Had a mechanism where it was
+    used but decided to remove it. It is still in place for future assurance.
+ -Increased the time wait between each load to 1000ms
 1.0.3 (26-02-2013)
  -Added 500ms timeout between each page fetch.
  -Added summary box at the bottom.
 1.0.2 (25-02-2013)
  -Changed the behaviour. You now need to press the button
-    to get a table of all images.     
+    to get a table of all images.
  -No need to set offset. It no longer uses it
- -New Feature: You are able to drag and drop thumbnails to Favourites 
+ -New Feature: You are able to drag and drop thumbnails to Favourites
  -New Feature: Set hideInbox to true if you wish to hide it when view deviations
 **************************************************************************************************
 */
@@ -102,24 +104,23 @@ document.addEventListener("DOMSubtreeModified", CheckURL, true);
 
 /*
 =========================================================================================================
-    Checks URL of document to see if its deviations first page. 
+    Checks URL of document to see if its deviations first page.
 =========================================================================================================*/
 function CheckURL()
 {
-    if (document.getElementsByClassName("alink nav2").length > 0 && (document.URL == "http://www.deviantart.com/messages/#view=deviations" || document.URL == "http://www.deviantart.com/messages/#view=deviations&page=1"))
+    if (document.getElementsByClassName("alink nav2").length > 0 && (document.URL == "http://www.deviantart.com/notifications/#view=deviations" || document.URL == "http://www.deviantart.com/notifications/#view=deviations&page=1"))
     {
         if (!document.getElementById("deviantScriptButton"))
         {
             button = document.createElement("button");
             button.id = "deviantScriptButton"
             button.setAttribute("style", "width: 100%; height: 25px;");
-            button.textContent = "Display all Deviations";            
+            button.textContent = "Display all Deviations";
             button.onclick = LoadTable;
             gmi = document.getElementById("gmi-ResourceStream");
             gmi.parentNode.insertBefore(button, gmi);
             table.style.height = 0;
             table.innerHTML = "";
-
         }
     }
     else if (document.getElementById("deviantScriptButton"))
@@ -130,7 +131,7 @@ function CheckURL()
 
 /*
 =========================================================================================================
-    Removes unwanted bars. 
+    Removes unwanted bars.
 =========================================================================================================*/
 function RemoveUnwantedBars()
 {
@@ -170,7 +171,7 @@ function DeviationsCount()
 
 /*
 =========================================================================================================
-    Loads deviations into the table     
+    Loads deviations into the table
 =========================================================================================================*/
 function LoadTable(event)
 {
@@ -208,9 +209,9 @@ var dispatchMouseEvent = function (target, var_args)
 =========================================================================================================*/
 function GetThumbnail(thumbnail)
 {
-    //console.log(thumbnail.getAttribute("marked"));    
+    //console.log(thumbnail.getAttribute("marked"));
     if (!thumbnail.getAttribute("marked"))
-    {        
+    {
         thumbnail.setAttribute("marked", "true");
         var d = document.createElement("div");
         d.innerHTML = thumbnail.innerHTML;
@@ -219,8 +220,8 @@ function GetThumbnail(thumbnail)
 
         table.appendChild(d);
         deviationCount++;
-        if (d.className.indexOf("mcbox-thumb-deviation"))        
-            d.getElementsByClassName("mcb-app")[0].innerHTML = "<strong>" + deviationCount + "</strong>";       
+        if (d.className.indexOf("mcbox-thumb-deviation"))
+            d.getElementsByClassName("mcb-app")[0].innerHTML = "<strong>" + deviationCount + "</strong>";
     }
 }
 
@@ -229,7 +230,7 @@ function GetThumbnail(thumbnail)
     Parses through the thumbnails after display deviations button is pressed
 =========================================================================================================*/
 function GetThumbnails()
-{       
+{
     var thumbnails = document.querySelectorAll("div.mcbox-thumb-deviation, div.mcbox-thumb-orphaned");
     var errorCount = 0;
     pageCount++;
@@ -282,13 +283,13 @@ function AddSummaryBar()
 
 function CheckIfImagesAreLoaded()
 {
-    var nav = document.getElementsByClassName("alink nav2");    
+    var nav = document.getElementsByClassName("alink nav2");
     if (nav && nav.length == 1)
     {
         thumbnails = gmi.getElementsByClassName("mcbox ch mcbox-thumb mcbox-thumb-deviation");
-        images = gmi.getElementsByTagName("img");        
+        images = gmi.getElementsByTagName("img");
         if (thumbnails.length <= images.length)
-        {            
+        {
             clearInterval(intervalIDCheck);
             GetThumbnails();
             if (GetNextPage()) intervalIDCheck = setInterval(CheckIfImagesAreLoaded, 200);
