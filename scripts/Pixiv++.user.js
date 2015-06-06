@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.73
+// @version             3.2.74
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
@@ -41,6 +41,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.2.74 (2015-06-06)
+ - Bug fixes to support own illustrations both public and hidden
 3.2.73 (2015-05-30)
  - Outgoing links are direct now
  - Bug Fix: getIllustID extracts id from unique urls now
@@ -317,11 +319,14 @@ var IllustrationLinker =
            unsafeWindow.eval(script.innerHTML);
            context = unsafeWindow["pixiv" + id].context;
 
-           el = doc.querySelector(".user-image");
            metadata.userID = context.userId; //el.parentElement.href.match(/member\.php\?id=(\d+)/i)[1];
            metadata.userName = context.userName; //el.nextElementSibling.textContent;
-           metadata.userProfileImageURL = el.src;
-           if (el.src.match("/profile/")) metadata.userLoginName = el.src.match(/\/profile\/([^\/])+\//i)[1];
+           el = doc.querySelector(".user-image");
+           if (el)
+           {
+               metadata.userProfileImageURL = el.src;
+               if (el.src.match("/profile/")) metadata.userLoginName = el.src.match(/\/profile\/([^\/])+\//i)[1];
+           }
 
            metadata.illustID = id;
            metadata.illustTitle = context.illustTitle; //doc.querySelector('meta[property="og:title"]'); //Translation scripts mess with the title
@@ -333,11 +338,16 @@ var IllustrationLinker =
            if (doc.querySelector(".tools")) metadata.tools = doc.querySelector(".tools").textContent;
 
 
+
            metadata.tags = doc.querySelector('meta[name="keywords"]').getAttribute("content");
-           metadata.illust128URL = doc.querySelector('meta[property="og:image"]').getAttribute("content");;
-           //metadata.time
+
+           metadata.illust128URL = doc.querySelector('meta[property="og:image"]');
+           metadata.illust128URL = (metadata.illust128URL) ? metadata.illust128URL.getAttribute("content") : doc.querySelector('img[class="original-image"]').getAttribute("data-src");
+
+           metadata.description = doc.querySelector('meta[property="og:description"]');
+           metadata.description = (metadata.description) ? metadata.description.getAttribute("content") : doc.querySelector("._unit .caption").innerHTML;
+
            metadata.bookmarkCount = "?";
-           metadata.description = doc.querySelector('meta[property="og:description"]').getAttribute("content");
 
            metadata.viewCount = parseInt(doc.querySelector(".view-count").textContent);
            metadata.ratings = parseInt(doc.querySelector(".rated-count").textContent);
