@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.29
+// @version         1.1.30
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
@@ -36,6 +36,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.30 (2015-06-08)
+ - Bug Fix: "Report Bug" and "Review" review button always visible even when there is no need.
 1.1.29 (2015-06-08)
  - Using json to populate the table. This allows the extraction of version number.
  - Changed the feedback system rating interface. Review by default is hidden.
@@ -132,60 +134,57 @@ script-list-set
         pathname = decodeURIComponent(document.location.pathname);
 
     OrangifyPage();
-    if (pathname.match(/(\w|-)+\/forum\/(post|discussion)\//))
+    if (pathname.match(/(\w|-)+\/forum\/(post|discussion)\//) && document.getElementById("Form_Rating"))
     {
-        var po = document.querySelector(".PostOptions, .CommentOptions");
-        if (po)
-        {
-            TSL.addStyle("", ".choiceButtons {text-align:center; width: 80px;}");
+        TSL.addStyle("", ".choiceButtons {text-align:center; width: 80px;}");
 
-            var lbl = po.querySelector("label"),
-            ratings = po.querySelectorAll(".RadioLabel"),
+        var po = document.querySelector(".PostOptions, .CommentOptions"),
+            lbl = po.querySelector("label"),
+            options = po.querySelectorAll(".RadioLabel"),
             hld = document.createElement("div"),
             btn1 = document.createElement("input"),
             btn2 = document.createElement("input");
 
-            btn1.className = btn2.className = "choiceButtons  Button";
-            btn1.value = "Report bug"; btn1.style.marginRight = "4px";
-            btn2.value = "Review";
+        btn1.className = btn2.className = "choiceButtons  Button";
+        btn1.value = "Report bug"; btn1.style.marginRight = "4px";
+        btn2.value = "Review";
 
-            btn1.onclick = function ()
-            {
-                btn1.style.color = "#2DCD05";
-                btn2.style.color = "";
+        btn1.onclick = function ()
+        {
+            btn1.style.color = "#2DCD05";
+            btn2.style.color = "";
 
-                ratings[0].setAttribute("style", "margin-top: 5px !important;");
-                ratings[4].removeAttribute("style");
+            options[0].setAttribute("style", "margin-top: 5px !important;");
+            options[4].removeAttribute("style");
 
-                ratings[1].setAttribute("style", "display: none !important;"); //ratings[1].style.display = "none !important";
-                ratings[2].setAttribute("style", "display: none !important;");
-                ratings[3].setAttribute("style", "display: none !important;");
-                lbl.setAttribute("style", "display: none !important;");
+            options[1].setAttribute("style", "display: none !important;"); //options[1].style.display = "none !important";
+            options[2].setAttribute("style", "display: none !important;");
+            options[3].setAttribute("style", "display: none !important;");
+            lbl.setAttribute("style", "display: none !important;");
 
-                ratings[0].click();
-            }
-
-            btn2.onclick = function ()
-            {
-                btn1.style.color = "";
-                btn2.style.color = "#2DCD05";
-
-                ratings[0].setAttribute("style", "display: none !important;");
-                ratings[4].setAttribute("style", "display: none !important;");
-
-                ratings[1].removeAttribute("style");
-                ratings[2].removeAttribute("style");
-                ratings[3].removeAttribute("style");
-                lbl.removeAttribute("style");
-
-                ratings[3].click();
-            }
-
-            hld.appendChild(btn1);
-            hld.appendChild(btn2);
-            po.insertBefore(hld, po.firstElementChild);
-            btn1.click();
+            options[0].click();
         }
+
+        btn2.onclick = function ()
+        {
+            btn1.style.color = "";
+            btn2.style.color = "#2DCD05";
+
+            options[0].setAttribute("style", "display: none !important;");
+            options[4].setAttribute("style", "display: none !important;");
+
+            options[1].removeAttribute("style");
+            options[2].removeAttribute("style");
+            options[3].removeAttribute("style");
+            lbl.removeAttribute("style");
+
+            options[3].click();
+        }
+
+        hld.appendChild(btn1);
+        hld.appendChild(btn2);
+        po.insertBefore(hld, po.firstElementChild);
+        btn1.click();
     }
     else if (pathname.match(/\/[\w-]+\/scripts\/\d+/)) //Script Page
     {
