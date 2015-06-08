@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.0.28b
-// @description     Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
+// @version         1.1.29
+// @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @icon            https://i.imgur.com/YKtX7ph.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -15,7 +15,6 @@
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_deleteValue
-// @grant           GM_xmlhttpRequest
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -37,6 +36,10 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.29 (2015-04-04)
+ - Using json to populate the table. This allows the extraction of version number.
+ - Changed the feedback system rating interface. Review by default is hidden.
+ - Supporting of versions "Obselete", "Depreciated", and "Defunct" similar to the script "OUJS-1"
 1.0.28b (2015-04-04)
  - Bug fix to handle site searches
 1.0.27 (2014-12-28)
@@ -129,7 +132,62 @@ script-list-set
         pathname = decodeURIComponent(document.location.pathname);
 
     OrangifyPage();
-    if (pathname.match(/\/[\w-]+\/scripts\/\d+/)) //Script Page
+    if (pathname.match(/(\w|-)+\/forum\/(post|discussion)\//))
+    {
+        var po = document.querySelector(".PostOptions, .CommentOptions");
+        if (po)
+        {
+            TSL.addStyle("", ".choiceButtons {text-align:center; width: 80px;}");
+
+            var lbl = po.querySelector("label"),
+            ratings = po.querySelectorAll(".RadioLabel"),
+            hld = document.createElement("div"),
+            btn1 = document.createElement("input"),
+            btn2 = document.createElement("input");
+
+            btn1.className = btn2.className = "choiceButtons  Button";
+            btn1.value = "Report bug"; btn1.style.marginRight = "4px";
+            btn2.value = "Review";
+
+            btn1.onclick = function ()
+            {
+                btn1.style.color = "#2DCD05";
+                btn2.style.color = "";
+
+                ratings[0].setAttribute("style", "margin-top: 5px !important;");
+                ratings[4].removeAttribute("style");
+
+                ratings[1].setAttribute("style", "display: none !important;"); //ratings[1].style.display = "none !important";
+                ratings[2].setAttribute("style", "display: none !important;");
+                ratings[3].setAttribute("style", "display: none !important;");
+                lbl.setAttribute("style", "display: none !important;");
+
+                ratings[0].click();
+            }
+
+            btn2.onclick = function ()
+            {
+                btn1.style.color = "";
+                btn2.style.color = "#2DCD05";
+
+                ratings[0].setAttribute("style", "display: none !important;");
+                ratings[4].setAttribute("style", "display: none !important;");
+
+                ratings[1].removeAttribute("style");
+                ratings[2].removeAttribute("style");
+                ratings[3].removeAttribute("style");
+                lbl.removeAttribute("style");
+
+                ratings[3].click();
+            }
+
+            hld.appendChild(btn1);
+            hld.appendChild(btn2);
+            po.insertBefore(hld, po.firstElementChild);
+            btn1.click();
+        }
+    }
+    else if (pathname.match(/\/[\w-]+\/scripts\/\d+/)) //Script Page
     {
         TSL.addStyle("", "#script-content {background-color: #F9ECDB; margin: 0; padding-bottom: 5px;} #script-links > li:hover { background-color: yellow; } .current {background-color: #F9ECDB !important;}");
         TSL.addStyle("", ".install-link {background-color: #F7A207;} .install-help-link {background-color: #F9C565 !important;}");
@@ -372,9 +430,9 @@ script-list-set
         switch (document.body.getAttribute("PageType"))
         {
             case "PersonalProfile":
-                cell.innerHTML += '<span class="filterL" style="margin-left: 10px;">L</span>'
-                                + '<span class="filterU">U</span>'
-                                + '<span class="filterD">D</span>';
+                cell.innerHTML += '<span class="filterL" style="margin-left: 10px;" title="Library Filter">L</span>'
+                                + '<span class="filterU" title="Unlisted Filter">U</span>'
+                                + '<span class="filterD" title="Deleted Filter">D</span>';
                 break;
             case "UserProfile":
                 cell.innerHTML += '<span class="filterL" style="margin-left: 10px;">L</span>';
@@ -425,6 +483,12 @@ script-list-set
     ---------------------------------------------------------------------------*/
     function populateScriptTable(clear)
     {
+        TSL.addStyle("Al28dj21", ".thetitle a {margin-right: 2px !important;}");
+        TSL.addStyle("Al28dj23", ".theversion {font-size: xsmall; margin-right: 4px;}");
+        TSL.addStyle("Al28dj24", ".scriptL td:nth-child(2) {background-color: #DFF9C6 !important;}");
+        TSL.addStyle("Al28dj26", "tr[depreciated='true'] td:nth-child(2) {background-color: #FBEDE1 !important;}");
+        TSL.addStyle("Al28dj27", ".scriptD td:nth-child(2) {background-color: #F9E8E8 !important;}");
+
         var tbody = document.getElementById("script-table").getElementsByTagName("tbody")[0];
         if (clear) tbody.innerHTML = "";
 
@@ -453,7 +517,7 @@ script-list-set
 
         for (var i = 0; i < scripts.length; i++)
         {
-            var script = scripts[i];
+            var script = getScriptHTML(i);
             if (script.deleted && !separator)
             {
                 TSL.addStyle("", "#ToggleDisplayClick {border: 1px solid; background-color: #FBDDD2 !important; color: orangered; cursor: pointer; height: 15px; font-weight: 600;}");
@@ -467,12 +531,11 @@ script-list-set
             }
 
             row = tbody.insertRow(-1);
-            row.className = "";
+            row.id = "s" + script.id;
             cell = row.insertCell(-1);
 
             var num = i + offset;
             cell.textContent = (prefix + num).slice((-1 * prefix.length));
-
 
             cell = row.insertCell(-1);
             var el = document.createElement("div");
@@ -483,16 +546,19 @@ script-list-set
             {
                 el.innerHTML += '<span class="type-library" />';
                 row.className += "scriptL ";
+                row.setAttribute("library", "true");
             }
             else if (script.type == "unlisted")
             {
                 el.innerHTML += '<span class="type-unlisted" />';
                 row.className += "scriptU ";
+                row.setAttribute("unlisted", "true");
             }
             if (script.deleted)
             {
                 el.innerHTML += '<span class="type-deleted" />';
                 row.className += "scriptD ";
+                row.setAttribute("deleted", "true");
             }
             if (document.body.getAttribute("PageType") == "ListingPage")
             {
@@ -515,6 +581,12 @@ script-list-set
         }
 
         filterTable();
+
+        function getScriptHTML(idx)
+        {
+            var properties = "name id author authorID description rating ratings installsDaily installsTotal dateCreated dateUpdated type deleted";
+            return makeStruct(properties, scripts[idx]);
+        }
     }
 
 
@@ -551,10 +623,12 @@ script-list-set
         m = (m) ? m[1] : "";
 
         if (m != tag || (document.URL.indexOf("per_page=100") < 0)) document.querySelector(("td[tag='" + tag + "']")).click();
-        else document.querySelector(("td[tag='" + tag + "']")).setAttribute("class", "currentSort");
+        else
+        {
+            document.querySelector(("td[tag='" + tag + "']")).setAttribute("class", "currentSort");
+            getScriptVersionNumbers();
+        }
     }
-
-
 
     /*  Table header is clicked, get the correct script sorting
     ---------------------------------------------------------------------------*/
@@ -573,7 +647,7 @@ script-list-set
     ---------------------------------------------------------------------------*/
     function getScriptListing(tag)
     {
-        var isListingPage = (document.body.getAttribute("PageType") == "ListingPage")
+        var isListingPage = (document.body.getAttribute("PageType") == "ListingPage");
 
         if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/[\w-]+\/scripts(\/by-site\/[\w\.\-_]+|\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
@@ -636,11 +710,110 @@ script-list-set
 
                     getScripts(doc);
                     populateScriptTable(true);
+                    getScriptVersionNumbers();
                 }
 
                 header.parentElement.removeAttribute("busy");
-                console.log("getScriptListing OUT: " + url)
+                console.warn("getScriptListing OUT: " + url);
             }
-        })();
+        });
+    }
+
+    function getScriptVersionNumbers()
+    {
+        var jsonURL = document.URL.replace(/(\?|$)/, ".json$1");
+        console.log("JSON: " + jsonURL);
+
+        //Get version number
+        GM_xmlhttpRequest({
+            url: jsonURL,
+            method: "GET",
+            timeout: 15000,
+            headers: {
+                "User-agent": navigator.userAgent,
+                "Host": "greasyfork.org",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.5"
+            },
+            onload: function (xhr)
+            {
+                if (xhr.status == 200)
+                {
+                    var scripts = JSON.parse(xhr.responseText);
+                    if (!Array.isArray(scripts)) scripts = scripts.scripts;
+                    for (var i = 0; i < scripts.length; i++)
+                    {
+                        var script = scripts[i];
+                        var el = document.querySelector("#s" + script.id + " .thetitle");
+                        if (el)
+                        {
+                            var s = document.createElement("span");
+                            s.className = "theversion";
+                            s.innerHTML = "(<strong>" + script.version + "</strong>)";
+                            if (script.version.match(/defunct|depreciated|obselete/i))
+                                el.parentElement.parentElement.setAttribute("depreciated", "true");
+                            el.insertBefore(s, el.firstElementChild.nextElementSibling);
+                        }
+                    }
+
+                    sortScripts();
+                }
+            }
+        });
+
+        function sortScripts()
+        {
+            if (document.body.getAttribute("PageType") == "ListingPage") return;
+
+            var els = document.querySelectorAll('tr[depreciated = "true"]');
+            if (!els) return;
+
+            var before = document.getElementById("ToggleDisplayClick");
+            if (before) before = before.parentElement;
+
+            var tbody = document.getElementById("script-table").getElementsByTagName("tbody")[0];
+
+            document.createAttribute
+
+            TSL.addStyle("", "#Depreciated{border: 1px solid; background-color: #FBC783 !important; color: orangered; height: 15px; font-weight: 600;}");
+            var row = tbody.insertRow(-1),
+                cell = row.insertCell(-1);
+
+            cell.id = "Depreciated";
+            cell.setAttribute("colspan", 7);
+            cell.textContent = "Depreciated Scripts: No longer supported but on last update they were functioning";
+            tbody.insertBefore(row, before);
+
+            for (var i = 0; i < els.length; i++)
+            {
+                if (!TSL.hasClass(els[i], "scriptD")) tbody.insertBefore(els[i], before);
+            }
+
+            //Renumber the scripts
+            els = tbody.querySelectorAll('tr[id^="s"] td:first-child');
+            for (var i = 0; i < els.length; i++)
+            {
+                els[i].textContent = (i + 1).toString().lPad("0", els.length.toString().length);
+            }
+        }
+    }
+
+    function getScriptJSON(obj)
+    {
+        var properties = "bad_ratings code_updated_at code_url contribution_amount contribution_url created_at daily_installs description fan_score good_ratings id license locale name namespace ok_ratings redistributable support_url total_installs url version";
+        return makeStruct(properties, obj);
+    }
+
+    function makeStruct(keys, obj)
+    {
+        if (!obj) obj = {};
+
+        var names = keys.split(" ").sort();
+        for (var i = 0; i < names.length; i++)
+        {
+            obj[names[i]] = obj[names[i]];
+        }
+
+        return obj;
     }
 })();
