@@ -36,7 +36,7 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ----------------------------------------------
     Version History
 ----------------------------------------------
-1.1.29 (2015-04-04)
+1.1.29 (2015-06-08)
  - Using json to populate the table. This allows the extraction of version number.
  - Changed the feedback system rating interface. Review by default is hidden.
  - Supporting of versions "Obselete", "Depreciated", and "Defunct" similar to the script "OUJS-1"
