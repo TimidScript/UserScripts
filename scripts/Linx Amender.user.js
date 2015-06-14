@@ -1459,8 +1459,8 @@ var MO =
 
         if (MO.Observer && MO.disconnected)
         {
-            MO.Observer.observe(document, { subtree: true, childList: true });
             MO.disconnected = false;
+            MO.Observer.observe(document, { subtree: true, childList: true });
         }
     },
 
@@ -1479,7 +1479,7 @@ var MO =
     {
         if (MO.disconnected && !norules)
         {
-            setTimeout(MO.monitorChanges, 250);
+            MO.monitorChanges();
         }
     }
 };
@@ -1511,15 +1511,5 @@ else
         window.addEventListener("keyup", function (e) { if (e.keyCode == 120) DialogMain.show(e.altKey); }, true);
     }
 
-    window.onload = function ()
-    {
-        try
-        {
-            MO.Observer.disconnect();
-            MO.disconnected = true;
-        }
-        catch (err) { };
-        ParseNodes();
-    }
     setTimeout(ParseNodes, 250);
 })();
