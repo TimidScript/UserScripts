@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.2.27
+// @version         1.2.28
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -46,6 +46,14 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
+1.2.28 (2015-06-19)
+ - Removed cloneInto as it's no longer needed
+ - In flash controls are always visible
+ - Bug Fix: where controls are missing for deviantart images/swf that do not have id
+ - Remove postfix "?timidscript_*" from image source and url. The tag is used in a personal script that has been in beta phase since forever.
+ - Source links now have the prefix "timidscript_source" to avoid being picked up by downloaders
+ - Using styles to toggle visibility
+ - Removed the message box.
 1.2.27 (2015-05-14)
  - As of 11/05/2015 the Phone API (SPAPI) is dead. Using TSL-Pixiv library to get information from HTML.
  - Avoided the usage of Public API to bypass multiple login and timeout
@@ -86,25 +94,6 @@ var BGCOLORS = JSON.parse(GM_getValue("BGColors", '["#0D0D0D", "#D3CFCF", "#E2FF
 var ScrollBarThickness = TSL.getScrollBarThickness();
 //#endregion Global Variables
 
-function DisplayMessage(msg)
-{
-    //text-align: center; display:inline-block; width: 100px; background-color: #D3D3D3; border: 1;
-    var msgBox = document.getElementById("msgBox");
-    if (!msgBox)
-    {
-        msgBox = document.createElement("span");
-        msgBox.id = "msgBox";
-        msgBox.setAttribute("style", "position: fixed; bottom: 30px; left: 10px; min-width: 200px; background-color: #D3D3D3; padding-left:10px; border-style: solid; border-color: #FF0000; text-align:left;");
-        document.body.appendChild(msgBox);
-    }
-    msgBox.style.visibility = null;
-    var div = document.createElement("div");
-    div.textContent = msg;
-    msgBox.appendChild(div);
-
-    setTimeout(function (el) { if (el.parentElement.children.length == 1) el.parentElement.style.visibility = "hidden"; el.parentElement.removeChild(el); }, 2000, div);
-}
-
 function CreatePanelControl(text, href)
 {
     var panel = document.createElement("span");
@@ -130,8 +119,8 @@ function CreatePanelControlImage(href, imgSrc)
 function CreatePanelControlIcon(text, classname, href)
 {
     var panel = CreatePanelControl(null, href);
-    panel.firstElementChild.setAttribute("src", href);
-    panel.firstElementChild.href = "";
+    //panel.firstElementChild.setAttribute("src", href);
+    panel.firstElementChild.href = href;
     var div = document.createElement("div");
     div.className = classname;
     panel.firstElementChild.appendChild(div);
@@ -211,19 +200,12 @@ var ControlHQ =
         document.body.style.backgroundColor = BGCOLORS[BGColor];
     },
 
-    registerLinkPanel: function ()
-    {
-        var linkPanel = document.getElementById("LinkPanel");
-        linkPanel.setAttribute("style", "position: fixed; left: 10px; top: 10px; z-index:100; border: 1px ridge gray; padding: 5px; background-color:lightgray;");
-
-        ControlHQ.infoID = setTimeout(function () { document.getElementById("LinkPanel").style.visibility = "hidden"; }, 1500);
-    },
-
     createLinkPanel: function ()
     {
         TSL.removeNode("LinkPanel");
         var panel;
         var linkPanel = document.createElement("div");
+        linkPanel.setAttribute("style", "position: fixed; left: 10px; top: 10px; z-index:100; border: 1px ridge gray; padding: 5px; background-color:lightgray;");
         linkPanel.id = "LinkPanel";
 
         var data = ControlHQ.data;
@@ -275,32 +257,21 @@ var ControlHQ =
             TSL.addStyle(null, ".sourceGoogle { background-image: url(data:image/x-icon;base64,AAABAAIAEBAAAAEAIABoBAAAJgAAACAgAAABACAAqBAAAI4EAAAoAAAAEAAAACAAAAABACAAAAAAAAAEAAASCwAAEgsAAAAAAAAAAAAA9IVCSvSFQuf0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hULk9IVCSvSFQub0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQuf0hUL/9IVC//SFQv/0hUL/9Y1O//rIq//+7+f//eXX//vUvf/7z7X/96Fu//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//vYwv/97OH/9ZRZ//SFQv/0hUL/9IhG//zbx//3om7/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/97uX/+buW//SFQv/0hUL/9IVC//SFQv/5upT/+9O6//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/+b6b//zezP/0iEf/9IVC//SFQv/1klf//ezh//vPtP/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/3qXr/+siq//m8lv/5wqD//vTu//3t4//1klb/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0h0b//vbx//zi0//1j1H/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/2nmn/+bmS/////v/4sIX/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/5uJH///v5//eoef/1jU//+82y//afav/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL//vXw//vOs//0hUL/9IVC//ekcf/96+D/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//728v/4sIX/9IVC//SFQv/4s4n///v4//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/6yKn/+byX//SFQv/0hkT//eTV//vWv//0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IZE//m6lP/5u5b//OHQ///+/f/6y6//96d3//SFQv/0hUL/9IVC//SFQv/0hULm9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hULm9IVCSfSFQub0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hULm9IVCSQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAIAAAAEAAAAABACAAAAAAAAAQAAASCwAAEgsAAAAAAAAAAAAA9IVCAPSFQif0hUKt9IVC8vSFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQvL0hUKt9IVCJ/SFQgD0hUIo9IVC7/SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hULv9IVCKPSFQq30hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUKt9IVC8fSFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQvP0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9YtL//i2jv/828f//vLr///7+P///Pv//vTu//3n2v/6zbH/96Nw//SFQ//0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//ekcv/+8+z////////////+9fD/+9K5//m9mf/4to7/+buV//vSuf/++PT//OPT//aYYP/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/2l13///r3/////////fv/+b2Z//SIRv/0hUL/9IVC//SFQv/0hUL/9IVC//WNT//84M///vXv//aZYf/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//vPtP////////////i0i//0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//WQUv///Pr//OPU//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL//eTV///////+9O7/9IVD//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//3m2P//////9ppi//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/718H///////3s4f/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL//vDn///////4soj/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//erff////////38//WTWP/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//iziv////////////iwhf/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//rMsP///////eXW//WSVv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/4sYb///z7/////////Pv/9ZFV//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//ixhv/+8Of//vn1//rMsP/4rH//9plh//WQUv/1j1L/+s2x//////////////////m9mf/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SGQ//2nmn/+buW//vNsv/82sb//e3j/////////////////////v/5wZ//9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/83Mj////////////++fb/+K+C//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9ZRZ/////////////vTt//aaYv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/1lFr////////////6xqf/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//ehbf/70bj//end//3o2////v3///////3l1//0iEb/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/5wqD////////////96t7/96Z2//WOUP/2nWf//NvH//zcyP/1i0z/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/96l6/////////////vLr//WPUf/0hUL/9IVC//SFQv/0h0b//end//3k1f/0iUn/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/8387////////////4sYf/9IVC//SFQv/0hUL/9IVC//SFQv/6w6L///////nBn//0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC///69////////vj1//SIR//0hUL/9IVC//SFQv/0hUL/9IVC//m+mv///////e3j//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL///r3///////8387/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/+syw///////++fb/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/95NX///////vUvP/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/97OH///////7y6//0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//i2jv///////N/O//SFQv/0hUL/9IVC//SFQv/0hUL/96Nx////////////+s2x//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IdF//zh0P//+/j/9ZJW//SFQv/0hUL/9IVC//SKSv/96t7///////738v/1k1f/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9YxN//vUvf/96+D/96Z0//WNT//3om///ebY/////////Pv/+LKI//WVW//0h0X/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//agbP/7zbL//enc//749P////////////////////////////3r4P/3p3f/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hULx9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC8/SFQq30hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUKt9IVCJ/SFQu/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC7/SFQif0hUIA9IVCJfSFQq30hULx9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC//SFQv/0hUL/9IVC8fSFQq30hUIl9IVCAIAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAB);}");
             TSL.addStyle(null, ".sourceTinyEye { background-image: url(data:image/x-icon;base64,AAABAAEAEBAAAAAAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAACxeDVItHk157iAO//WtW7/482G/+XOhv/lzYL/1L98/5mTcf8UKUP/CwsM/xwcG/8AAAD/AAAA/wAAAOcAAA5ItHo25LV7Nv+1ezb/tXs2/8GPSf/EoGj/s5hw/6KPdf93bWT/ZFdK/2daTP9hVEj/XU9C/zIpH/8EAgH/AAAA5LV7Nv+1ezb/tXs2/7V7Nv+1ezb/uIA+/8eea//Wtof/48eU/+PKkv/iyJP/4MeV/9u/kf/HqHz/rI1p/3tmT/+1ezb/tXs2/7V7Nv+1ezb/zKV0/+PKlP/hxXr/zbFk/8esYf/VuW7/3sFz/+LFdf/gw3P/48Z3/+nPjv/dwJD/tXs2/7V7Nv+1ezb/y6Nx/9/Gg/+NekT/V0wv/5uSfP95cmH/JiES/zAqGv86Mh3/W08v/3lpQP+Wg03/zLFn/7V7Nv+1ezb/uoVH/8myg/+VgUr/AAAA/2xpZf/i4+X/+fn5/0JAO/8AAAD/LCkl/768uf+/vr3/Mi8q/x0ZEP+2fDf/tXs2/6WGX/+pklP/JyES/0dFQP96eHX/W1tc//////9ua2X/DAoH/6Wim/+EhIX//////6ejnP8AAAD/wo1F/8GLQ//Conf/tZ1e/wYDAP9pZmH/6+vs/9/f3/////3/Pjoz/zo2Lf/Jycb/UlJT//////+xraX/AAAA/8OORv/Djkb/1bF+/821cf83MSD/MC4s//n49P//////l5OJ/wMCAP9IRDr/////////////////ZGBW/wAAAP/Djkb/w45G/8qkcP+sllr/wKtw/zw5Mf9MSUb/VlNM/wIBAP8AAAD/FxUP/9PQyv/8+/j/rKig/wkHA/8AAAD/w45G/8OORv+1jlj/l4hm/8etZv/QuHf/m4xk/21hSP9PRjX/Mi0j/xsYFf87NzD/VFBK/xUVFf8FBwz/CQsQ/8OORv/Djkb/g2I1/8Oea//Mt4z/uJxU/56hhv92nLj/l6ut/56poP+gpJL/mJeC/5aMbP+bjmv/m49t/52Qbv/Djkb/uItP/05PUP+zjlv/yptc/9C3jP9gYFP/ABVH/wAzc/8IP4T/FUuM/xhSmP99lZ3/5sRv/9S6cf/Lsmr/w45G/1B7rv8bbdT/LWy5/8OORv/Djkf/yqRw/zswIP8AAAD/AAAA/wAAAP8AAAD/Fyk8/5CKZ/+ahU3/modW/8GNReeEj5r/L37g/0Jxqf/Cjkf/w45G/8OORv/Fllb/clYw/zoqFf8hGQ3/IhwU/x4ZFf9HRUD/vaJ5/86pdee+ikU/woxEyZ6HZ/+8jEz/w45G/8OORv/Djkb/w45G/8OORv/Djkb/v4tF/8ORTf/GlFD/xJBJ/8KMRMm+ikU/gAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAE=); }");
 
-            panel = CreatePanelControlIcon("IQDB", "sourceIQDB", "http://www.iqdb.org/?url=" + data.imgSrc);
+            panel = CreatePanelControlIcon("IQDB", "sourceIQDB", "http://www.iqdb.org/?url=" + data.imgSrc + "&timidscript_source");
             linkPanel.appendChild(panel);
-            panel = CreatePanelControlIcon("SauceNAO", "sourceSauce", "http://saucenao.com/search.php?db=999&url=" + data.imgSrc);
+            panel = CreatePanelControlIcon("SauceNAO", "sourceSauce", "http://saucenao.com/search.php?db=999&url=" + data.imgSrc + "&imidscript_source");
             linkPanel.appendChild(panel);
-            panel = CreatePanelControlIcon("ImgOps", "sourceImgOps", "http://imgops.com/" + data.imgSrc.replace("http://", ""));
+            panel = CreatePanelControlIcon("ImgOps", "sourceImgOps", "http://imgops.com/" + data.imgSrc.replace("http://", "") + "?imidscript_source");
             linkPanel.appendChild(panel);
-            panel = CreatePanelControlIcon("Google", "sourceGoogle", " http://google.com/searchbyimage?hl=en&site=search&image_url=" + data.imgSrc);
+            panel = CreatePanelControlIcon("Google", "sourceGoogle", " http://google.com/searchbyimage?hl=en&site=search&image_url=" + data.imgSrc + "&imidscript_source");
             linkPanel.appendChild(panel);
-            panel = CreatePanelControlIcon("TinyEye", "sourceTinyEye", "http://www.tineye.com/parse?url=" + data.imgSrc);
+            panel = CreatePanelControlIcon("TinyEye", "sourceTinyEye", "http://www.tineye.com/parse?url=" + data.imgSrc + "&imidscript_source");
             linkPanel.appendChild(panel);
-
-            //Add & sign to links to avoid them being picked up by download managers.
-            linkPanel.onmouseover = function ()
-            {
-                var links = this.getElementsByTagName("a");
-                for (var i = 0; i < links.length; i++) if (links[i].getAttribute("src")) links[i].href = links[i].getAttribute("src");
-            }
-            linkPanel.onmouseout = function ()
-            {
-                var links = this.getElementsByTagName("a");
-                for (var i = 0; i < links.length; i++) if (links[i].getAttribute("src")) links[i].href = "";
-            }
 
             linkPanel.appendChild(panel);
             document.body.appendChild(linkPanel);
-            ControlHQ.registerLinkPanel();
+
+            ControlHQ.infoID = setTimeout(function () { document.getElementById("LinkPanel").style.visibility = "hidden"; }, 1500);
         }
     },
 
@@ -534,9 +505,6 @@ var ControlHQ =
                 break;
         }
 
-        if (mode > 0) DisplayMessage(msg + ((!enabled) ? " ON" : " OFF"));
-        else DisplayMessage("Resize Off");
-
         ControlHQ.readjustImageSize();
         GM_setValue("ResizeMode", ResizeMode);
     },
@@ -603,10 +571,10 @@ var ControlHQ =
     console.info("Generic Image Viewer");
 
     //Removes old settings
-    var Version = 1002;
+    var Version = 1002, pathname = document.location.pathname;
     if (GM_getValue("Version", 0) != Version)
     {
-        var names = cloneInto(GM_listValues(), window);
+        var names = GM_listValues();
         for (var i = 0; name = names[i], i < names.length; i++)
         {
             var skipNames = ["USO-Updater"];
@@ -620,10 +588,17 @@ var ControlHQ =
         GM_setValue("ResizeMode", 0)
     }
 
-    if (document.URL.match(/.+\.swf(\?\d+)?$/) && document.body.children[0].tagName == "EMBED")
+    //Cleans the URL links of the postfix "?timidscript_". This tag is used in a personal script that is still in beta phase (2015/06)
+    if (document.URL.match(/[\?&]timidscript_[_a-z]+$/i))
     {
-        ControlHQ.flash = !(document.getElementsByTagName("embed")[0] == null);
-        if (!ControlHQ.flash) return;
+        //window.history.pushState(null, "", document.URL.replace(/[\?&]timidscript_[_a-z]+$/i, ""));
+        var imgs = document.getElementsByTagName("img");
+        for (var i = 0; i < imgs.length; i++) imgs[i].src = imgs[i].src.replace(/[\?&]timidscript_[_a-z]+$/i, "");
+    }
+
+    if (pathname.match(/.+\.swf(\?\d+)?$/) && document.body.children[0].tagName == "EMBED")
+    {
+        ControlHQ.flash = true;
     }
     else if (document.URL.indexOf("http://lohas.nicoseiga.jp/o/") == 0)
     {
@@ -640,7 +615,6 @@ var ControlHQ =
         ControlHQ.displayImage(imgs[0].src);
     }
     else return;
-
 
     if (document.URL.match(/http:\/\/[^\.]+\.pixiv\.net/gi))  //Pixiv Site
     {
@@ -693,17 +667,22 @@ var ControlHQ =
     {
         console.info("GIViewer: deviantArt");
 
-        var id = document.URL.replace(/\.(jpg|bmp|png|gif|swf)$/gi, "");
+        var user, id = pathname.replace(/\.(jpg|bmp|png|gif|swf)$/gi, "");
         id = id.substr(id.length - 7).toLowerCase();
-        if (id[0] != "d") return;
+        if (id[0] == "d")
+        {
+            ControlHQ.data.imgTitle = "Illustration Page";
+            ControlHQ.data.imgURL = "http://www.deviantart.com/gallery/#/" + id;
+            user = pathname.replace(/.+_by_(.+)-d.+$/i, "$1");
+            user = user.replace(/_/g, "-");
+        }
+        else
+        {
+            user = pathname.match(/_by_(\w+).swf$/i);
+            if (user) user = user[1];
+        }
 
-        ControlHQ.data.imgTitle = "Illustration Page";
-        ControlHQ.data.imgURL = "http://www.deviantart.com/gallery/#/" + id;
-
-        var user = document.URL.replace(/.+_by_(.+)-d.+$/i, "$1");
-        user = user.replace(/_/g, "-");
-
-        if (user != document.URL)
+        if (user)
         {
             ControlHQ.data.userName = user;
             ControlHQ.data.userHome = "http://" + user + ".deviantart.com";
