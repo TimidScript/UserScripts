@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.27c
+// @version         3.0.28
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @icon            https://i.imgur.com/WznrrlJ.png
 // @author          TimidScript
@@ -55,9 +55,10 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.28 (2015-06-19)
+ - Removed onload event (changes 3.0.26) and MO.reConnect timeout to fix the issue mentioned in previous 3.0.26.
 3.0.27 (2015-05-22)
  - A fix for uBlock users. https://greasyfork.org/en/forum/discussion/4308/
- - Removed onload event (changes 3.0.26) and MO.reConnect timeout to fix the issue mentioned in previous 3.0.26.
 3.0.26 (2015-04-22)
  - Bug Fix: MO does not always capture changes when document is loaded in background. Added onload event which parses
  all links.
