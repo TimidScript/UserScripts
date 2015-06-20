@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.31
+// @version         1.1.32
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -40,6 +40,8 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.32 (2015-06-20)
+ - Remove link tag on mouse down
 1.1.31 (2015-06-19)
  - Added tag "?timidscript_youtube" to screenshot links.
 1.1.30 (2015-04-25)
@@ -225,8 +227,26 @@ function CreateScreenshotLink(videoID)
         }
     });
 
+    ss.addEventListener("mousedown",RemoveLinkTag, true);
+    ss.addEventListener("mouseup",AddLinkTag, false);
 
     return ss;
+}
+
+function AddLinkTag(e)
+{
+    var link = e.target;
+    if (link.postfix)
+        setTimeout( function(){link.href += link.postfix;}, 250);
+}
+function RemoveLinkTag(e)
+{
+    var s, m = this.href.match(/\?timidscript_[_a-z0-9]+/i);
+    if (m)
+    {
+        this.postfix = m[0];
+        this.href = this.href.replace(/\?timidscript_[_a-z0-9]+/i, "");
+    }
 }
 
 function AddBlockButton(li)
