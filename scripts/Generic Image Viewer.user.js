@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         1.2.28
+// @version         1.2.29
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @icon            https://i.imgur.com/6yhR6jx.png
 // @author          TimidScript
@@ -46,6 +46,8 @@ Hotkeys:
 ------------------------------------
  Version History
 ------------------------------------
+1.2.29 (2015-06-20)
+ - Removed the comment for URL alteration
 1.2.28 (2015-06-19)
  - Removed cloneInto as it's no longer needed
  - In flash controls are always visible
@@ -591,7 +593,7 @@ var ControlHQ =
     //Cleans the URL links of the postfix "?timidscript_". This tag is used in a personal script that is still in beta phase (2015/06)
     if (document.URL.match(/[\?&]timidscript_[_a-z]+$/i))
     {
-        //window.history.pushState(null, "", document.URL.replace(/[\?&]timidscript_[_a-z]+$/i, ""));
+        window.history.pushState(null, "", document.URL.replace(/[\?&]timidscript_[_a-z]+$/i, ""));
         var imgs = document.getElementsByTagName("img");
         for (var i = 0; i < imgs.length; i++) imgs[i].src = imgs[i].src.replace(/[\?&]timidscript_[_a-z]+$/i, "");
     }
