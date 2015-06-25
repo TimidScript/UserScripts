@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantArt Download Link
 // @namespace       TimidScript
-// @version         1.1.11
+// @version         1.1.12
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -39,6 +39,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.1.12 (2015-06-21)
+ - Redirect counter interval went back to 1000ms
 1.1.11 (2015-06-19)
  - Bug Fix: Correct illustration data is collected. The site stores the content of the previous page which cause parsing problems.
  Fixed by checking if the main container display is set to none.
@@ -130,7 +132,7 @@ function CreateDownloadButton(src, imgWidth, imgHeight)
     if (btn && !btn.adjusted)
     {
         btn.adjusted = true;
-        console.log(imgHeight, imgWidth);
+        //console.log(imgHeight, imgWidth);
         if (imgWidth != undefined)
         {
             var size = document.evaluate('//body/div[not(contains(@style,"none"))]//div[contains(@class,"dev-metainfo-details")]//dt[contains(text(),"Resolution")]/following-sibling::dd[1]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -198,13 +200,17 @@ function CreateDownloadButton(src, imgWidth, imgHeight)
         {
             var s = document.querySelector("#oh-menu-direct span span")
             s.setAttribute("style", "color: white;background-color:red;border-color:red;font-weight:900;");
-
+            //console.log(countdown);
             var timer = 0,
                 interval = setInterval(function ()
                 {
                     timer++;
-                    s.textContent = (countdown - Math.floor(timer / 10));
-                    if (s.textContent == 0) btn.click();
+                    s.textContent = (countdown - timer);
+                    if (s.textContent == 0)
+                    {
+                        clearInterval(interval);
+                        btn.click();
+                    }
 
                     if (!DisplayImageOnly)
                     {
@@ -212,7 +218,7 @@ function CreateDownloadButton(src, imgWidth, imgHeight)
                         s.removeAttribute("style");
                         s.textContent = GM_getValue("ReDirect-Timer");
                     }
-                }, 100);
+                }, 1000);
         }
     }
 
