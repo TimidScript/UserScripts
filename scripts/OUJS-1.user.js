@@ -1,9 +1,8 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.21
+// @version                 1.0.22
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
-// @icon                    https://imgur.com/RCyq4C8.png
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
@@ -19,6 +18,7 @@
 // @grant                   GM_listValues
 // @grant                   GM_registerMenuCommand
 // @grant                   GM_setClipboard
+// @icon                    data:image/gif;base64,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
 // ==/UserScript==
 
 
@@ -38,6 +38,15 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.22 (2015-06-25)
+ - Bug Fix: Rating count is wrong when it is 0 and flagged
+ - Unhide the progress bar elements
+ - On script replaced the deceptive ratings bar and change the way information if conveyed.
+ - No longer altering the profile page URL. Removed the search box from profile page
+ - Columns sort order highlighted in listings
+ - Removed cloneInto as it's no longer needed
+ - Script icon now base64
+ - Removed scripts are no longer listed in the History Chart
 1.0.21 (2015-06-10)
  - Changed the colours of the issues on the forum
  - Changed progress-bar colouring
@@ -121,12 +130,6 @@ var HistoryMAX = parseInt(GM_getValue("HistoryMAX", 15)); //Stats histry, maximu
 console.info("OUJS-1 is Running");
 
 
-if (typeof cloneInto == "undefined")
-{
-    cloneInto = function(a, b) { return a;};
-}
-
-
 var DAY = 86400000;
 
 function ToggleIssuesView(discuss, issues)
@@ -170,7 +173,7 @@ function ClickedHistory(e)
 
 function DisplayStats(old, current)
 {
-    var totalI = totalIN = totalNew = totalRp = totalRn = 0, row, sups = document.querySelectorAll(".dStatP, .dStatN, .dStatNew");
+    var totalR, totalI = totalIN = totalNew = totalRp = totalRn = 0, row, sups = document.querySelectorAll(".dStatP, .dStatN, .dStatZ, .dStatNew");
 
     var tmpStamp = Date.now();
 
@@ -224,13 +227,15 @@ function DisplayStats(old, current)
         })() + "</sup>"));
 
 
-    if (totalRp || totalRn) document.querySelector(".table thead th:nth-child(3) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalRp > 0) ? "P" : "N") +   "'>"
-        + (totalRp + totalRn) +
+
+    totalR = totalRp + totalRn;
+    if (totalRp || totalRn) document.querySelector(".table thead th:nth-child(3) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalR == 0) ? "Z" : (totalR > 0) ? "P" : "N") +   "'>"
+        + totalR  +
         (function()
         {
             if (totalRp && totalRn)
             {
-                return "<span style='color:black;'>(<span style='color: green;'>" + totalRp + "</span><span style='color: red;'>" + totalRn + "</span>)</span>";
+                return "<span style='color:black;'>[<span style='color:green;'>" + totalRp + "</span><span style='color:red;'>"+ totalRn + "</span>]</span>";
             }
             return "";
         })() + "</sup>"));
@@ -264,11 +269,14 @@ function DisplayStats(old, current)
 
     while (arr.length > 0)
     {
-        el = document.createElement("li");
-        if (arr[0].installs < 0) el.innerHTML = arr[0].name + " (<span style='color:red; font-weight: 700;'>Removed</span>)";
-        else if (arr[0].isNew) el.innerHTML = arr[0].name + " (<span style='color:blue; font-weight: 700;'>" + arr[0].installs + "</span>)";
-        else el.innerHTML = arr[0].name + " (<span style='color:green; font-weight: 700;'>" + arr[0].installs + "</span>)";
-        ol.appendChild(el);
+        if (arr[0].installs >= 0)
+        {
+            el = document.createElement("li");
+            if (arr[0].installs < 0) el.innerHTML = arr[0].name + " (<span style='color:red; font-weight: 700;'>Removed</span>)";
+            else if (arr[0].isNew) el.innerHTML = arr[0].name + " (<span style='color:blue; font-weight: 700;'>" + arr[0].installs + "</span>)";
+            else el.innerHTML = arr[0].name + " (<span style='color:green; font-weight: 700;'>" + arr[0].installs + "</span>)";
+            ol.appendChild(el);
+        }
         arr.shift();
     }
 }
@@ -306,12 +314,10 @@ function addScriptListingNumbers()
 function SortScriptTable(e)
 {
     e.stopImmediatePropagation();
-    TSL.addStyle("OUJS-ORDER",".decen {background-color: rgba(200,255,255,0.6);} .ascen {background-color: rgba(255,220,255, 0.6);} ");
-    //#F0DDFD #DAFBF6 #C2F4F7 #FF0
 
-    var sortDescending = !TSL.hasClass(this.parentElement,"decen");
-    if (document.querySelector(".decen, .ascen")) TSL.removeClass(document.querySelector(".decen, .ascen"), "decen ascen");
-    TSL.addClass(this.parentElement, ((sortDescending) ? "decen" : "ascen"));
+    var sortDescending = !TSL.hasClass(this.parentElement,"descen");
+    if (document.querySelector(".descen, .ascen")) TSL.removeClass(document.querySelector(".descen, .ascen"), "descen ascen");
+    TSL.addClass(this.parentElement, ((sortDescending) ? "descen" : "ascen"));
 
     var tbody = document.querySelector(".table tbody");
     var rows = tbody.getElementsByClassName("tr-link");
@@ -410,7 +416,7 @@ function SortScriptTable(e)
     }
 
 
-    var id, ids = cloneInto(GM_listValues(), window);
+    var id, ids = GM_listValues();
     for (var i = ids.length - 1; i >= 0, id = ids[i]; i--)
     {
         if (id.match(/s\d\d\d\d/i) && !scriptIDsPresent[id])
@@ -470,7 +476,7 @@ function SortScriptTable(e)
     function getSavedUsernames()
     {
         var arr = new Array();
-        var names = cloneInto(GM_listValues(), window);
+        var names = GM_listValues();
 
         for (var i = 0; i < names.length; i++)
         {
@@ -490,10 +496,13 @@ function SortScriptTable(e)
     var timestamp = Date.now();
     var loggedUsername = "";
 
-    TSL.addStyle("ppp",".progress {background-color: red;} .progress-bar-good {background-color: green;} .progress * {color: white;}");
+    TSL.addStyle("ppp",".progress {background-color: #E74C3C;} .progress-bar-good {background-color: #499E49;} .progress * {color: white;}");
     TSL.addStyle("Image-Limiter", ".user-content img, .topic-post-contents img {max-width: 98%; border: 1px solid blue; padding: 2px; color: yellow; margin: 5px 0; box-shadow: 5px 5px 2px #888888;}"
         + ".topic-post-contents img:last-child {margin-bottom: 10px;}"
         );
+
+    TSL.addStyle("OUJS-ORDER",".descen {background-color: rgba(200,255,255,0.6);} .ascen {background-color: rgba(255,220,255, 0.6);} ");
+    //#F0DDFD #DAFBF6 #C2F4F7 #FF0
 
     if (document.querySelector(".fa-sign-out") != undefined)
     {
@@ -535,22 +544,47 @@ function SortScriptTable(e)
 
     document.querySelector("nav a[href='/forum']").href = "/all"; //Change the "Discuss" link to point directly to "All"
     var pathname = document.location.pathname;
-
-    if (pathname.match(/^\/$|^\/group\/\w+/))
+    if (pathname.match(/^\/$|^\/group\/\w+|^\/groups/))
     {
+        console.log("OUJS-1: Scripts/Library/Groups listings");
         addLibraryIcons();
         addScriptListingNumbers();
+
+
+        var columns = columns = ["name","installs","rating","updated"],
+            search = document.location.search,
+            orderBy = search.match(/orderBy=(\w+)/i);
+
+        orderBy = (orderBy) ? orderBy[1] : "rating";
+
+        if (search.match(/library/i)) columns = ["name","rating","updated"];
+        else if (pathname.match(/group/i)) columns = ["name","size","rating"];
+
+        TSL.addClass(document.querySelector(".panel > table >  thead th:nth-child(" +
+            (function()
+            {
+                for(var i = 0; i < columns.length; i++)
+                {
+                    console.log(i, columns[i].toLowerCase(), orderBy);
+                    if (orderBy.toLowerCase() == columns[i].toLowerCase()) return i + 1;
+                }
+                return 3;
+            }
+            )() + ")"), ((search.match(/orderDir=asc/i)) ? "ascen" : "descen"));
     }
     else if (pathname.match(/^\/users\/\w+$/i)) //User profile page
     {
+        console.log("OUJS-1: Profile page");
         var container = document.getElementsByClassName("container-fluid")[0];
-        document.getElementsByClassName("col-sm-4")[0].innerHTML += '<div class="panel panel-transparent"><div class="input-group col-xs-12"><form action="" method="get"><div class="input-group col-xs-12"><input name="q" placeholder="Search Profile Scripts" class="search form-control" value="" type="text"><span class="input-group-btn"><button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button></span></div></form></div></div>';
         getScriptListings(document.URL + "/scripts/?p=1");
 
-        window.history.pushState(null, "", document.URL + "/scripts"); //Change document URL
+        //Search box
+        //document.getElementsByClassName("col-sm-4")[0].innerHTML += '<div class="panel panel-transparent"><div class="input-group col-xs-12"><form action="" method="get"><div class="input-group col-xs-12"><input name="q" placeholder="Search Profile Scripts" class="search form-control" value="" type="text"><span class="input-group-btn"><button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button></span></div></form></div></div>';
+        //window.history.pushState(null, "", document.URL + "/scripts"); //Change document URL
     }
     else if (pathname.match(/^\/users\/.+\/comments/i)) //User profile comments page
     {
+        console.log("OUJS-1: Profile comments page");
         TSL.addStyle("UserScripts", ".topic-title .breadcrumb {margin-bottom: 0px;}");
     }
     else if (pathname.match(/^\/users\/\w+\/scripts/i)) //User script listing
@@ -562,10 +596,12 @@ function SortScriptTable(e)
     }
     else if (pathname.match(/^\/scripts\/[^\/]+\/[^\/]+$/i)) //Script page
     {
+        console.log("OUJS-1: Scripts page");
         scriptPageAmendRateArea();
     }
     else if (pathname.match(/^\/(all|issues|garage|corner|discuss|announcements)$/))
     {
+        console.log("OUJS-1: Forum");
         TSL.addStyle("NinjaStyle",".breadcrumb {padding: 8px; }  .breadcrumb > li + li {margin-left: 2px;} .breadcrumb > li + li:before { content: ''; padding: 0px;} .breadcrumb > li {width: 120px; text-align:center; border: 1px solid #CFD2D2; border-radius: 5px; } ");
         var el = document.querySelector(".breadcrumb");
         //el.className = "fishMonkey";
@@ -834,7 +870,6 @@ function SortScriptTable(e)
     {
         if (!prefix) prefix = "s";
         var id, ids = GM_listValues();
-        ids = cloneInto(GM_listValues(), window);
 
         for (var i = 0; i < ids.length, id = ids[i]; i++)
         {
@@ -858,7 +893,7 @@ function SortScriptTable(e)
         var meta = GM_getValue("USER-S:" + username);
         if (!meta) return;
 
-        TSL.addStyle("HistoricalColors", ".dStatN {color: red;} .dStatP {color: green;} .dStatNew {color: blue;} .dStatP:before, .dStatNew:before { content: '+';}");
+        TSL.addStyle("HistoricalColors", ".dStatZ {color: blue;} .dStatN {color: red;} .dStatP {color: green;} .dStatNew {color: blue;} .dStatP:before, .dStatNew:before { content: '+';} ");
 
         meta = JSON.parse(meta);
         var oldCurrent = meta.current;
@@ -1071,29 +1106,57 @@ function SortScriptTable(e)
 
     function scriptPageAmendRateArea()
     {
-        var counter = 0;
-        var vote = document.querySelector(".vote-area");
-        var fav = document.querySelector(".nav-pills li");
-
         var pd = document.querySelector(".col-sm-4.container-fluid .panel-default .panel-body");
+
+        //Encourage rating
         var notice = document.createElement("div");
         notice.textContent = "If you like the script, show your appreciation to the author by rating and favouring it.";
         notice.setAttribute("style", "padding: 0 10px; color: red; font-weight: 700; border-radius: 5px; background-color: yellow;");
         pd.appendChild(notice);
 
-        var rating = parseInt(pd.querySelector(".row p").textContent.match(/\d+$/)[0]),
-            votes = parseInt(pd.querySelector(".progress").textContent),
-            votesDown = ((votes - rating) / 2);
-
-        if (!isNaN(votes) && rating != votes)
+        //Progress bar replaced
+        notice = document.createElement("div");
+        notice.textContent = "The original ratings bar is somewhat deceptive to end user and is more useful to moderators, so it has been replaced. "
+                    + "The original bar included flagging which does not get removed by moderators until reaches a certain threshold. You can "
+                    + "toggle 'moderators' bar by clicking this notice.";
+        notice.setAttribute("style", "padding: 0 10px; color: blue; font-weight: 700; border-radius: 5px; background-color: cyan; cursor: pointer;");
+        notice.onclick = function()
         {
-            pd.querySelector(".progress-bar-good").innerHTML = votes + "<sup>(<span style='color: cyan;'>" + (votes - votesDown) + "</span>,<span style='color: hotpink;'>-" + votesDown + "</span>)</sup> Votes";
+            var bars = pd.querySelectorAll(".progress");
+            var view = bars[0].style.display == "none"
+
+            bars[0].style.display = (view) ? null : "none";
+            bars[1].style.display = (!view) ? null : "none";
+
+            GM_setValue("RatingsBar", (view) ? 2 : 1);
+        };
+        pd.appendChild(notice);
+
+
+        var rating = parseInt(pd.querySelector(".row p").textContent.match(/\d+$/)[0]),
+            votes = parseInt(pd.querySelector(".progress-bar-good").textContent),
+            votes = isNaN(votes) ? 0 : votes,
+            votesDown = (votes - rating) /2,
+            flag = parseInt(pd.querySelector(".progress-bar-danger").textContent),
+            bar1 = pd.querySelector(".progress"),
+            bar2 = bar1.cloneNode(true);
+
+        if (rating != votes)
+        {
+            //bar1.firstElementChild.innerHTML = votes + "<sup>(<span style='color: cyan;'>" + (votes - votesDown) + "</span>,<span style='color: hotpink;'>-" + votesDown + "</span>)</sup> Votes";
+            bar1.firstElementChild.innerHTML = "<span style='color: cyan;'>+" + (votes - votesDown) + "</span> | <span style='color: yellow;'>-" + votesDown + "</span>";
+            pd.querySelector(".row p").innerHTML = pd.querySelector(".row p").innerHTML.replace(/\d+$/,rating + " (" + votes + " Votes)");
         }
 
-        console.log(rating, votes);
+        bar1.lastElementChild.style.width = (100 - parseFloat(bar1.firstElementChild.style.width)) + "%"
+        bar1.style.display = GM_getValue("RatingsBar", 2) == 1 ?  null : "none";
 
-
-        //row.appendChild("");
+        bar1.parentNode.insertBefore(bar2, bar1);
+        bar2.firstElementChild.style.width = (100 / votes * (votes - votesDown))  + "%"
+        bar2.lastElementChild.style.width =  (100  - parseFloat(bar2.firstElementChild.style.width))  + "%"
+        bar2.firstElementChild.textContent = votes - votesDown;
+        bar2.lastElementChild.textContent = votesDown;
+        bar2.style.display = GM_getValue("RatingsBar", 2) == 2 ?  null : "none";
     }
 
     function xhrPage(url, callback)
@@ -1123,8 +1186,7 @@ function SortScriptTable(e)
     function getSavedUsernames()
     {
         var arr = new Array();
-        //var names = GM_listValues();
-        var names = cloneInto(GM_listValues(), window);
+        var names = GM_listValues();
 
         for (var i = 0; i < names.length; i++)
         {
