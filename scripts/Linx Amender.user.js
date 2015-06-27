@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.29
+// @version         3.0.30
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -55,6 +55,8 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.30 (2015-06-27)
+ - Bug Fix: Check if rule urls are defined
 3.0.29 (2015-06-27)
  - Changed styling of main table to make it transparent
  - URI script icon
@@ -1123,7 +1125,7 @@ function GetSiteRules(forceEnable)
     {
         var rule = rules[i];
         if (!forceEnable && (!rule.enabled || !rule.URLs)) continue;
-        var URLs = rule.URLs.split("\n");
+        var URLs = (rule.URLs) ? rule.URLs.split("\n") : "";
         var addRule = false;
 
         for (var j = 0; j < URLs.length; j++)
