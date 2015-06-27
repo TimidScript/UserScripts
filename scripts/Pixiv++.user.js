@@ -1,9 +1,8 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.74
+// @version             3.2.75
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
-// @icon                https://i.imgur.com/ZNBlNzI.png
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
@@ -22,6 +21,7 @@
 // @grant               GM_listValues
 // @grant               GM_deleteValue
 // @grant               GM_xmlhttpRequest
+// @icon                data:image/bmp;base64,Qk1GJwAAAAAAADYAAAAoAAAAMgAAADIAAAABACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//Oo13////////////////////////////79/L/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//Wsnj/////////////////7+DJ/86jXf+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/////////////////97Ck/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/////////////////3sKT/72EJ/+9hCf/vYQn/72EJ//Fk0L/zqNd/86jXf/Oo13/zqNd/86jXf/BjDX/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//////////////////ewpP/yZtQ/+LJof/v4Mn////////////////////////////////////////////38OT/4smh/8mbUP+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn//////////////////////////////////////////////////Po1//v4Mn/7+DJ//v38v///////////////////////////+/gyf/Jm1D/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf///////////////////////fw5P/iyaH/zqNd/8GMNf+9hCf/vYQn/72EJ/+9hCf/vYQn/8WTQv/auob/9/Dk///////////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//////////////////m0a7/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/2rqG///////////////////////m0a7/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/////////////////97Ck/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/yZtQ//v38v/////////////////iyaH/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/////////////////3sKT/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/1rJ4///////////////////////Oo13/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/7+DJ/////////////////+/gyf+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/////////////////97Ck/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//Oo13//////////////////////8WTQv+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/////////////////3sKT/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//38OT/////////////////2rqG/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/+/gyf/////////////////iyaH/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/////////////////97Ck/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/4smh/////////////////+/gyf+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//iyaH/xZNC/72EJ/+9hCf/////////////////3sKT/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//m0a7/////////////////7+DJ/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/2rqG///////Oo13/vYQn/72EJ//////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/+/gyf/////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/8GMNf/79/L//////9ayeP+9hCf/vYQn/////////////////97Ck/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/+/fy/////////////////9ayeP+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/2rqG////////////+/fy/8mbUP+9hCf/////////////////3sKT/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/9Kqa///////////////////////wYw1/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/5tGu////////////+/fy/8mbUP/////////////////ewpP/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/7+DJ/////////////////+bRrv+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/5tGu////////////+/fy/////////////////97Ck/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/9Kqa///////////////////////xZNC/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/1rJ4//v38v//////////////////////3sKT/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//Jm1D/+/fy/////////////////9q6hv+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/xZNC/+/gyf/////////////////38OT/zqNd/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/0qpr//v38v/////////////////m0a7/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/9ayeP/38OT/////////////////8+jX/9ayeP/Fk0L/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/zqNd/+rZvP//////////////////////2rqG/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ//Wsnj/8+jX///////////////////////38OT/7+DJ/+rZvP/q2bz/7+DJ//v38v//////////////////////7+DJ/8mbUP+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/yZtQ/97Ck//v4Mn////////////////////////////////////////////38OT/4smh/8mbUP+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/yZtQ/86jXf/Oo13/zqNd/86jXf/Oo13/wYw1/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/72EJ/+9hCf/vYQn/w==
 // ==/UserScript==
 
 /* Information
@@ -41,6 +41,11 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
     Version History
 ------------------------------------
+3.2.75 (2015-06-27)
+ - Bug Fix: Default preview time and height were switched
+ - Bug Fix: Removal of extra title from thumbnail
+ - Support for other 3rd party of login by adding full support of xhr to be default rather than GM_xhr. Default request method is now is xhr
+ - Removed iframe support
 3.2.74 (2015-06-06)
  - Bug fixes to support own illustrations both public and hidden
 3.2.73 (2015-05-30)
@@ -245,7 +250,7 @@ var IllustrationLinker =
                if (IllustrationLinker.processList.length == 0 && IllustrationLinker.simultaneousCalls == 0)
                {
                    IllustrationLinker.TIMEEND = new Date();
-                   console.log(IllustrationLinker.TIMEEND - IllustrationLinker.TIMESTART);
+                   //console.log(IllustrationLinker.TIMEEND - IllustrationLinker.TIMESTART);
                    clearInterval(IllustrationLinker.intervalID);
                    IllustrationLinker.intervalID = null;
                    RemoveMessage(IllustrationLinker.msgHandle);
@@ -633,24 +638,48 @@ var IllustrationLinker =
                return;
            }
 
-           GM_xmlhttpRequest({
-               url: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id,
-               method: "GET",
-               timeout: 15000,
-               headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
-               onload: function (response)
+           if (Settings.requestMethod & 4)
+           {
+               GM_xmlhttpRequest({
+                   url: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id,
+                   method: "GET",
+                   timeout: 15000,
+                   //headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
+                   headers: { "User-agent": navigator.userAgent, "Accept": "text/html" },
+                   onload: function (response)
+                   {
+                       if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
+                       {
+                           var END = new Date();
+                           //console.info(END - START);
+                           var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                           IllustrationLinker.setMetadata(id, doc);
+                       }
+
+                       finalise();
+                   }
+               });
+           }
+           else
+           {
+               var oReq = new XMLHttpRequest();
+               oReq.open("GET", "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id, true);
+               oReq.responseType = "text";
+               oReq.timeout = 15000;
+               oReq.onload = function (e)
                {
-                   if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
+                   if (oReq.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
                    {
                        var END = new Date();
                        //console.info(END - START);
-                       var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                       var doc = new DOMParser().parseFromString(oReq.response, "text/html");
                        IllustrationLinker.setMetadata(id, doc);
                    }
 
                    finalise();
-               }
-           });
+               };
+               oReq.send();
+           }
 
            function finalise()
            {
@@ -673,25 +702,49 @@ var IllustrationLinker =
 
            function getBookmarkCount()
            {
-               GM_xmlhttpRequest({
-                   url: "http://www.pixiv.net/bookmark_detail.php?illust_id=" + id,
-                   method: "GET",
-                   timeout: 15000,
-                   headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
-                   onload: function (response)
-                   {
-                       if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
+               if ((IsIllustrationPage && (Settings.requestMethod & 8)) ||
+                   (!IsIllustrationPage && (Settings.requestMethod & 4)))
+               {
+                   GM_xmlhttpRequest({
+                       url: "http://www.pixiv.net/bookmark_detail.php?illust_id=" + id,
+                       method: "GET",
+                       timeout: 15000,
+                       //headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
+                       headers: { "User-agent": navigator.userAgent, "Accept": "text/html" },
+                       onload: function (response)
                        {
-                           var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                           if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
+                           {
+                               var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                               var bm = doc.querySelector(".bookmark-count");
+                               if (bm) illust.bookmarkCount = parseInt(bm.textContent);
+                               else illust.bookmarkCount = 0;
+                           }
+                           finalise();
+                       }
+                   });
+               }
+               else
+               {
+                   var oReq = new XMLHttpRequest();
+                   oReq.open("GET", "http://www.pixiv.net/bookmark_detail.php?illust_id=" + id, true);
+                   oReq.responseType = "text";
+                   oReq.timeout = 15000;
+                   oReq.onload = function (e)
+                   {
+                       if (oReq.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
+                       {
+                           var doc = new DOMParser().parseFromString(oReq.response, "text/html");
                            var bm = doc.querySelector(".bookmark-count");
                            if (bm) illust.bookmarkCount = parseInt(bm.textContent);
                            else illust.bookmarkCount = 0;
                        }
-                       finalise();
-                   }
-               });
-           }
 
+                       finalise();
+                   };
+                   oReq.send();
+               }
+           }
            /*
             There is no way of finding out the extension of manga files in the new naming method using
             the illustration page. We need to make another http request.
@@ -700,25 +753,52 @@ var IllustrationLinker =
            {
                if (illust.illust128URL.indexOf("/img-master/") > 0) //New naming format
                {
-                   GM_xmlhttpRequest({
-                       url: "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0",
-                       method: "GET",
-                       timeout: 15000,
-                       headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
-                       onload: function (response)
-                       {
-                           if (response.status == 200)
+                   if ((IsIllustrationPage && (Settings.requestMethod & 8)) ||
+                    (!IsIllustrationPage && (Settings.requestMethod & 4)))
+                   {
+                       GM_xmlhttpRequest({
+                           url: "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0",
+                           method: "GET",
+                           timeout: 15000,
+                           //headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
+                           headers: { "User-agent": navigator.userAgent, "Accept": "text/html" },
+                           onload: function (response)
                            {
-                               var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                               if (response.status == 200)
+                               {
+                                   var doc = new DOMParser().parseFromString(response.responseText, "text/html");
+                                   try
+                                   {
+                                       illust.illustURL = doc.getElementsByTagName("img")[0].src;
+                                   }
+                                   catch (err) { }
+                               }
+                               finalise();
+                           }
+                       });
+                   }
+                   else
+                   {
+                       var oReq = new XMLHttpRequest();
+                       oReq.open("GET", "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0", true);
+                       oReq.responseType = "text";
+                       oReq.timeout = 15000;
+                       oReq.onload = function (e)
+                       {
+                           if (oReq.status == 200)
+                           {
+                               var doc = new DOMParser().parseFromString(oReq.response, "text/html");
                                try
                                {
                                    illust.illustURL = doc.getElementsByTagName("img")[0].src;
                                }
                                catch (err) { }
                            }
+
                            finalise();
-                       }
-                   });
+                       };
+                       oReq.send();
+                   }
                }
                else finalise(); //Old naming format
            }
@@ -817,7 +897,7 @@ var Pager =
             var pageNumber = PaginatorHQ.getPageNumber(this.nextPageURL);
             var msg = DisplayMessage("Requesting page [" + pageNumber + "] ...");
 
-            if (Settings.pageFetchingMethod == 1)
+            if (Settings.requestMethod & 2)
             {
                 GM_xmlhttpRequest({
                     url: this.nextPageURL,
@@ -845,7 +925,7 @@ var Pager =
                     onerror: function (response) { RemoveMessage(msg); Pager.pageErrorTimeout("ERROR: Page [" + pageNumber + "] failed request", response) }
                 });
             }
-            else if (Settings.pageFetchingMethod == 2)
+            else
             {
                 var oReq = new XMLHttpRequest();
                 oReq.open("GET", this.nextPageURL, true);
@@ -868,30 +948,6 @@ var Pager =
                 oReq.ontimeout = function (response) { RemoveMessage(msg); Pager.pageErrorTimeout("ERROR: Timeout on Page [" + pageNumber + "].", response) };
                 oReq.onerror = function (response) { RemoveMessage(msg); Pager.pageErrorTimeout("ERROR: Page [" + pageNumber + "] failed request", response) };
                 oReq.send();
-            }
-            else
-            {
-                var iframe = document.getElementById("HiddenPagerFrame");
-                if (!iframe)
-                {
-                    iframe = document.createElement("iframe");
-                    iframe.id = "HiddenPagerFrame";
-                    iframe.style.display = "none";
-
-                    iframe.onload = function ()
-                    {
-                        Pager.requestingPage = false;
-                        if (Pager.ageRatingChanged) return;
-
-                        var doc = iframe.contentDocument || iframe.contentWindow.document;
-                        Pager.NextPageReceived(doc, PaginatorHQ.getPageNumber(this.src));
-                    }
-
-                    document.body.appendChild(iframe);
-                }
-
-                iframe.src = this.nextPageURL;
-                setTimeout(function () { RemoveMessage(msg); }, 3000);
             }
         },
 
@@ -1494,7 +1550,7 @@ var PaginatorHQ =
         ----------------------------------------------------------------------------------------*/
         updateVisibilityOfElement: function (thumbnail)
         {
-            var el = thumbnail.getElementsByClassName("title")[0];
+            var el = thumbnail.getElementsByClassName("title2")[0];
             if (el) el.style.display = (Settings.display.illustTitle) ? null : "none";
             else if (PAGETYPE == 1 || PAGETYPE == 3 || PAGETYPE == 4 || PAGETYPE == 5) //Bookmark page
             {
@@ -1528,24 +1584,28 @@ var PaginatorHQ =
                 link = thumbnail.getElementsByTagName("a")[0],
                 metadata = IllustrationLinker.getIllust(id);
             //We clean up here. Removing anything we do not desire or wanting to recreate
-            var el = thumbnail.getElementsByClassName("count-list");
-            if (el.length == 1) thumbnail.removeChild(el[0]);
-            var el = thumbnail.getElementsByClassName("f10");
-            if (el.length == 1) thumbnail.removeChild(el[0]);
-            el = thumbnail.getElementsByClassName("bookmark_artist");
-            if (el.length == 1) thumbnail.removeChild(el[0]);
+            //var el = thumbnail.getElementsByClassName("count-list");
+            //if (el.length == 1) thumbnail.removeChild(el[0]);
+            //var el = thumbnail.getElementsByClassName("f10");
+            //if (el.length == 1) thumbnail.removeChild(el[0]);
+            //el = thumbnail.getElementsByClassName("bookmark_artist");
+            //if (el.length == 1) thumbnail.removeChild(el[0]);
+            TSL.removeNode(thumbnail.querySelector(".count-list"));
+            TSL.removeNode(thumbnail.querySelector(".f10"));
+            TSL.removeNode(thumbnail.querySelector(".bookmark_artist"));
+            TSL.removeNode(thumbnail.querySelector("h1.title"));
 
             //Cleans image link by first removing any unwanted text. This is the case in Bookmarks.
             var brs = thumbnail.getElementsByTagName("br");
             while (brs.length > 0) brs[0].parentElement.removeChild(brs[0]);
 
 
-            if (link.getElementsByClassName("title").length == 0)
+            if (link.getElementsByClassName("title2").length == 0)
             {
                 link.innerHTML = link.innerHTML.replace(/(<img[^>]*>).*/gi, "$1");
                 link.style.display = "block";
                 var h1 = document.createElement("h1");
-                //h1.className = "title";
+                h1.className = "title2";
                 h1.textContent = metadata.illustTitle;
                 link.appendChild(h1);
             }
@@ -1999,34 +2059,59 @@ var SideBar =
 
             // Settings to hide according to the page type.
 
-            if (Settings.displayHidden & 2) iDoc.getElementById("hiddenCtrl").style.display = null;
+            if (Settings.displayHidden & 2)
 
-            if (PAGETYPE > 1 && Settings.displayHidden & 2)
-            {
-                var offset = iDoc.getElementById("pagingOffset");
-                offset.value = Settings.pagingOffset;
-                offset.onfocus = function (e) { e.target.select(); }
-                offset.oninput = function ()
+                if (PAGETYPE > 1 && Settings.displayHidden & 2)
                 {
-                    if (offset.value.length > 5 || isNaN(offset.value[offset.value.length - 1])) offset.value = offset.value.substring(0, offset.value.length - 1);
-                    if (isNaN(offset.value) || offset.value < 100) Settings.pagingOffset = 100;
-                    else Settings.pagingOffset = offset.value;
-                    Settings.saveSettings();
-                };
+                    var hc = iDoc.getElementById("hiddenCtrl");
+                    hc.style.display = null;
+                    hc.style.textAlign = "left";
+                    var offset = iDoc.getElementById("pagingOffset");
+                    offset.value = Settings.pagingOffset;
+                    offset.onfocus = function (e) { e.target.select(); }
+                    offset.oninput = function ()
+                    {
+                        if (offset.value.length > 5 || isNaN(offset.value[offset.value.length - 1])) offset.value = offset.value.substring(0, offset.value.length - 1);
+                        if (isNaN(offset.value) || offset.value < 100) Settings.pagingOffset = 100;
+                        else Settings.pagingOffset = offset.value;
+                        Settings.saveSettings();
+                    };
 
-                var sel = iDoc.getElementById("pageFetchMethod");
-                sel.selectedIndex = Settings.pageFetchingMethod - 1;
-                sel.onchange = function (e)
+                    hc.removeChild(iDoc.getElementById("pageFetchMethod"));
+                    hc.title = "If checked implies usage of GM_xmlhttpRequest rather than XMLHttpRequest.\nP > Next page fetching.\nA > All pages apart from illustration page. \nI > Illustration page"
+                    hc.innerHTML += '<select id="gbm" title="Get Bookmark on..."><option>None</option><option>All-I</option><option>All+I</option></select>'
+                    hc.innerHTML += 'P<input type="checkbox" />A<input type="checkbox" />I<input type="checkbox" />';
+
+
+                    var els = iDoc.getElementById("gbm");
+                    els.selectedIndex = GM_getValue("RequestBookmarkCount", 0);
+                    els.onchange = function ()
+                    {
+                        GM_setValue("RequestBookmarkCount", this.selectedIndex);
+                    };
+
+                    var els = hc.querySelectorAll("input[type=checkbox]");
+                    for (var i = 0; i < els.length; i++)
+                    {
+                        els[i].checked = (Settings.requestMethod & Math.pow(2, i + 1));
+                        els[i].onclick = function ()
+                        {
+                            Settings.requestMethod = 0;
+                            var chk = iDoc.querySelectorAll("#hiddenCtrl input[type=checkbox]");
+                            for (var j = 0; j < chk.length; j++)
+                            {
+                                Settings.requestMethod += (chk[j].checked) ? Math.pow(2, j + 1) : 0;
+                            }
+                            console.log("New Request Method: " + Settings.requestMethod);
+                            GM_setValue("RequestMethod", Settings.requestMethod)
+                        };
+                    }
+                }
+                else
                 {
-                    Settings.pageFetchingMethod = this.selectedIndex + 1;
-                    GM_setValue("NextPageMethod", Settings.pageFetchingMethod);
-                };
-            }
-            else
-            {
-                iDoc.getElementById("pagingOffset").style.display = "none";
-                iDoc.getElementById("pageFetchMethod").style.display = "none";
-            }
+                    iDoc.getElementById("pagingOffset").style.display = "none";
+                    iDoc.getElementById("pageFetchMethod").style.display = "none";
+                }
 
             if (PAGETYPE < 2)
             {
@@ -2437,7 +2522,7 @@ var Settings =
 
             for (var i = 0; name = names[i], i < names.length; i++)
             {
-                var skipNames = ["Filters", "GMU-CoolingPeriod", "GMU-Timestamp", "DisplayHidden", "NextPageMethod"];
+                var skipNames = ["Filters", "DisplayHidden"];
                 var found = false;
                 for (var j = 0; j < skipNames.length; j++) found = found || (name.indexOf(skipNames[j]) == 0);
                 if (!found) GM_deleteValue(name);
@@ -2460,12 +2545,12 @@ var Settings =
 
     loadSettings: function ()
     {
-        Settings.versionCheck("125.125");
+        Settings.versionCheck("126.125");
         //GM_setValue("DisplayHidden", 2);
-        Settings.displayHidden = GM_getValue("DisplayHidden", 0);
-        Settings.pageFetchingMethod = GM_getValue("NextPageMethod", 2);
+        Settings.displayHidden = GM_getValue("DisplayHidden", 2);
+        Settings.requestMethod = GM_getValue("RequestMethod", 0);
 
-        var vals = GM_getValue(Settings.valueName("Generic"), "4094|6|1500,350|500|0|0|0").split("|");
+        var vals = GM_getValue(Settings.valueName("Generic"), "4094|6|350,1500|500|0|0|0").split("|");
 
         // ----------- Sidebar Display Settings Options (PAGETYPE > 0)
         Settings.display = makeStruct("artistName illustTitle countList illustLink mangaLinks IQDBLink autoPreview sidebar displayOptions filterOptions");
@@ -2669,16 +2754,16 @@ function makeStruct(keys, obj)
 =================================================================================================
  [VYCS] VARIABLE YOU CAN SET
 =================================================================================================*/
-//GM_setValue("NextPageMethod", 1); // [1]
+//GM_setValue("RequestMethod", 0); // [1]
 //GM_setValue("RequestBookmarkCount", 2); //[4]
 
 /*
-[1] Default: 3
-Method used to load next page. Default now is Method 3 as it is most compatible
-method.
-1: Uses GM_XmlHttpRequest (Not supported by Google Chrome or Opera)
-2: Uses XmlHttpRequest (Not supported by Opera)
-3: Uses iform. Slowest method (Default method)
+[1] Default: 0
+Default gets all meta-data using XmlHttpRequest otherwise uses the flags below:
+2: Get next pages using GM_XmlHttpRequest
+4: Get illustration data using GM_XmlHttpRequest on every page apart from illustration page
+8: Get data using GM_XmlHttpRequest on illustration page
+If you want to use GM_XmlHttpRequest on everything then the value set the value to 14 (2+4+8)
 
 [2] Does an extra call to get bookmark if it is missing. Default value is 0.
 0: Do not make any extra http request to get bookmark
@@ -2711,13 +2796,6 @@ if (window.self === window.top)
             counter++;
             if (counter = 10) clearInterval(id);
         }, 100);
-
-
-        ////chrome, firefox, opera, safari
-        //if (navigator.userAgent.match(/firefox/i)) Settings.pageFetchingMethod = 1;
-        //else if (navigator.userAgent.match(/chrome/i)) Settings.pageFetchingMethod = 2;
-        //else if (navigator.userAgent.match(/opera/i)) Settings.pageFetchingMethod = 3;
-        //else Settings.pageFetchingMethod = GM_getValue("pageFetchingMethod", 3);
 
         Settings.loadSettings();
 
