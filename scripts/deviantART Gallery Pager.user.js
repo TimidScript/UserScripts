@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.11
+// @version         1.0.12
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Please notify me if distributing
-// @include         http://*.deviantart.com/gallery/*
-// @include         http://*.deviantart.com/favourites/*
+// @include         *://*.deviantart.com/gallery/*
+// @include         *://*.deviantart.com/favourites/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Gallery_Pager
 // @grant           GM_xmlhttpRequest
@@ -35,14 +35,16 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
                                 http://userscripts.org/users/TimidScript
                                 http://userscripts-mirror.org/users/100610/scripts
 
-From FireFox verion 34.0.5, window.scrollMaxY only returns the max scrollable value and does not return
+From FireFox version 34.0.5, window.scrollMaxY only returns the max scrollable value and does not return
 the document height as before. Before the two were snonymous or at least that's how it use to work as far
 as a I can remember.
 
 ------------------------------------
  Version History
 ------------------------------------
-1.1.11 (2015-06-27)
+1.0.12 (2015-02-07)
+ - Support https
+1.0.11 (2015-06-27)
  - Using URI (base64) for script icon
 1.0.10 (2015-05-25)
  - Changed the position of the auto-pager button.
