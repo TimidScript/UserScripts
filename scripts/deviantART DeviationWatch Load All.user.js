@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.16
+// @version             1.0.17
 // @description         Loads all deviations in Inbox DeviantWatch
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
 // @license             Creative Commons BY-NC-SA + Please notify me if distributing
-// @include             http://www.deviantart.com/notifications/*
+// @include             *://www.deviantart.com/notifications/*
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_DeviationWatch_Load_All
 // @grant               GM_xmlhttpRequest
@@ -36,6 +36,8 @@ TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
 ------------------------------------
  Version History
 ------------------------------------
+1.0.17 (2015-07-02)
+ - Support https
 1.0.16 (2015-06-27)
  - Using URI (base64) for script icon
 1.0.15 (2015-06-04)
