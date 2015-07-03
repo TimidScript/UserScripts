@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name            [TS] Schmoogle
 // @namespace       TimidScript
-// @version         2.1.43
+// @version         2.1.43d
 // @description     Dated but most functions work; Google: Fully Customisable Skins (columns, font colors, bgc etc.) | AutoPaging with Lazy Load Support | Remove Tracking/Redirection | URL Cleaner | Quick Search Filter | URL Blacklisting | SSL Search | Multiple Search Services | Quick Links To Google Services | Ad Removal... 
 // @icon            https://i.imgur.com/Kvb2Ili.png
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Please notify me if distributing
+// @license         Creative Commons BY-NC-SA + Read the License inside the script
 // @include         *//www.google.*
 // @include         *//encrypted.google.*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_jsColorGM.js
@@ -24,20 +24,24 @@
 // @grant           GM_registerMenuCommand
 // ==/UserScript==
 
+/* License + Copyright Notice
+********************************************************************************************
+Copyright © TimidScript, All Rights Reserved.
+[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+following conditions are met:
+
+1) This copyright must be included
+2) Due credits and link to original author's homepage (included in copyright).
+3) Notify the original author of redistribution
+
+TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
+                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
+*/
 /* Information
 ********************************************************************************************
-Copyright © 2014 TimidScript, All Rights Reserved.
-Script's Homepage:              Check homepages below
-
-TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
-                                https://greasyfork.org/users/1455-timidscript
-                                https://monkeyguts.com/author.php?un=timidscript
-                                
-                                http://userscripts.org/users/TimidScript
-                                http://userscripts-mirror.org/users/100610/scripts
-
-----------------------------------------------
 TODO List
 ----------------------------------------------
 PRIMARY
