@@ -1,3 +1,3 @@
-GreasyMonkey
-============
-Contains my scripts.
+TimidScript's GreaseMonkey Repository
+=====================================
+Contains my usercripts for GreaseMonkey
