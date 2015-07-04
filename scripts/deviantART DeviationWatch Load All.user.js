@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.17b
+// @version             1.0.17c
 // @description         Loads all deviations in Inbox DeviantWatch
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
