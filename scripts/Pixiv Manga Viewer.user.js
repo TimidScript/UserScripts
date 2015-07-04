@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.2.23
+// @version         2.2.24
 // @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Please notify me if distributing
+// @license         Creative Commons BY-NC-SA + Read Copyright inside the script
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -23,22 +23,25 @@
 // ==/UserScript==
 
 
+/* Copyright Notice
+********************************************************************************************
+Copyright © TimidScript, All Rights Reserved.
+[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+following conditions are met:
+
+1) This copyright must be included
+2) Due credits and link to original author's homepage (included in copyright).
+3) Notify the original author of redistribution
+
+TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
+                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
+*/
 
 /* Information
 ********************************************************************************************
-Copyright © 2014 TimidScript, All Rights Reserved.
-Script's Homepage:              Check homepages below
-
-TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
-                                https://greasyfork.org/users/1455-timidscript
-                                https://monkeyguts.com/author.php?un=timidscript
-
-
-                                http://userscripts.org/users/TimidScript
-                                http://userscripts-mirror.org/users/100610/scripts
-
-
-------------------------------------
     Version History
 ------------------------------------
 
@@ -56,6 +59,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.2.24 (2015-06-27)
+ - Bug Fix: userId not userID when getting artist's id
 2.2.23 (2015-06-27)
  - Changed to using XMLHttpRequest to supprt Pixiv 3rd party login
 2.2.22 (2015-05-15)
@@ -872,7 +877,7 @@ document.
 
     Illust.id = unsafeWindow.pixiv.context.illustId;
     Illust.title = document.querySelector(".breadcrumbs h1").textContent;
-    Illust.userID = unsafeWindow.pixiv.context.userID;
+    Illust.userID = unsafeWindow.pixiv.context.userId;
     Illust.username = document.querySelector(".user").textContent;
     Illust.userIcon = document.querySelector(".user-icon").src.replace("_ss", "_s");
     //Illust.userLoginName = Illust.userIcon.match(/\/profile\/([^\/]+)\//)[1];
