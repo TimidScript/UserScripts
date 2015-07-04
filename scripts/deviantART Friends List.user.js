@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                [TS] deviantART Friends List
 // @namespace           TimidScript
-// @version             1.0.6
+// @version             1.0.6b
 // @description         In your Watching list, links go to root Gallery instead of Profile Page
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
-// @license             Creative Commons BY-NC-SA + Please notify me if distributing
+// @license             Creative Commons BY-NC-SA + Read the License inside the script
 // @include             *://www.deviantart.com/watching/*
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Friends_List
@@ -21,21 +21,24 @@
 // ==/UserScript==
 
 
+/* License + Copyright Notice
+********************************************************************************************
+Copyright © TimidScript, All Rights Reserved.
+[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+following conditions are met:
+
+1) This copyright must be included
+2) Due credits and link to original author's homepage (included in copyright).
+3) Notify the original author of redistribution
+
+TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
+                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
+*/
 /* Information
 **************************************************************************************************
-Copyright © 2014 TimidScript, All Rights Reserved.
-Script's Homepage:              Check homepages below
-
-TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
-                                https://greasyfork.org/users/1455-timidscript
-                                https://monkeyguts.com/author.php?un=timidscript
-
-                                http://userscripts.org/users/TimidScript
-                                http://userscripts-mirror.org/users/100610/scripts
-
-
-------------------------------------
  Version History
 ------------------------------------
 1.0.6 (2015-02-07)
