@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.12
+// @version         1.0.12b
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Please notify me if distributing
+// @license         Creative Commons BY-NC-SA + Read the License inside the script
 // @include         *://*.deviantart.com/gallery/*
 // @include         *://*.deviantart.com/favourites/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -23,23 +23,24 @@
 // ==/UserScript==
 
 
+/* License + Copyright Notice
+********************************************************************************************
+Copyright © TimidScript, All Rights Reserved.
+[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+following conditions are met:
+
+1) This copyright must be included
+2) Due credits and link to original author's homepage (included in copyright).
+3) Notify the original author of redistribution
+
+TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
+                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
+*/
 /* Information
 **************************************************************************************************
-Copyright © 2014 TimidScript, All Rights Reserved.
-Script's Homepage:              Check homepages below
-
-TimidScript's Homepage:         https://openuserjs.org/users/TimidScript
-                                https://greasyfork.org/users/1455-timidscript
-                                https://monkeyguts.com/author.php?un=timidscript
-
-                                http://userscripts.org/users/TimidScript
-                                http://userscripts-mirror.org/users/100610/scripts
-
-From FireFox version 34.0.5, window.scrollMaxY only returns the max scrollable value and does not return
-the document height as before. Before the two were snonymous or at least that's how it use to work as far
-as a I can remember.
-
-------------------------------------
  Version History
 ------------------------------------
 1.0.12 (2015-02-07)
