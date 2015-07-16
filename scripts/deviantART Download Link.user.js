@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            [TS] deviantArt Download Link
+// @name            [TS] deviantART Download Link
 // @namespace       TimidScript
 // @version         1.1.13
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
