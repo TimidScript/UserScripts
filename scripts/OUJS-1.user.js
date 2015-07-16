@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.22b
+// @version                 1.0.23
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
 // @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 Creative Commons BY-NC-SA + Read the License inside the script
+// @license                 Creative Commons BY-NC-SA + Read Copyright inside the script
 // @include                 http*://openuserjs.org/*
 // @require                 https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require                 https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -21,7 +21,8 @@
 // @icon                    data:image/gif;base64,R0lGODlhMAAwAIZ/AAEBAQoOEg0SGRUOBRoTCRcYGBUcJRsjLBwnNScbDCUfGC8lGjUkDzgqGicnJyUtOCsxODAuLDkzKzc3OB8tQCIvQCg1SCw9Uzg8Qi9BWTFDWzZKZTtRbj1VdEIuF0szF1k8GkY5KkQ/OlM9JU9AL0RBP1hCKVRGNGhFHGpMKWpTN3VOIHlUKXVaO0dHRklNUk9QUFFPTlVRTVdXV0dVaUJbe1xdYV1hZldhcGBeW3JdRWJgXnhhRnxuXmlpaWptcW9wcnFvbHd3d0RegUhjh3V6gHiAiYdaJIFcMZBfJYplOJhlKJlrNKFvM6t5PYptTI10WJNsQJ12SZt8WYN9eKh7R6B+VoKBfq2DU7iFSbSJWL+QW6SGZaCQfbqSZcaNTMKPVMmVWNedWsqaZMyic9ejaOWraOWucOyxb+2ycPO1b/i7df/BeYmJiJCPj5OQjpeXlp+foJ6jqKGfnKKhn6eop7Kro7q6ub/AwMbGx9nVz9jY2Obg2Ojo6P7+/ebm5iH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAB/ACwAAAAAMAAwAAAI/wD/CBxIsKDBgwgTKjzop82MGCIKBAAAwIGLGUHqLNxosM2ECRE+QoBg4cIFDRcQUAxAwMEEFxo5LtwToYAJEwkEbCDCk+cQDhESEKAIIIADH33mCMEIpw/HOjOiYnCAZc2aLCAicKgxpIYPKGO+LDmCIgHRAh8fPDDg0oZCPy4KyC1AoIoZNVa/JFHixUuZNFbPsDiyJAmIASsvcOWAIECBGAlnGKiwgQMFE2FavOEC5kwZM2vYWB3DxQ4VwkuWrEAMQMCFnhuMujkoxMFrIh0KVFEzhkyZv6HZiB6DZcoTJE3EiEVBlOJtIhcCuDg44UANnggIhBF+RssTHTygaP8pg8bqGjNi0rAxk4I10QAceNZA68cggAc8NwCwMKXMFBsddNBVBxzQYEMPXIxxhhplWCGDBgI0RxECPRkQQX0FFWABdvDVwFVPIPrkIQ4+0CAgESpJKMAQPBkwAYYEwYDfEAYEcF2IOILIYk8WSFhUB0RACMNBcEAQXwEC3JjjkiBe4ON+DxjVBkIuGGlAkkxmyVOPTwKAlkIyWCBAAEBqyeQBTzoW1QSQHVSHGwoA8JyZIXIwkYoRzACEBA04AIRBIkQgwQwFGLAjnSBS4GMAIgg0gw5MNPCCQROMsEIJLgSwIaI9OemjA1P+8SgTEhQBxB0EuRACCxHI4YJrnEL/d2dzRw1kgw5VNCCBRRi6EUEIUTCggAxxIRCfljVQMOtKEYQq0A8kpMBCFR8ooIBAQpww7QofRJAHDA4Y8MAGh4JYwwURNmeUC3gQ5EcEKiixQhZIfBCAQC+oUEYWS6AgAhw+BOHDBAFMVpmAHFxggI9ozeDDDle0UQcfRYRQhhZMSIGEB9P9gUEIY4jBwggPYEBSSSZpsIEFB1y5qAEQXGDBzBhYgMEEH6PBBhgsoOCAEAN9zEQIHXyI4xAbBMjBBkwzzcGJOg4RYAcWKKFGFf02SpADC0RgQQVgP4DA2C0/oCSIGsz8dQVfz8x2SQYwkAIIIHiQgUEzvODCBC7t/x2BA39viiOXBRxwQAGAR3CAS3y/9JEMQMvkgwMFlIljB2PGYAfAeuLRhx+gy0RQDh+VEAECFliOo0oGxDWRdDCKLtAbEEhUVAAIVMCkk7YT5cAbssf4QAc1brDwfkvq9x5FBTgbfAz4VWAAdCsdG6LyFYkwUQR7BD+QEA+ISaanAVSgAY4ZFHWUAxY8MN0ddeThPQxjzrxBBXLWYMDZRDwAAARwOMAFOAABKlAhAi6K3UbgEIEIXYBANTgA1XRnrgAcwA3Qq4EFIkCFCahEAc7biA8g0AEErCg/xlMMiDhQkTpMYIAQKMEDUgKACMRBdkGAQA00AB/5IEAuEuxJB/kCoIA4TKADF5ghDXj4s+D5YQJi6yFuBDCdCVRgR0NUQB0wQC4PXcABIgihTJayAwfsZIoT+AMcHHA+3BilDy5wQAXWEgEfKNB7E7AAizgggAgIRAQPYJF+0niHGBQgAiJAlfcMQgcIJM0ABfCBGqHIogoEAAZAoNwEFLnIg0CvRn7cQR6vgzmLLCwAAYjAC8TYSVGJIAZQiUAGhDizlh3AAguLZCsVYsUQ1WBpHdiAAB9QgCDsMiEeFFANAiRMA7xmAwJAgAH+dMyDxKUAD6DcTqJTAK7U6EXVRMgMPhKD6iQRJGpxiR7CuRE/xMAoQHCInjjJznoeJCAAOw==
 // ==/UserScript==
 
-/* License + Copyright Notice
+
+/* Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, All Rights Reserved.
 [Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
@@ -37,10 +38,13 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript)
 */
+
 /*
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.23 (2015-07-16)
+ - Changed the styling of blockquote
 1.0.22 (2015-06-25)
  - Bug Fix: Rating count is wrong when it is 0 and flagged
  - Unhide the progress bar elements
@@ -503,6 +507,7 @@ function SortScriptTable(e)
     TSL.addStyle("Image-Limiter", ".user-content img, .topic-post-contents img {max-width: 98%; border: 1px solid blue; padding: 2px; color: yellow; margin: 5px 0; box-shadow: 5px 5px 2px #888888;}"
         + ".topic-post-contents img:last-child {margin-bottom: 10px;}"
         );
+    TSL.addStyle("BetterQuotes", 'blockquote {font-size:14px;font-style: italic;border-left: 7px solid #DFE1E1;margin: 10px 30px;padding: 0px 5px; }');
 
     TSL.addStyle("OUJS-ORDER",".descen {background-color: rgba(200,255,255,0.6);} .ascen {background-color: rgba(255,220,255, 0.6);} ");
     //#F0DDFD #DAFBF6 #C2F4F7 #FF0
