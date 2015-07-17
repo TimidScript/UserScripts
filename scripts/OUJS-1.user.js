@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.23
+// @version                 1.0.24
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -43,6 +43,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.24 (2015-07-16)
+ - Bug Fix: Correctly handle negative ratings
 1.0.23 (2015-07-16)
  - Changed the styling of blockquote
 1.0.22 (2015-06-25)
@@ -1141,7 +1143,7 @@ function SortScriptTable(e)
         pd.appendChild(notice);
 
 
-        var rating = parseInt(pd.querySelector(".row p").textContent.match(/\d+$/)[0]),
+        var rating = parseInt(pd.querySelector(".row p").textContent.match(/-?\d+$/)[0]),
             votes = parseInt(pd.querySelector(".progress-bar-good").textContent),
             votes = isNaN(votes) ? 0 : votes,
             votesDown = (votes - rating) /2,
