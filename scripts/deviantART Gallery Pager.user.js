@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.12b
+// @version         1.0.13
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -43,6 +43,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.13
+ - BugFix to support Chrome and Opera. Replaced createHTMLDocument('MPIV') as it only seems to work in FireFox
 1.0.12 (2015-02-07)
  - Support https
 1.0.11 (2015-06-27)
@@ -224,8 +226,7 @@ function GetNextPage()
                 //var xdoc = document.createElement("xml");
                 //xdoc.innerHTML = xhr.responseText;
 
-                var xdoc = document.implementation.createHTMLDocument('MPIV');
-                xdoc.documentElement.innerHTML = xhr.responseText;
+                var xdoc = new DOMParser().parseFromString(xhr.response, "text/html");
 
                 if (xdoc.querySelector("#gmi-DoubleResourceStream")) //Groups
                 {
