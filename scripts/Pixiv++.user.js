@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.75b
+// @version             3.2.76
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -44,6 +44,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ------------------------------------
+3.2.76 (2015-07-25)
+ - Bug Fix: Capture new homepage url
 3.2.75 (2015-06-27)
  - Bug Fix: Default preview time and height were switched
  - Bug Fix: Removal of extra title from thumbnail
@@ -92,7 +94,7 @@ var Illustrations = {};
 var PAGETYPE = (function ()
 {
     if (IsIllustrationPage) return 0;
-    else if (document.URL.match(/http:\/\/www\.pixiv\.net\/(cate_r18|mypage|member)\.php/i)) return 1;
+    else if (document.URL.match(/http:\/\/www\.pixiv\.net\/((cate_r18|mypage|member)\.php)?/i)) return 1;
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php\?id/i)) return 3; //Artist Work Page
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php/i)) return 4; //Personal Work Page
     else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark(_add)?\.php/i)) return 5;  //Personal Bookmarks, Added new bookmarks
