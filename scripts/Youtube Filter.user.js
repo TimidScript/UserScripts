@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.32b
+// @version         1.1.33
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -45,6 +45,10 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.33 (2015-08-18)
+ - Bug Fix: Corrections to changes made in Youtube page syntax
+ - Added fullscreen link
+ - Removal of tags occurs on mouseover and mouseout
 1.1.32 (2015-06-20)
  - Remove link tag on mouse down
 1.1.31 (2015-06-19)
@@ -140,10 +144,10 @@ Known Issues:
 //GM_setValue("PageType1",".ytcenter-site-search .yt-card.clearfix{width: 700px !important;}");
 /**************************************************/
 
-if (window.self !== window.top) return;
+////if (window.self !== window.top) return;
 console.info("Youtube Filter");
 var intervalID;
-var AutoPaging = GM_getValue("AutoPaging",true);
+var AutoPaging = GM_getValue("AutoPaging", true);
 //0 Main Page; 1 Search Result; 2 Video Page; 3 Channel Video Page
 var PageTYPE = null; //Video Page
 var FilteredUsers = new Array();
@@ -165,11 +169,11 @@ function IsMouseEventInClientArea(event, element)
 
 function GetPageType()
 {
-    PageTYPE  = null;
-    if (document.URL.match(/\.youtube\.[^\/]+\/?$/i)) PageTYPE  = 0; //Main Page
-    else if (document.URL.match(/youtube\.[^\/]+\/result/gi)) PageTYPE  = 1; //Search Result
-    else if (document.URL.match(/youtube\.[^\/]+\/watch/gi)) PageTYPE  = 2; //Video Page
-    else if (document.URL.match(/youtube\.[^\/]+\/(user|channel)\/.+\/videos/gi)) PageTYPE  = 3; //User Channel
+    PageTYPE = null;
+    if (document.URL.match(/\.youtube\.[^\/]+\/?$/i)) PageTYPE = 0; //Main Page
+    else if (document.URL.match(/youtube\.[^\/]+\/result/gi)) PageTYPE = 1; //Search Result
+    else if (document.URL.match(/youtube\.[^\/]+\/watch/gi)) PageTYPE = 2; //Video Page
+    else if (document.URL.match(/youtube\.[^\/]+\/(user|channel)\/.+\/videos/gi)) PageTYPE = 3; //User Channel
 }
 
 function GetUserData(link)
@@ -195,7 +199,7 @@ function IsFilteredUser(user)
 function BlockUser(e)
 {
     e.stopImmediatePropagation();
-    console.log(this);
+    e.preventDefault();
     var user = this.title;
 
     if (!IsFilteredUser(user))
@@ -232,8 +236,8 @@ function CreateScreenshotLink(videoID)
         }
     });
 
-    ss.addEventListener("mousedown",RemoveLinkTag, true);
-    ss.addEventListener("mouseup",AddLinkTag, false);
+    ss.addEventListener("mouseover", RemoveLinkTag, true);
+    ss.addEventListener("mouseout", AddLinkTag, false);
 
     return ss;
 }
@@ -241,8 +245,9 @@ function CreateScreenshotLink(videoID)
 function AddLinkTag(e)
 {
     var link = e.target;
-    if (link.postfix)
-        setTimeout( function(){link.href += link.postfix;}, 250);
+    link.href += link.postfix;
+    //if (link.postfix)
+    //    setTimeout(function () { link.href += link.postfix; }, 250);
 }
 function RemoveLinkTag(e)
 {
@@ -259,19 +264,19 @@ function AddBlockButton(li)
     var btn = document.createElement("span");
     btn.className = "blockBTN32";
 
-    if (PageTYPE == 1) btn.title = li.getElementsByClassName("g-hovercard")[0].textContent;
-    else btn.title = li.getElementsByClassName("g-hovercard")[1].textContent;
-
+    //if (PageTYPE == 1) btn.title = li.getElementsByClassName("g-hovercard")[0].textContent;
+    //else btn.title = li.getElementsByClassName("g-hovercard")[1].textContent;
+    btn.title = li.getElementsByClassName("g-hovercard")[0].textContent;
     var span = document.createElement("span");
 
     if (PageTYPE == 2)
     {
-        span.setAttribute("style","position:absolute; right:0px;");
+        span.setAttribute("style", "position:absolute; right:0px;");
         li.insertBefore(span, li.firstElementChild);
     }
     else
     {
-        span.setAttribute("style","float:right;");
+        span.setAttribute("style", "float:right;");
         li.firstElementChild.insertBefore(span, li.firstElementChild.firstElementChild);
     }
 
@@ -282,8 +287,8 @@ function AddBlockButton(li)
     var href = li.getElementsByTagName("a")[0].href;
     if (href.indexOf("/watch?v=") > 0)
     {
-        var ss = CreateScreenshotLink(href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
-        ss.setAttribute("style","display:block;text-align:center;");
+        var ss = CreateScreenshotLink(href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi, "$1"));
+        ss.setAttribute("style", "display:block;text-align:center;");
         span.appendChild(ss);
     }
 }
@@ -368,17 +373,17 @@ function HideUnwantedUsers()
         //var items = document.getElementsByClassName("channels-content-item");
         var items = document.getElementsByClassName("yt-lockup-video");
 
-        for(var i = 0; i < items.length; i++)
+        for (var i = 0; i < items.length; i++)
         {
             var thumbdata = items[i],
-            user =  thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent,
+            user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent,
             filtered = IsFilteredUser(user),
             notice = thumbdata.parentNode.querySelector(".banNotice");
 
             if (filtered && !notice)
             {
                 FilteredUsers.push(user);
-                TSL.addClass(thumbdata,"blockedVideoBG");
+                TSL.addClass(thumbdata, "blockedVideoBG");
 
                 notice = document.createElement("div");
                 notice.className = "banNotice";
@@ -386,9 +391,9 @@ function HideUnwantedUsers()
 
                 notice.style.height = thumbdata.clientHeight + "px";
                 notice.style.width = thumbdata.clientWidth + "px";
-                notice.setAttribute("name","YTF");
+                notice.setAttribute("name", "YTF");
 
-                var  txt = document.createElement("span");
+                var txt = document.createElement("span");
                 txt.textContent = user;
                 txt.style.height = thumbdata.clientHeight + "px";
                 txt.style.width = thumbdata.clientWidth + "px";
@@ -397,7 +402,7 @@ function HideUnwantedUsers()
             }
             else if (!filtered && notice)
             {
-                TSL.removeClass(thumbdata,"blockedVideoBG");
+                TSL.removeClass(thumbdata, "blockedVideoBG");
                 TSL.removeNode(notice);
             }
         }
@@ -421,18 +426,18 @@ function HideUnwantedUsers()
                 if (filtered)
                 {
                     FilteredUsers.push(user);
-                    TSL.addClass(vid,"blockedVideo");
+                    TSL.addClass(vid, "blockedVideo");
                 }
                 else
                 {
-                    TSL.removeClass(vid,"blockedVideo");
+                    TSL.removeClass(vid, "blockedVideo");
                 }
             }
             catch (e) { console.warn(e); }
         }
     }
 
-    if (FilteredUsers.length > 0) TSL.addStyle("OptSelect","#OptionsButton, #OptionsButton2{background-color: #FBE8E5;} #OptionsButton:hover{background-color: #FBD5CF}");
+    if (FilteredUsers.length > 0) TSL.addStyle("OptSelect", "#OptionsButton, #OptionsButton2{background-color: #FBE8E5;} #OptionsButton:hover{background-color: #FBD5CF}");
     else TSL.removeNode("OptSelect");
 }
 
@@ -447,14 +452,14 @@ function GetFilters()
 
 function ShowAllVideos()
 {
-    if (Boolean(GM_getValue("ShowAllVideos",false)))
+    if (Boolean(GM_getValue("ShowAllVideos", false)))
     {
         TSL.removeNode("BlockVideos");
-        TSL.addStyle("ShowAllVideos",".banNotice {display: none;}");
+        TSL.addStyle("ShowAllVideos", ".banNotice {display: none;}");
     }
     else
     {
-        TSL.addStyle("BlockVideos",".blockedVideo {display:none;}");
+        TSL.addStyle("BlockVideos", ".blockedVideo {display:none;}");
         TSL.removeNode("ShowAllVideos");
     }
 }
@@ -468,7 +473,7 @@ function CreateFilterWindow()
 
     fwin = document.createElement("span");
     var tbHolder = document.createElement("div");
-    tbHolder.setAttribute("style","overflow-x:hidden; overflow-y:auto; max-height: 500px;");
+    tbHolder.setAttribute("style", "overflow-x:hidden; overflow-y:auto; max-height: 500px;");
     var table = document.createElement("table");
     table.style.maxHeight
     tbHolder.appendChild(table);
@@ -488,11 +493,11 @@ function CreateFilterWindow()
             var user = this.title;
             var filters = GetFilters();
 
-            for(var i = 0;  i < filters.length; i++)
+            for (var i = 0; i < filters.length; i++)
             {
                 if (filters[i] == user)
                 {
-                    filters.splice(i,1);
+                    filters.splice(i, 1);
                     GM_setValue("Filters", JSON.stringify(filters));
                     break;
                 }
@@ -513,7 +518,7 @@ function CreateFilterWindow()
         var d = document.createElement("div");
         d.textContent = user;
 
-        for(var j = 0; j < FilteredUsers.length; j++)
+        for (var j = 0; j < FilteredUsers.length; j++)
         {
             if (user == FilteredUsers[j])
             {
@@ -545,7 +550,7 @@ function CreateFilterWindow()
             this.style.backgroundColor = (AutoPaging) ? "lime" : "gray";
             EnablePager();
 
-            GM_setValue("AutoPaging",AutoPaging);
+            GM_setValue("AutoPaging", AutoPaging);
         };
         d.appendChild(b);
     }
@@ -553,10 +558,10 @@ function CreateFilterWindow()
     b = document.createElement("input");
     b.type = "button";
     b.value = "Show All";
-    b.style.backgroundColor = Boolean(GM_getValue("ShowAllVideos",false)) ? "lime" : "gray";
+    b.style.backgroundColor = Boolean(GM_getValue("ShowAllVideos", false)) ? "lime" : "gray";
     b.onclick = function ()
     {
-        var show = !Boolean(GM_getValue("ShowAllVideos",false));
+        var show = !Boolean(GM_getValue("ShowAllVideos", false));
         this.style.backgroundColor = show ? "lime" : "gray";
         GM_setValue("ShowAllVideos", show);
         ShowAllVideos(show);
@@ -566,7 +571,7 @@ function CreateFilterWindow()
     b = document.createElement("input");
     b.type = "button";
     b.value = "Close";
-    b.onclick = function () { TSL.removeNode("FilterWindow");};
+    b.onclick = function () { TSL.removeNode("FilterWindow"); };
 
     d.appendChild(b);
     fwin.appendChild(d);
@@ -597,7 +602,7 @@ function AdjustSearchResult()
             {
                 AddBlockButton(results[i]);
             }
-            catch(e){};
+            catch (e) { };
         }
     }
 
@@ -641,9 +646,9 @@ function AddOptions()
             else CreateFilterWindow();
         };
 
-        document.onmousemove = function(e)
+        document.onmousemove = function (e)
         {
-            options.style.display = (IsMouseEventInClientArea(e,placer)) ? null : "none";
+            options.style.display = (IsMouseEventInClientArea(e, placer)) ? null : "none";
         }
 
         document.body.appendChild(options);
@@ -653,21 +658,22 @@ function AddOptions()
 //Mutation Observer
 var MO =
 {
-    monitorBody: function()
+    monitorBody: function ()
     {
         var mo = window.MutationObserver || window.MozMutationObserver || window.WebKitMutationObserver;
         if (mo)
         {
             MO.Observer = new mo(
-                function() {
+                function ()
+                {
                     setTimeout(MainFunc, 500);
                 });
 
-            MO.Observer.observe(document.body, { characterData:true, attributes: true, childList: true, subtree: true });
+            MO.Observer.observe(document.body, { characterData: true, attributes: true, childList: true, subtree: true });
         }
     },
 
-    disconnect: function()
+    disconnect: function ()
     {
         if (MO.Observer) MO.Observer.disconnect();
         MO.Observer = null;
@@ -678,7 +684,7 @@ var MainItemPageCount = 0;
 function MainFunc()
 {
     GetPageType();
-    switch(PageTYPE)
+    switch (PageTYPE)
     {
         case 0: //Main Page
             console.info("YTF: Main Page");
@@ -689,7 +695,7 @@ function MainFunc()
             if (MainItemPageCount != items.length)
             {
                 MainItemPageCount = items.length;
-                for(var i = 0; i < items.length; i++)
+                for (var i = 0; i < items.length; i++)
                 {
                     var thumbdata = items[i];
                     if (thumbdata.parsed) continue;
@@ -711,7 +717,7 @@ function MainFunc()
                     link.appendChild(block);
                     link.className += " aaTT";
 
-                    var ss = CreateScreenshotLink(link.href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
+                    var ss = CreateScreenshotLink(link.href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi, "$1"));
                     block.appendChild(ss);
                 }
 
@@ -737,17 +743,22 @@ function MainFunc()
             var player = document.getElementById("watch7-headline");
             if (!player.getAttribute("screenshot"))
             {
-                player.setAttribute("screenshot","added");
-                var ss = CreateScreenshotLink(document.URL.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
+                player.setAttribute("screenshot", "added");
+                var ss = CreateScreenshotLink(document.URL.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi, "$1"));
                 player.insertBefore(ss, player.firstElementChild);
+                var fs = document.createElement("a");
+                fs.textContent = "[FS]";
+                fs.href = "https://www.youtube.com/v/" + document.location.search.match(/v=([-_\w]+)/)[1];
+                fs.style.marginLeft = "10px";
+                player.insertBefore(fs, ss.nextElementSibling);
             }
 
             //Loads more side videos and filters them
-            setTimeout(function()
+            setTimeout(function ()
             {
                 if (document.getElementById("watch-more-related-button"))
                     document.getElementById("watch-more-related-button").click();
-                setTimeout(function()
+                setTimeout(function ()
                 {
                     AdjustSearchResult();
                 }, 1000);
@@ -760,7 +771,7 @@ function MainFunc()
             MO.disconnect();
             var vthumbs = document.getElementsByClassName("ux-thumb-wrap");
 
-            for(var i = 0, thumb; i < vthumbs.length, thumb = vthumbs[i]; i++)
+            for (var i = 0, thumb; i < vthumbs.length, thumb = vthumbs[i]; i++)
             {
                 if (!thumb.className.match("aaTT"))
                 {
@@ -772,7 +783,7 @@ function MainFunc()
                     block.style.top = "10px";
                     thumb.appendChild(block);
 
-                    var ss = CreateScreenshotLink(thumb.querySelector("a").href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi,"$1"));
+                    var ss = CreateScreenshotLink(thumb.querySelector("a").href.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi, "$1"));
                     ss.style.backgroundColor = "yellow";
                     ss.style.border = "1px solid black";
                     block.appendChild(ss);
@@ -798,7 +809,7 @@ var URL = document.URL;
         if (filters)
         {
             filters = filters.split("|");
-            for(var i = 0; i < filters.length; i++)
+            for (var i = 0; i < filters.length; i++)
             {
                 filters[i] = filters[i];
             }
@@ -821,7 +832,7 @@ var URL = document.URL;
         TSL.addStyle(null, "#OptionsButton{height: 32px; width: 32px; margin: 0; padding: 0; position: fixed;color: #777979; right: 10px;top: 60px;border-radius: 3px;background-color: lightgray;border: 1px solid darkgray;cursor: pointer; z-index:99999999999999999;}#OptionsButton:hover{background-color: darkgray;color: black;}");
     }
     TSL.addStyle(null, ".blockBTN32, .blockBTN16, .unblockBTN{background-repeat:no-repeat; cursor:pointer; background-image: url(data:image/png;base64,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);background-size: contain;z-index: 100;}");
-    TSL.addStyle("YTF_BT",".unblockBTN{display: inline-block;width: 16px;height: 16px; padding-right: 3px;} .blockBTN32{display: block;width: 32px;height: 32px;}a.aaTT:hover .blockLINKS{visibility: visible;} .blockBTN16 {display:block; background-color: black;border: 1px solid red;height: 24px;width: 24px;}");
+    TSL.addStyle("YTF_BT", ".unblockBTN{display: inline-block;width: 16px;height: 16px; padding-right: 3px;} .blockBTN32{display: block;width: 32px;height: 32px;}a.aaTT:hover .blockLINKS{visibility: visible;} .blockBTN16 {display:block; background-color: black;border: 1px solid red;height: 24px;width: 24px;}");
     TSL.addStyle("YTF_BL", ".blockLINKS{position: absolute;top: 2px;visibility: hidden; z-index: 100; right: 2px;} .blockLINKS a:nth-child(2){line-height:normal; background-color:yellow; border: 1px solid blue; display:block;text-align:center;}");
     TSL.addStyle("YTF_NB", ".banNotice {position:absolute; z-index: 1000; font-size:medium;} .banNotice > span { display:table-cell; background-color:yellow; text-align: center; vertical-align: middle; }");
     TSL.addStyle("YTF_PC", "#FloatArea{position: fixed; right: 0px; top:10px; border: none; visibility:hidden; height: 200px; width:140px;}");
@@ -829,19 +840,19 @@ var URL = document.URL;
 
 
     ShowAllVideos();
-    TSL.addStyle("BlockVideoBG",".blockedVideo, .blockedVideoBG {background-color:#FBE8E5;}");
+    TSL.addStyle("BlockVideoBG", ".blockedVideo, .blockedVideoBG {background-color:#FBE8E5;}");
 
 
     if (PageTYPE == 2)
     {
-        if (GM_getValue("PageType2",false))
-            TSL.addStyle("",GM_getValue("PageType2"));
-        else TSL.addStyle("","body #watch7-sidebar-contents {padding: 15px 0px 15px 5px !important;}"
+        if (GM_getValue("PageType2", false))
+            TSL.addStyle("", GM_getValue("PageType2"));
+        else TSL.addStyle("", "body #watch7-sidebar-contents {padding: 15px 0px 15px 5px !important;}"
                 + "#watch7-sidebar-contents .video-list-item.related-list-item {padding-right: 35px;}");
     }
-    else if (PageTYPE == 1 && GM_getValue("PageType1",false))
+    else if (PageTYPE == 1 && GM_getValue("PageType1", false))
     {
-        TSL.addStyle("",GM_getValue("PageType1"));
+        TSL.addStyle("", GM_getValue("PageType1"));
     }
 
     MainFunc();
