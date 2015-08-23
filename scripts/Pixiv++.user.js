@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.2.77b
+// @version             3.2.78
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -44,6 +44,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ------------------------------------
+3.2.78 (2015-08-23)
+ - Filter fixed. Neat code provided by HoldMyPizza from OUJS
 3.2.77 (2015-07-26)
  - Bug Fix: Corrected latest fix
 3.2.76 (2015-07-25)
@@ -349,9 +351,10 @@ var IllustrationLinker =
 
            if (doc.querySelector(".tools")) metadata.tools = doc.querySelector(".tools").textContent;
 
-
-
-           metadata.tags = doc.querySelector('meta[name="keywords"]').getAttribute("content");
+           metadata.tags = [].map.call(doc.querySelectorAll('li.tag a.text'), function (v, i)
+           {
+               return v.childNodes[0].textContent;
+           }).join(' ');
 
            metadata.illust128URL = doc.querySelector('meta[property="og:image"]');
            metadata.illust128URL = (metadata.illust128URL) ? metadata.illust128URL.getAttribute("content") : doc.querySelector('img[class="original-image"]').getAttribute("data-src");
