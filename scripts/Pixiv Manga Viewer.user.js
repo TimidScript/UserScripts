@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.2.24
+// @version         2.2.25
 // @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -59,6 +59,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.2.25 (2015-08-23)
+ - Removed redundant code
 2.2.24 (2015-06-27)
  - Bug Fix: userId not userID when getting artist's id
 2.2.23 (2015-06-27)
@@ -428,20 +430,6 @@ function DisplayMessage(msg)
     setTimeout(function (el) { if (el.parentElement.children.length == 1) el.parentElement.style.visibility = "hidden"; el.parentElement.removeChild(el); }, 2000, div);
 }
 
-
-function makeStruct(names)
-{
-    var names = names.split(' ');
-    var count = names.length;
-    function constructor()
-    {
-        for (var i = 0; i < count; i++)
-        {
-            this[names[i]] = null;
-        }
-    }
-    return constructor;
-}
 
 /* Mouse Monitor Functions
 ====================================================================
