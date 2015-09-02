@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.33
+// @version         1.1.33a
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
