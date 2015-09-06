@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.24
+// @version                 1.0.25
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -38,11 +38,14 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript)
 */
-
 /*
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.25 (2015-09-06)
+ - Interval check for new issues every 3 minutes
+ - Option to display new issue count in title. Need to set GM_setValue("EditTitle",1);
+ - Highlight username in forums.
 1.0.24 (2015-07-16)
  - Bug Fix: Correctly handle negative ratings
 1.0.23 (2015-07-16)
@@ -132,6 +135,7 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 /*=================================================================================================*/
 
 if (window !== window.top) return;
+//GM_setValue("EditTitle", 1); //Uncomment line to allow issue count to be displayed on title. Once run once, you need to update the script to re-enable auto-update.
 var HistoryMIN = parseInt(GM_getValue("HistoryMIN", 5));  //Stats history, minimum number of mins stored
 var HistoryMAX = parseInt(GM_getValue("HistoryMAX", 15)); //Stats histry, maximum number of dates stored
 
@@ -195,7 +199,7 @@ function DisplayStats(old, current)
         row = document.querySelector('tr[scriptid="' + scriptID + '"]');
 
         if (scriptID == "timestamp") continue;
-        else if (!row) arr.push ({name: GM_getValue(scriptID),  installs : -1}); //Removed Items
+        else if (!row) arr.push({ name: GM_getValue(scriptID), installs: -1 }); //Removed Items
         else if (old[scriptID])
         {
             row.tempStamp = tmpStamp;
@@ -205,7 +209,7 @@ function DisplayStats(old, current)
             if (diff < 0) totalIN += diff; //Can happen when you remove and then re-add the script
             if (diff) row.querySelector("td:nth-child(2) p").appendChild(TSL.createElementHTML("<sup class='dStat" + ((diff > 0) ? "P" : "N") + "'>" + diff + "</sup>"));
 
-            if (diff) arr.push ({name: row.querySelector("b").textContent,  installs : diff} );
+            if (diff) arr.push({ name: row.querySelector("b").textContent, installs: diff });
 
             diff = current[scriptID].rating - old[scriptID].rating;
             if (isNaN(diff)) diff = 0;
@@ -216,41 +220,41 @@ function DisplayStats(old, current)
     }
 
     var rows = document.querySelectorAll(".col-xs-12 .table .tr-link");
-    for(var i = 0, installs; i < rows.length, row = rows[i]; i++)
+    for (var i = 0, installs; i < rows.length, row = rows[i]; i++)
     {
         if (row.tempStamp != tmpStamp)
         {
             installs = parseInt(row.getAttribute("installs"));
             totalI += installs;
             totalNew += installs;
-            row.querySelector("td:nth-child(2) p").appendChild(TSL.createElementHTML("<sup class='dStatNew'>" + installs+ "</sup>"));
-            arr.push({ name: row.querySelector(".tr-link-a > b").textContent, installs : installs, isNew : true});
+            row.querySelector("td:nth-child(2) p").appendChild(TSL.createElementHTML("<sup class='dStatNew'>" + installs + "</sup>"));
+            arr.push({ name: row.querySelector(".tr-link-a > b").textContent, installs: installs, isNew: true });
         }
     }
 
-    if (totalI) document.querySelector(".table thead th:nth-child(2) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalI > 0) ? "P" : "N") +   "'>"
-        + totalI + (function()
+    if (totalI) document.querySelector(".table thead th:nth-child(2) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalI > 0) ? "P" : "N") + "'>"
+        + totalI + (function ()
         {
-            if (totalI != totalIN &&  totalIN < 0) return "<span style='color: red;'>[" + totalIN + "]</span>"
+            if (totalI != totalIN && totalIN < 0) return "<span style='color: red;'>[" + totalIN + "]</span>"
             return "";
         })() + "</sup>"));
 
 
 
     totalR = totalRp + totalRn;
-    if (totalRp || totalRn) document.querySelector(".table thead th:nth-child(3) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalR == 0) ? "Z" : (totalR > 0) ? "P" : "N") +   "'>"
-        + totalR  +
-        (function()
+    if (totalRp || totalRn) document.querySelector(".table thead th:nth-child(3) a").appendChild(TSL.createElementHTML("<sup class='dStat" + ((totalR == 0) ? "Z" : (totalR > 0) ? "P" : "N") + "'>"
+        + totalR +
+        (function ()
         {
             if (totalRp && totalRn)
             {
-                return "<span style='color:black;'>[<span style='color:green;'>" + totalRp + "</span><span style='color:red;'>"+ totalRn + "</span>]</span>";
+                return "<span style='color:black;'>[<span style='color:green;'>" + totalRp + "</span><span style='color:red;'>" + totalRn + "</span>]</span>";
             }
             return "";
         })() + "</sup>"));
 
     if (arr.length == 0) return;
-    arr.sort(function(a, b)
+    arr.sort(function (a, b)
     {
         if (a.installs < b.installs) return -1;
         if (a.installs > b.installs) return 1;
@@ -273,7 +277,7 @@ function DisplayStats(old, current)
     panel.appendChild(el);
 
     var ol = document.createElement("ol");
-    ol.setAttribute("style","font-size:14px; font-weight: 500;");
+    ol.setAttribute("style", "font-size:14px; font-weight: 500;");
     panel.appendChild(ol);
 
     while (arr.length > 0)
@@ -324,7 +328,7 @@ function SortScriptTable(e)
 {
     e.stopImmediatePropagation();
 
-    var sortDescending = !TSL.hasClass(this.parentElement,"descen");
+    var sortDescending = !TSL.hasClass(this.parentElement, "descen");
     if (document.querySelector(".descen, .ascen")) TSL.removeClass(document.querySelector(".descen, .ascen"), "descen ascen");
     TSL.addClass(this.parentElement, ((sortDescending) ? "descen" : "ascen"));
 
@@ -335,10 +339,10 @@ function SortScriptTable(e)
     GM_setValue("SortHeader", idx);
     GM_setValue("SortDescending", sortDescending);
 
-    for(var n, i = 0; i < rows.length - 1; i++)
+    for (var n, i = 0; i < rows.length - 1; i++)
     {
         n = i;
-        for(var j=i+1; j < rows.length; j++)
+        for (var j = i + 1; j < rows.length; j++)
         {
             if ((sortDescending && compareRows(rows[n], rows[j]) < 0) || (!sortDescending && compareRows(rows[n], rows[j]) > 0))
             {
@@ -411,7 +415,7 @@ function SortScriptTable(e)
 
 
 //Fix broken saved data caused by FireFox 35 security issues
-(function()
+(function ()
 {
     if (GM_getValue("HasBeenFixed", false)) return;
     alert("Due to changes in FireFox 35 GreaseMonkey GM_listValues got broken and with it, it has ruined OUJS-1 save. This will attempt to fix it. If it fails then remove, restart firefox and install again");
@@ -419,7 +423,7 @@ function SortScriptTable(e)
     var scriptIDsPresent = {};
 
     var usernames = getSavedUsernames();
-    for(var i = 0; i < usernames.length; i++)
+    for (var i = 0; i < usernames.length; i++)
     {
         UpdateFireFox35BrokenData(usernames[i]);
     }
@@ -444,7 +448,7 @@ function SortScriptTable(e)
         scriptNames = {},
         meta = JSON.parse(GM_getValue("USER-S:" + username));
 
-        for(var i = 0; i < meta.history.length; i++)
+        for (var i = 0; i < meta.history.length; i++)
         {
             remove = false;
             for (var key in meta.history[i])
@@ -469,14 +473,14 @@ function SortScriptTable(e)
 
             if (remove)
             {
-                meta.history.splice(i,1);
+                meta.history.splice(i, 1);
                 i = 0;
             }
         }
 
         if (updated)
         {
-            meta.current = meta.history[meta.history.length-1];
+            meta.current = meta.history[meta.history.length - 1];
             console.log(meta.current);
             GM_setValue("USER-S:" + username, JSON.stringify(meta));
         }
@@ -505,13 +509,13 @@ function SortScriptTable(e)
     var timestamp = Date.now();
     var loggedUsername = "";
 
-    TSL.addStyle("ppp",".progress {background-color: #E74C3C;} .progress-bar-good {background-color: #499E49;} .progress * {color: white;}");
+    TSL.addStyle("ppp", ".progress {background-color: #E74C3C;} .progress-bar-good {background-color: #499E49;} .progress * {color: white;}");
     TSL.addStyle("Image-Limiter", ".user-content img, .topic-post-contents img {max-width: 98%; border: 1px solid blue; padding: 2px; color: yellow; margin: 5px 0; box-shadow: 5px 5px 2px #888888;}"
         + ".topic-post-contents img:last-child {margin-bottom: 10px;}"
         );
     TSL.addStyle("BetterQuotes", 'blockquote {font-size:14px;font-style: italic;border-left: 7px solid #DFE1E1;margin: 10px 30px;padding: 0px 5px; }');
 
-    TSL.addStyle("OUJS-ORDER",".descen {background-color: rgba(200,255,255,0.6);} .ascen {background-color: rgba(255,220,255, 0.6);} ");
+    TSL.addStyle("OUJS-ORDER", ".descen {background-color: rgba(200,255,255,0.6);} .ascen {background-color: rgba(255,220,255, 0.6);} ");
     //#F0DDFD #DAFBF6 #C2F4F7 #FF0
 
     if (document.querySelector(".fa-sign-out") != undefined)
@@ -561,19 +565,19 @@ function SortScriptTable(e)
         addScriptListingNumbers();
 
 
-        var columns = columns = ["name","installs","rating","updated"],
+        var columns = columns = ["name", "installs", "rating", "updated"],
             search = document.location.search,
             orderBy = search.match(/orderBy=(\w+)/i);
 
         orderBy = (orderBy) ? orderBy[1] : "rating";
 
-        if (search.match(/library/i)) columns = ["name","rating","updated"];
-        else if (pathname.match(/group/i)) columns = ["name","size","rating"];
+        if (search.match(/library/i)) columns = ["name", "rating", "updated"];
+        else if (pathname.match(/group/i)) columns = ["name", "size", "rating"];
 
         TSL.addClass(document.querySelector(".panel > table >  thead th:nth-child(" +
-            (function()
+            (function ()
             {
-                for(var i = 0; i < columns.length; i++)
+                for (var i = 0; i < columns.length; i++)
                 {
                     console.log(i, columns[i].toLowerCase(), orderBy);
                     if (orderBy.toLowerCase() == columns[i].toLowerCase()) return i + 1;
@@ -612,7 +616,7 @@ function SortScriptTable(e)
     else if (pathname.match(/^\/(all|issues|garage|corner|discuss|announcements)$/))
     {
         console.log("OUJS-1: Forum");
-        TSL.addStyle("NinjaStyle",".breadcrumb {padding: 8px; }  .breadcrumb > li + li {margin-left: 2px;} .breadcrumb > li + li:before { content: ''; padding: 0px;} .breadcrumb > li {width: 120px; text-align:center; border: 1px solid #CFD2D2; border-radius: 5px; } ");
+        TSL.addStyle("NinjaStyle", ".breadcrumb {padding: 8px; }  .breadcrumb > li + li {margin-left: 2px;} .breadcrumb > li + li:before { content: ''; padding: 0px;} .breadcrumb > li {width: 120px; text-align:center; border: 1px solid #CFD2D2; border-radius: 5px; } ");
         var el = document.querySelector(".breadcrumb");
         //el.className = "fishMonkey";
         el.innerHTML = '<li><a href="/all" title="Amalgamation of all discussion boards">All</a></li>' +
@@ -623,7 +627,7 @@ function SortScriptTable(e)
                        '<li><a href="/announcements" title="Official site announcements">Announcements</a></li>';
 
 
-        TSL.addStyle("WoloSD3",".selectedDiscuss {background-color: #CACAF5; border-color: #00F !important;} .selectedDiscuss a {color: #00F;}");
+        TSL.addStyle("WoloSD3", ".selectedDiscuss {background-color: #CACAF5; border-color: #00F !important;} .selectedDiscuss a {color: #00F;}");
         el.querySelector("li > a[href='" + pathname + "']").parentNode.className = "selectedDiscuss";
     }
     else if ((pathname.match(/^\/libs\/[^\/]+\/[^\/]+$/i))) amendLibraryPage();
@@ -632,6 +636,16 @@ function SortScriptTable(e)
 
     function displayNewIssues()
     {
+        if (pathname.match(/^\/(issues|forum|all|corner|garage|discuss|announcements)/))
+        {
+            var usernames = getSavedUsernames();
+            for (var i = 0, username; i < usernames.length, username = usernames[i]; i++)
+            {
+                var els = document.querySelectorAll('.label-info a[href="/users/' + username + '"]');
+                for (var j = 0; j < els.length; j++) els[j].parentElement.style.backgroundColor = "#6AB046";
+            }
+        }
+
         if (pathname.match(/^\/(issues|forum|all)/))
         {
             TSL.addStyle("ForumHelper", "body .table .scriptIssues td {background-color: #BCF3F3 !important;}"
@@ -664,28 +678,42 @@ function SortScriptTable(e)
             return;
         }
 
-
         if (window.sessionStorage.getItem("NewIssuesStamp") && Date.now() - window.sessionStorage.getItem("NewIssuesStamp") < 20000)
         {
             var doc = document.implementation.createHTMLDocument("OUJS");
             doc.documentElement.innerHTML = window.sessionStorage.getItem("NewIssuesDoc");
             NewIssues(doc);
         }
-        else xhrPage("https://openuserjs.org/issues", function (xhr, doc)
+        else
         {
-            if (doc)
+            GetIssueCount();
+            setInterval(GetIssueCount, 6000);
+            //setInterval(GetIssueCount, 180000);
+        }
+
+        function GetIssueCount()
+        {
+            xhrPage("https://openuserjs.org/issues", function (xhr, doc)
             {
-                window.sessionStorage.setItem("NewIssuesDoc", xhr.responseText);
-                window.sessionStorage.setItem("NewIssuesStamp", Date.now());
-                NewIssues(doc);
-            }
-        });
+                if (doc)
+                {
+                    window.sessionStorage.setItem("NewIssuesDoc", xhr.responseText);
+                    window.sessionStorage.setItem("NewIssuesStamp", Date.now());
+                    NewIssues(doc);
+                }
+            });
+        }
 
         function NewIssues(doc)
         {
+            TSL.removeNode("TheIssueCounter");
+            TSL.removeNode("IssueNoticeBoard");
+            if (GM_getValue("EditTitle")) document.title = document.title.replace(/^\[\d+\]\s*/, "");
+
             var count = 0;
             var usernames = getSavedUsernames();
             var issues = document.createElement("section");
+            issues.id = "IssueNoticeBoard";
             issues.appendChild(document.createElement("ul"));
 
             for (var i = 0, username, arr; i < usernames.length, username = usernames[i]; i++)
@@ -719,14 +747,13 @@ function SortScriptTable(e)
 
             if (count > 0)
             {
+                if (GM_getValue("EditTitle")) document.title = "[" + count + "] " + document.title;
                 var discuss = document.querySelector('.nav a[href="/all"]');
-                discuss.innerHTML += " (";
-                var notice = document.createElement("span");
-                notice.setAttribute("style", "color: lime; display:inline-block; font-weight: 600;");
-                notice.id = "newIssues";
-                notice.textContent = count;
-                discuss.appendChild(notice);
-                discuss.innerHTML += ")";
+                var counter = document.createElement("span");
+                counter.id = "TheIssueCounter";
+                counter.style.marginLeft = "3px";
+                discuss.appendChild(counter);
+                counter.innerHTML += '(<span id="newIssues" style="color: lime; display:inline-block; font-weight: 600;">' + count + '</span>)';
 
                 TSL.addStyle("OUJS-IL-BT", "#IssuesListing {position: absolute;background-color: #2C3E50; color: white; font-weight: 600; z-index: 99999;"
                     + "font-size:12px; padding: 3px 8px; color: white; border: 1px solid black; box-sizing: border-box;}"
@@ -832,9 +859,9 @@ function SortScriptTable(e)
             }
         }
 
-        TSL.addStyle("HeaderPointer",".col-xs-12 .table th a {cursor: pointer;}");
+        TSL.addStyle("HeaderPointer", ".col-xs-12 .table th a {cursor: pointer;}");
         var headers = document.querySelectorAll(".table thead th a");
-        for(var i = 0; i < headers.length; i++)
+        for (var i = 0; i < headers.length; i++)
         {
             headers[i].removeAttribute("href");
             headers[i].onclick = SortScriptTable;
@@ -845,7 +872,7 @@ function SortScriptTable(e)
 
         //Load missing icons. Occurs in profile page
         els = document.querySelectorAll("i.fa.fa-fw.fa-file-code-o");
-        for(var i = 0, el, img; i < els.length; i++)
+        for (var i = 0, el, img; i < els.length; i++)
         {
             el = els[i];
             img = document.createElement("img");
@@ -855,7 +882,7 @@ function SortScriptTable(e)
         }
 
         var idx = GM_getValue("SortHeader", 3);
-        var SortAscending =  !GM_getValue("SortDescending", true);
+        var SortAscending = !GM_getValue("SortDescending", true);
         headers[idx].click();
         if (SortAscending) headers[idx].click();
         //addScriptListingNumbers();
@@ -863,10 +890,10 @@ function SortScriptTable(e)
 
     function addLibraryIcons()
     {
-        TSL.addStyle("IconReplacer",".script-icon, .script-icon img {display:inline-block; height: 16px; width: 16px;}")
+        TSL.addStyle("IconReplacer", ".script-icon, .script-icon img {display:inline-block; height: 16px; width: 16px;}")
         var els = document.querySelectorAll("._library .script-icon.hidden-xs i");
         if (document.location.search.match(/^\?library=/i)) els = document.querySelectorAll(".script-icon.hidden-xs i");
-        for(var i = 0, el, img; i < els.length; i++)
+        for (var i = 0, el, img; i < els.length; i++)
         {
             el = els[i];
             img = document.createElement("img");
@@ -963,7 +990,7 @@ function SortScriptTable(e)
             }
         }
         //if (meta.history.length > HistoryMAX) console.log("mm", timePassed(meta.history[i].timestamp));
-        if (meta.history.length > HistoryMAX) meta.history.splice(HistoryMIN-1,1); //Last Min Date
+        if (meta.history.length > HistoryMAX) meta.history.splice(HistoryMIN - 1, 1); //Last Min Date
 
         GM_setValue("USER-S:" + username, JSON.stringify(meta));
 
@@ -1031,7 +1058,7 @@ function SortScriptTable(e)
             meta = JSON.parse(meta);
             var record = this.parentElement.data.timestamp;
 
-            for(var i = 0; i < meta.history.length; i++)
+            for (var i = 0; i < meta.history.length; i++)
             {
                 if (meta.history[i].timestamp == record)
                 {
@@ -1130,7 +1157,7 @@ function SortScriptTable(e)
                     + "The original bar included flagging which does not get removed by moderators until reaches a certain threshold. You can "
                     + "toggle 'moderators' bar by clicking this notice.";
         notice.setAttribute("style", "padding: 0 10px; color: blue; font-weight: 700; border-radius: 5px; background-color: cyan; cursor: pointer;");
-        notice.onclick = function()
+        notice.onclick = function ()
         {
             var bars = pd.querySelectorAll(".progress");
             var view = bars[0].style.display == "none"
@@ -1146,7 +1173,7 @@ function SortScriptTable(e)
         var rating = parseInt(pd.querySelector(".row p").textContent.match(/-?\d+$/)[0]),
             votes = parseInt(pd.querySelector(".progress-bar-good").textContent),
             votes = isNaN(votes) ? 0 : votes,
-            votesDown = (votes - rating) /2,
+            votesDown = (votes - rating) / 2,
             flag = parseInt(pd.querySelector(".progress-bar-danger").textContent),
             bar1 = pd.querySelector(".progress"),
             bar2 = bar1.cloneNode(true);
@@ -1155,18 +1182,18 @@ function SortScriptTable(e)
         {
             //bar1.firstElementChild.innerHTML = votes + "<sup>(<span style='color: cyan;'>" + (votes - votesDown) + "</span>,<span style='color: hotpink;'>-" + votesDown + "</span>)</sup> Votes";
             bar1.firstElementChild.innerHTML = "<span style='color: cyan;'>+" + (votes - votesDown) + "</span> | <span style='color: yellow;'>-" + votesDown + "</span>";
-            pd.querySelector(".row p").innerHTML = pd.querySelector(".row p").innerHTML.replace(/\d+$/,rating + " (" + votes + " Votes)");
+            pd.querySelector(".row p").innerHTML = pd.querySelector(".row p").innerHTML.replace(/\d+$/, rating + " (" + votes + " Votes)");
         }
 
         bar1.lastElementChild.style.width = (100 - parseFloat(bar1.firstElementChild.style.width)) + "%"
-        bar1.style.display = GM_getValue("RatingsBar", 2) == 1 ?  null : "none";
+        bar1.style.display = GM_getValue("RatingsBar", 2) == 1 ? null : "none";
 
         bar1.parentNode.insertBefore(bar2, bar1);
-        bar2.firstElementChild.style.width = (100 / votes * (votes - votesDown))  + "%"
-        bar2.lastElementChild.style.width =  (100  - parseFloat(bar2.firstElementChild.style.width))  + "%"
+        bar2.firstElementChild.style.width = (100 / votes * (votes - votesDown)) + "%"
+        bar2.lastElementChild.style.width = (100 - parseFloat(bar2.firstElementChild.style.width)) + "%"
         bar2.firstElementChild.textContent = votes - votesDown;
         bar2.lastElementChild.textContent = votesDown;
-        bar2.style.display = GM_getValue("RatingsBar", 2) == 2 ?  null : "none";
+        bar2.style.display = GM_getValue("RatingsBar", 2) == 2 ? null : "none";
     }
 
     function xhrPage(url, callback)
@@ -1245,7 +1272,7 @@ function SortScriptTable(e)
                     else diff.textContent = "+" + ((meta[postID].replies == undefined) ? replies : replies - meta[postID].replies);
                 }
 
-                var val = { postID: postID, postTitle: postTitle, replies: replies, url: post.querySelector(".tr-link-a").getAttribute("href")};
+                var val = { postID: postID, postTitle: postTitle, replies: replies, url: post.querySelector(".tr-link-a").getAttribute("href") };
                 if (post.querySelector("td:nth-child(3) .label:last-child").textContent != username) arr.push(val);
                 else
                 {
