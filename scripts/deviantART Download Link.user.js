@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Download Link
 // @namespace       TimidScript
-// @version         1.1.13
+// @version         1.1.14
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -44,6 +44,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.1.14 (2015-09-06)
+ - Bug Fix: Check redirection status before redirection click
 1.1.13 (2015-07-16)
  - Bug Fix: Redirect countdown timer is reset when illustration changes
  - Colour of download button text is changed when redirection is removed
@@ -203,17 +205,16 @@ function CreateDownloadButton(src, imgWidth, imgHeight)
             {
                 timer++;
                 s.textContent = (countdown - timer);
-                if (s.textContent == 0)
-                {
-                    clearInterval(redirectInterval);
-                    btn.click();
-                }
-
                 if (!DisplayImageOnly)
                 {
                     clearInterval(redirectInterval);
                     s.removeAttribute("style");
                     s.textContent = GM_getValue("ReDirect-Timer");
+                }
+                else if (s.textContent == 0)
+                {
+                    clearInterval(redirectInterval);
+                    btn.click();
                 }
             }, 1000);
         }
