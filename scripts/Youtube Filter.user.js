@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.33a
+// @version         1.1.34
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -45,6 +45,9 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.34 (2015-09-12)
+ - Make filter compatible with "Youtube Center"
+ - Bug Fix: Corrections to changes made in Youtube video page syntax
 1.1.33 (2015-08-18)
  - Bug Fix: Corrections to changes made in Youtube page syntax
  - Added fullscreen link
@@ -376,7 +379,7 @@ function HideUnwantedUsers()
         for (var i = 0; i < items.length; i++)
         {
             var thumbdata = items[i],
-            user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard").textContent,
+            user = thumbdata.querySelector(".yt-uix-sessionlink.spf-link.g-hovercard, .yt-uix-sessionlink.g-hovercard").textContent,
             filtered = IsFilteredUser(user),
             notice = thumbdata.parentNode.querySelector(".banNotice");
 
@@ -412,15 +415,16 @@ function HideUnwantedUsers()
         var results, user;
         if (PageTYPE == 1) results = document.getElementsByClassName("item-section")[0].children;
         else results = document.getElementsByClassName("video-list-item");
-
+        console.log(results.length);
         for (var i = 0; i < results.length; i++)
         {
             try
             {
                 var vid = results[i];
                 if (vid.getElementsByClassName("g-hovercard").length == 0) continue;
-                if (PageTYPE == 1) user = vid.getElementsByClassName("g-hovercard")[0].textContent;
-                else user = vid.getElementsByClassName("g-hovercard")[1].textContent;
+                var user = vid.getElementsByClassName("g-hovercard")[0].textContent;
+                //if (PageTYPE == 1) user = vid.getElementsByClassName("g-hovercard")[0].textContent;
+                //else user = vid.getElementsByClassName("g-hovercard")[1].textContent;
 
                 var filtered = IsFilteredUser(user);
                 if (filtered)
