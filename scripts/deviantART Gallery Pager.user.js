@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.13a
+// @version         1.0.14
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -43,6 +43,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.14
+ - Ability to set the scroll offset to allow more pages loaded as you scroll
 1.0.13
  - BugFix to support Chrome and Opera. Replaced createHTMLDocument('MPIV') as it only seems to work in FireFox
 1.0.12 (2015-02-07)
@@ -82,11 +84,12 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************/
 console.info("DeviantScript Gallery Pager");
 /************** Variable you can set **************/
+//Once set update, run the script once and then force update to allow automatic updating
 //GM_setValue("UpdateURL", 1) //Turn on update URL
 //GM_deleteValue("UpdateURL") //Turn off update URL
-/**************************************************/
+//GM_setValue("ScrollOffset", 500); //The gap between page loading
 
-var scrollOffset = 500;
+var scrollOffset = GM_getValue("ScrollOffset", 500);
 var addPagination = true; //Adds page divider
 var gmi = document.querySelector("#gmi-GZone[gmi-name='top_left']");
 
