@@ -6,7 +6,7 @@ Repository for my UserScripts for GreaseMonkey. For script information and insta
 1. **Linx Amender** (Very powerful tool that provides page redirection, link cleaner, attribute cleaner and much more. Currently version 4 is in development and provides a lot more features and power.)
 
 ####Site Beautification and Enhancements
-1. **Schmoogle** (Google paging and table results. Needs major update but functions more than well enough)
+1. (UNLISTED) **Schmoogle** (Google paging and table results. Needs major update but functions more than well enough)
 2. **OUJS-1** (OpenUserJS)
 3. **Citrus GFork** (GreasyFork)
 
