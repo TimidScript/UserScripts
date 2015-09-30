@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.79 Beta
+// @version             3.3.80 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,8 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.80 Beta (2015-09-30)
+ - Bug Fix: Thumbnail Title URL Syntax Fix
 3.3.79 Beta (2015-08-01) Pixiv++ Minor Release that brings in a lot of new changes to the interface and inner workings.
 Close to being a major release due to the amount of changes done.
  - Bug Fix: Manga and Illustration filter fixed. Before I wasn't getting the tags but some japanese keywords
@@ -1626,7 +1628,7 @@ Close to being a major release due to the amount of changes done.
                     //Title
                     el = document.createElement("a");
                     el.className = "title";
-                    el.href = "member_illust.php?mode=medium&illust_id" + metadata.illustID;
+                    el.href = "member_illust.php?mode=medium&illust_id=" + metadata.illustID;
                     el.textContent = metadata.illustTitle;
                     meta.appendChild(el);
 
