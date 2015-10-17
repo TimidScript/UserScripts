@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.80a Beta
+// @version             3.3.81 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,10 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.81 Beta (2015-09-30)
+ - Bug Fix: Gallery indentation when you toggle sidebar
+ - Bug Fix: IQDB link on update selection code fix
+ - Replaced base64 bmp icon with png version
 3.3.80 Beta (2015-09-30)
  - Bug Fix: Thumbnail Title URL Syntax Fix
 3.3.79 Beta (2015-08-01) Pixiv++ Minor Release that brings in a lot of new changes to the interface and inner workings.
@@ -1580,7 +1584,7 @@ Close to being a major release due to the amount of changes done.
                 var IQDBLink = thumbnail.querySelector(".iqdb-link"),
                     metadata = IllustrationLinker.getIllust(thumbnail.getAttribute("illustration-id"));
 
-                IQDBLink.href = "http://" + Settings.IQDBType + ".IQDB.org/?url=" + metadata.illust240URL + "&";
+                if (IQDBLink) IQDBLink.href = "http://" + Settings.IQDBType + ".IQDB.org/?url=" + metadata.illust240URL + "&";
             },
 
             updateAllIQDBLinks: function ()
@@ -2014,8 +2018,8 @@ Close to being a major release due to the amount of changes done.
         img.onmousedown = function ()
         {
             SideBar.iframe.style.visibility = null;
-            SideBar.adjustFrameSize();
             Settings.display.sidebar = true;
+            SideBar.adjustFrameSize();
             Settings.saveSettings();
         };
 
@@ -2291,6 +2295,7 @@ Close to being a major release due to the amount of changes done.
             SideBar.iframe.style.width = (SideBar.sidebar.offsetWidth + 2) + "px";
         }
 
+        if (!Settings.display.sidebar || (document.getElementById("wrapper").offsetLeft >= parseInt(SideBar.iframe.style.width) + 5)) return;
         document.getElementById("wrapper").style.marginLeft = (parseInt(SideBar.iframe.style.width) + 5) + "px";
     },
 
