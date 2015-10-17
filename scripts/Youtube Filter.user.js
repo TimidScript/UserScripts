@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.35
+// @version         1.1.36
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -45,6 +45,8 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.36  (2015-10-05)
+ - Larger delay on Load More Videos on video page
 1.1.35  (2015-10-05)
  - Replaced base64 bmp icon with png version
 1.1.34 (2015-09-12)
@@ -753,7 +755,7 @@ function MainFunc()
                 var ss = CreateScreenshotLink(document.URL.replace(/.+watch\?v=(([a-z0-9]|_|-)+).*/gi, "$1"));
                 player.insertBefore(ss, player.firstElementChild);
                 var fs = document.createElement("a");
-                fs.textContent = "[FS]";
+                fs.textContent = "[FT]";
                 fs.href = "https://www.youtube.com/v/" + document.location.search.match(/v=([-_\w]+)/)[1];
                 fs.style.marginLeft = "10px";
                 player.insertBefore(fs, ss.nextElementSibling);
@@ -767,10 +769,10 @@ function MainFunc()
                 setTimeout(function ()
                 {
                     AdjustSearchResult();
-                }, 1000);
+                }, 2500);
 
                 //var player = document.getElementById("player");
-            }, 2500);
+            }, 7500);
             break;
         case 3: //User Channel
             console.info("YTF: User Channel");
