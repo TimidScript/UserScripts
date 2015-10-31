@@ -1050,8 +1050,8 @@ function GetOrderedRules(runFirstEnabled)
     ruleOrder += "," + GM_getValue("RuleOrderO", "");
 
 
-    //var names = GM_listValues();
-    var names = cloneInto(GM_listValues(), window);
+    var names = GM_listValues();
+    //var names = cloneInto(GM_listValues(), window);
     //log.log(names);
     for (var i = 0; i < names.length; i++)
     {
