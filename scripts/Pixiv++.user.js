@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.81 Beta
+// @version             3.3.82 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,8 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.82 Beta (2015-12-15)
+ - Minor change to CSS styles
 3.3.81 Beta (2015-09-30)
  - Bug Fix: Gallery indentation when you toggle sidebar
  - Bug Fix: IQDB link on update selection code fix
@@ -565,7 +567,7 @@ Close to being a major release due to the amount of changes done.
                    {
                        TSL.addStyle("AddBorder", ".work-tags, .works_display  {margin-bottom: 0px;}");
                        //TSL.addStyle("VLB", "#VisibleLinkBox {background-color: red; height: 40px; margin: 5px 20px 10px 20px;}");
-                       TSL.addStyle("VLB", "#VisibleLinkBox {margin: 1px 20px 10px 20px; background-color: gray;}");
+                       TSL.addStyle("VLB", "#VisibleLinkBox {margin: 1px 20px 0px 20px; background-color: gray;}");
                        var linkbox = document.createElement("section");
                        linkbox.id = "VisibleLinkBox";
                        linkbox.className = "work-tags";
