@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.82 Beta
+// @version             3.3.83 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,8 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.83 Beta (2016-02-14)
+ - Compatibility issues with Google Chrome
 3.3.82 Beta (2015-12-15)
  - Minor change to CSS styles
 3.3.81 Beta (2015-09-30)
@@ -1536,7 +1538,7 @@ Close to being a major release due to the amount of changes done.
                     arr = new Array();
                 for (var i = 0, thumb; i < thumbnails.length, thumb = thumbnails[i]; i++)
                 {
-                    console.log(getMetaScore(thumb)[sortType], thumb.getAttribute("pppThumb"));
+                    //console.log(getMetaScore(thumb)[sortType], thumb.getAttribute("pppThumb"));
                     var value = (sort) ? parseInt(getMetaScore(thumb)[sortType]) : parseInt(thumb.getAttribute("pppThumb"));
                     arr.push({ "index": i, "value": value });
                 }
@@ -1544,8 +1546,9 @@ Close to being a major release due to the amount of changes done.
                 //The value is either original position or score value
                 arr.sort(function (a, b)
                 {
-                    if ((sort && a.value < b.value) || (!sort && a.value > b.value)) return 1;
-                    return 0;
+                    if (sort) return b.value - a.value;
+                    else return a.value - b.value;
+                    //if ((sort && a.value < b.value) || (!sort && a.value > b.value)) return 1;
                 });
 
                 //Apply sorted array to thumbnails
@@ -1556,6 +1559,7 @@ Close to being a major release due to the amount of changes done.
 
                     container.appendChild(thumbnails[arr[i].index]);
                 }
+
 
                 var evaluator = new XPathEvaluator(); //document.evaluate
                 var sortButton = evaluator.evaluate("//a[@name='Sort']", SideBar.iDoc.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
