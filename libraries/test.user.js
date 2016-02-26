@@ -7,6 +7,7 @@
 // @homepageURL         https://openuserjs.org/users/TimidScript
 // @copyright           © 2014 TimidScript, All Rights Reserved.
 // @license             Creative Commons BY-NC-SA + Read Copyright inside the script
+// @require             https://raw.githubusercontent.com/TimidScript/UserScripts/master/libraries/test.js
 // @include             http://www.pixiv.net/*
 // @grant               GM_info
 // @grant               GM_getMetadata
