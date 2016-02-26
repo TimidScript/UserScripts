@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.83 Beta
+// @version             3.3.84 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,9 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.84 Beta (2016-02-14)
+ - Temporary fix for sidebar issue moving gallery to the right
+ - Support for TamperMonkey window object separation
 3.3.83 Beta (2016-02-14)
  - Compatibility issues with Google Chrome
 3.3.82 Beta (2015-12-15)
@@ -2248,10 +2251,9 @@ Close to being a major release due to the amount of changes done.
             iDoc.body.setAttribute("style", "width: auto; height: auto;");
             iframe.setAttribute("style", "z-index: 1000; position:fixed; top: 0px; left:0px;");
 
-            SideBar.iframe.style.visibility = (Settings.display.sidebar) ? null : "hidden";
-            document.getElementById("wrapper").style.margin = (Settings.display.sidebar) ? "10px 20px 0px auto" : null;
-            window.onresize = SideBar.adjustFrameSize;
-            SideBar.adjustFrameSize();
+            window.addEventListener("resize", SideBar.adjustFrameSize);
+            SideBar.iframe.style.visibility = "hidden";
+            if (Settings.display.sidebar) img.click();
 
             if (Settings.fetch.metadata) IllustrationLinker.switchOn();
             else IllustrationLinker.switchOff();
