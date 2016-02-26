@@ -10,4 +10,4 @@
 // @exclude                 *
 // ==/UserScript==
 
-alert("SDDS");
+alert("AAAA");
