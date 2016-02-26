@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 // @namespace         TimidScript
-// @version             2
+// @version             3
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". ???????|????|???????|?????|????|??|????????
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
