@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.25
+// @version                 1.0.26
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -42,6 +42,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.26 (2016-02-27)
+ - Ratings bar and "Flaggins" are now separate elements, so removed unnecessary code and notice.
+ - Removed flagged information as it seems admin hide it so might as well hide it also.
 1.0.25 (2015-09-06)
  - Interval check for new issues every 3 minutes
  - Option to display new issue count in title. Need to set GM_setValue("EditTitle",1);
@@ -1151,49 +1154,18 @@ function SortScriptTable(e)
         notice.setAttribute("style", "padding: 0 10px; color: red; font-weight: 700; border-radius: 5px; background-color: yellow;");
         pd.appendChild(notice);
 
-        //Progress bar replaced
-        notice = document.createElement("div");
-        notice.textContent = "The original ratings bar is somewhat deceptive to end user and is more useful to moderators, so it has been replaced. "
-                    + "The original bar included flagging which does not get removed by moderators until reaches a certain threshold. You can "
-                    + "toggle 'moderators' bar by clicking this notice.";
-        notice.setAttribute("style", "padding: 0 10px; color: blue; font-weight: 700; border-radius: 5px; background-color: cyan; cursor: pointer;");
-        notice.onclick = function ()
-        {
-            var bars = pd.querySelectorAll(".progress");
-            var view = bars[0].style.display == "none"
-
-            bars[0].style.display = (view) ? null : "none";
-            bars[1].style.display = (!view) ? null : "none";
-
-            GM_setValue("RatingsBar", (view) ? 2 : 1);
-        };
-        pd.appendChild(notice);
-
-
         var rating = parseInt(pd.querySelector(".row p").textContent.match(/-?\d+$/)[0]),
             votes = parseInt(pd.querySelector(".progress-bar-good").textContent),
             votes = isNaN(votes) ? 0 : votes,
             votesDown = (votes - rating) / 2,
-            flag = parseInt(pd.querySelector(".progress-bar-danger").textContent),
-            bar1 = pd.querySelector(".progress"),
-            bar2 = bar1.cloneNode(true);
+            flags = parseInt(pd.querySelector(".progress-bar-danger").textContent),
+            bar1 = pd.querySelector(".progress");
 
-        if (rating != votes)
-        {
-            //bar1.firstElementChild.innerHTML = votes + "<sup>(<span style='color: cyan;'>" + (votes - votesDown) + "</span>,<span style='color: hotpink;'>-" + votesDown + "</span>)</sup> Votes";
-            bar1.firstElementChild.innerHTML = "<span style='color: cyan;'>+" + (votes - votesDown) + "</span> | <span style='color: yellow;'>-" + votesDown + "</span>";
-            pd.querySelector(".row p").innerHTML = pd.querySelector(".row p").innerHTML.replace(/\d+$/, rating + " (" + votes + " Votes)");
-        }
-
-        bar1.lastElementChild.style.width = (100 - parseFloat(bar1.firstElementChild.style.width)) + "%"
-        bar1.style.display = GM_getValue("RatingsBar", 2) == 1 ? null : "none";
-
-        bar1.parentNode.insertBefore(bar2, bar1);
-        bar2.firstElementChild.style.width = (100 / votes * (votes - votesDown)) + "%"
-        bar2.lastElementChild.style.width = (100 - parseFloat(bar2.firstElementChild.style.width)) + "%"
-        bar2.firstElementChild.textContent = votes - votesDown;
-        bar2.lastElementChild.textContent = votesDown;
-        bar2.style.display = GM_getValue("RatingsBar", 2) == 2 ? null : "none";
+        bar1.firstElementChild.innerHTML = "<span style='color: yellow;'>+" + (votes - votesDown) + "</span>";
+        pd.querySelector(".row p").innerHTML = pd.querySelector(".row p").innerHTML.replace(/\d+$/, rating + " (" + votes + " Votes)");
+        pd.querySelector(".progress-bar-danger").innerHTML = "<span style='color: yellow;'>-" + votesDown + "</span>";
+        pd.querySelector(".progress-bar-danger").style.textAlign = "center";
+        pd.querySelector(".progress-bar-danger").style.width = (100-parseFloat (pd.querySelector(".progress-bar-good").style.width)) + "%";
     }
 
     function xhrPage(url, callback)
