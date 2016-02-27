@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.33
+// @version         1.1.34
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -42,7 +42,11 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ----------------------------------------------
-1.1.33  (2015-10-05)
+1.1.34 (2016-02-27)
+ - Bug Fix: Displays version number in third party profiles
+ - Removed toggle For Deleted scripts
+ - Added discussion even when not logged in
+1.1.33 (2015-10-05)
  - Replaced base64 bmp icon with png version
 1.1.32 (2015-07-04)
  - Added overflow style to code tag
@@ -374,6 +378,60 @@ script-list-set
 
         el = document.getElementById("user-deleted-script-list");
         if (el) TSL.removeNode(el.parentElement);
+
+        //Get discussions
+        el = document.querySelector("#user-discussions-on-scripts-written");
+        if (el) return;
+        //https://greasyfork.org/en/forum/discussions.json?script_author=1455
+        var userId = document.URL.match(/\/users\/(\d+)/)[1],
+            localURL = document.URL.replace(/\/users\/.+/, ""),
+            disURL = localURL + "/forum/discussions.json?script_author=" + userId;
+
+        GM_xmlhttpRequest({
+            url: disURL,
+            method: "GET",
+            headers: { "User-agent": navigator.userAgent, "Accept": "text/xml" },
+            onload: function (xhr)
+            {
+                if (xhr.status == 200)
+                {
+                    var data = JSON.parse(xhr.responseText);
+                    if (typeof data !== "object" || data.CountDiscussions == 0) return;
+                    console.log(data);
+
+                    var discussions = document.createElement("section");
+                    discussions.id = "user-discussions-on-scripts-written";
+                    discussions.innerHTML = '<h3>Discussions on scripts <a href="/en/forum/discussions/feed.rss?script_author="' + userId + '"><img src="/assets/feed-icon-14x14-ea341336588040dc7046d3423511d63d.png" alt="RSS Feed" rel="nofollow"></a></h3><ul class="discussion-list"></ul>';
+                    document.body.insertBefore(discussions, document.querySelector("#script-table"));
+
+                    var list = discussions.querySelector("ul");
+
+                    for (var i = 0, post, item; i < data.Discussions.length && i < 10; i++)
+                    {
+                        post = data.Discussions[i];
+
+                        item = document.createElement("li");
+                        item.class = "discussion-question";
+                        item.innerHTML = '<a href="' + localURL + '/scripts/' + post.ScriptID + '">' + post.DiscussionAboutName + '</a> : '
+                            + '<a href="' + post.Url + '">' + post.Name + '</a> by '
+                            + '<a href="' + localURL + "/forum/profile/" + post.FirstUserID + "/" + post.FirstName + '">' + post.FirstName + '</a> '
+                            + '<time datetime="' + post.FirstDate + '">' + getDate(post.FirstDate) + '</time>, last comment by '
+                            + '<a href="' + localURL + "/forum/profile/" + post.LastUserID + "/" + post.LastName + '">' + post.LastName + '</a> '
+                            + '<time datetime="' + post.LastDate + '">' + getDate(post.LastDate) + '</time>';
+
+
+                        list.appendChild(item);
+                    }
+                }
+                else callback(xhr, null);
+
+                function getDate(date)
+                {
+                    return date.replace(/\s+.+/, "");
+                    //return date.match(/^\d+-\d+-\d+/)[0];
+                }
+            }
+        });
     }
 
 
@@ -752,12 +810,14 @@ script-list-set
             {
                 if (xhr.status == 200)
                 {
-                    var scripts = JSON.parse(xhr.responseText);
-                    if (!Array.isArray(scripts)) scripts = scripts.scripts;
-                    for (var i = 0; i < scripts.length; i++)
+                    var data = JSON.parse(xhr.responseText), scripts;
+                    if (typeof data !== "object") return;
+                    scripts = data.scripts || data.all_listable_scripts;
+                    for (var i = 0, script; i < scripts.length; i++)
                     {
-                        var script = scripts[i];
+                        script = scripts[i];
                         var el = document.querySelector("#s" + script.id + " .thetitle");
+
                         if (el)
                         {
                             var s = document.createElement("span");
