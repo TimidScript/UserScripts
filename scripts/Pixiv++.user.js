@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.84 Beta
+// @version             3.3.85 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,9 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.85 Beta (2016-03-23)
+ - Removed legacy code
+ - Corrected display on result info
 3.3.84 Beta (2016-02-14)
  - Temporary fix for sidebar issue moving gallery to the right
  - Support for TamperMonkey window object separation
@@ -301,7 +304,6 @@ Close to being a major release due to the amount of changes done.
                        IllustrationLinker.intervalID = null;
                        RemoveMessage(IllustrationLinker.msgHandle);
                        IllustrationLinker.msgHandle = null;
-                       PaginatorHQ.displayResultInfo();
                        DisplayMessage("Illustration metadata acquired", 1000);
                    }
                    else if (IllustrationLinker.processList.length % 5 == 0)
@@ -397,8 +399,17 @@ Close to being a major release due to the amount of changes done.
                metadata.tags = metadata.tags.trim();
 
 
-               metadata.illust128URL = doc.querySelector('meta[property="og:image"]');
-               metadata.illust128URL = (metadata.illust128URL) ? metadata.illust128URL.getAttribute("content") : doc.querySelector('img[class="original-image"]').getAttribute("data-src");
+               var baseURL = doc.querySelector('meta[property="og:image"]');
+               if (baseURL) baseURL = baseURL.getAttribute("content").replace(/\/img-inf\/(.+)_s/, "/c/DIMENSIONS/img-master/$1_master1200");
+               baseURL = baseURL.replace(/128x128|150x150/, "DIMENSIONS");
+
+               metadata.illust128URL = baseURL.replace("DIMENSIONS", "128x128");
+               metadata.illust150URL = baseURL.replace("DIMENSIONS", "150x150");
+               metadata.illust240URL = baseURL.replace("DIMENSIONS", "240x480");
+               metadata.illust480URL = baseURL.replace("DIMENSIONS", "480x960");
+               metadata.illust600URL = baseURL.replace("DIMENSIONS", "600x600");
+               metadata.illust1200URL = baseURL.replace("DIMENSIONS", "1200x1200");
+               metadata.illustURL = baseURL.replace(/c\/DIMENSIONS\/img-master(.+)\/.+/, "img-original$1/" + metadata.illustID + "_p0.jpg");
 
                metadata.description = doc.querySelector('meta[property="og:description"]');
                metadata.description = (metadata.description) ? metadata.description.getAttribute("content") : doc.querySelector("._unit .caption").innerHTML;
@@ -415,22 +426,14 @@ Close to being a major release due to the amount of changes done.
                {
                    metadata.illustType = 3;
                    metadata.illustURL = context.ugokuIllustFullscreenData.src;
-
-                   metadata.illust128URL = metadata.illust128URL.replace(/\/img-inf\/(.+)_s/, "/c/128x128/img-master/$1_master1200");
-                   metadata.illust128URL = metadata.illust128URL.replace(".png", ".jpg");
-                   metadata.illust150URL = metadata.illust128URL.replace("/128x128/", "/150x150/");
-                   metadata.illust240URL = metadata.illust128URL.replace("/128x128/", "/240x480/");
-                   metadata.illust480URL = metadata.illust128URL.replace("/128x128/", "/480x960/");
-                   metadata.illust600URL = metadata.illust128URL.replace("/128x128/", "/600x600/");
-                   metadata.illust1200URL = metadata.illust128URL.replace("/128x128/", "/1200x1200/");
                }
                else
                {
                    el = doc.querySelector(".works_display ._layout-thumbnail img");
-                   metadata.illustURL = metadata.illust600URL = el.src.replace(/\?\d+/, "");
 
-                   //TODO: Bug illustration link is sometimes missing
+                   //TODO: Single paged manga (really an illustration) extensions are sometimes marked as jpg when they are png files
                    //http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46543872
+                   //http://www.pixiv.net/member_illust.php?mode=medium&illust_id=52415438
                    el = doc.querySelector(".original-image");
                    if (el) //Single Image
                    {
@@ -452,35 +455,10 @@ Close to being a major release due to the amount of changes done.
                            metadata.pageCount = 1;
                            metadata.illustType = 1;
                        }
-
-
-                       metadata.illustURL = metadata.illustURL.replace(/(\d+)_m\.\w+/, "$1_big_p0" + metadata.illust128URL.match(/(.\w+)$/)[1]);
-                       metadata.illustURL = metadata.illustURL.replace(/c\/600x600\/img-master(.+)\/.+/, "img-original$1/" + metadata.illustID + "_p0" + metadata.illust128URL.match(/(\.\w+)$/)[1]);
-                       if (metadata.illustID < 11319936) metadata.illustURL = metadata.illustURL.replace("_big", "");
-                   }
-
-
-                   if (metadata.illust128URL.indexOf("/img-master/") > 0)
-                   {
-                       metadata.illust150URL = metadata.illust128URL.replace("/128x128/", "/150x150/");
-                       metadata.illust128URL = metadata.illust150URL.replace("/150x150/", "/128x128/");
-                       metadata.illust240URL = metadata.illust128URL.replace("/128x128/", "/240x480/");
-                       metadata.illust480URL = metadata.illust128URL.replace("/128x128/", "/480x960/");
-                       metadata.illust600URL = metadata.illust128URL.replace("/128x128/", "/600x600/");
-                       metadata.illust1200URL = metadata.illust128URL.replace("/128x128/", "/1200x1200/");
-                   }
-                   else
-                   {
-                       metadata.illust240URL = metadata.illust600URL.replace(/([^\/]+)\/(\d+)_m.+/, "$1/mobile/$2_240mw.jpg");
-                       metadata.illust480URL = metadata.illust600URL;
-                       metadata.illust1200URL = metadata.illust600URL;
-                       if (metadata.illustType == 2) metadata.illust240URL = metadata.illust240URL.replace("_240mw", "_240mw_p0");
-                       if (metadata.pageCount > 1 && metadata.illustID >= 11319936) metadata.illust1200URL = metadata.illustURL.replace("_big", "")
-                       metadata.illust150URL = metadata.illust240URL;
                    }
                }
-
                metadata.bookmarkCount = IllustrationLinker.getBookmarkCount(id);
+               //console.log(metadata);
                return metadata;
            },
 
@@ -628,7 +606,7 @@ Close to being a major release due to the amount of changes done.
                                        for (var i = 0; i < metadata.pageCount; i++)
                                        {
                                            el = document.createElement("a");
-                                           el.href = metadata.illustURL.replace(/\/(\d+|\d+_big)_p\d+/i, "/$1_p" + i);
+                                           el.href = metadata.illustURL.replace(/(_p)0/i, "$1" + i);
                                            el.innerHTML = "<img src='" + metadata.illust240URL.replace(/_p\d+/i, "_p" + i) + "'/>";
                                            //el.innerHTML = "<img src='" + metadata.illust150URL.replace(/_p\d+/i, "_p" + i) + "'/>";
                                            thumbs.appendChild(el);
@@ -651,29 +629,30 @@ Close to being a major release due to the amount of changes done.
                }
 
                //INFO: View all different sized images
-               //if (!IsIllustrationPage) return;
-               //var previews = document.createElement("section");
-               //var wdu = document.querySelector("._work-detail-unit");
-               //wdu.insertBefore(previews, wdu.lastElementChild);
-               //addImage(metadata.illust128URL);
-               //addImage(metadata.illust150URL);
-               //addImage(metadata.illust240URL);
-               //addImage(metadata.illust480URL);
-               //addImage(metadata.illust600URL);
-               //addImage(metadata.illust1200URL);
-               //function addImage(scource)
-               //{
-               //    var con = document.createElement("div");
-               //    var img = document.createElement("img");
-               //    con.appendChild(img);
-               //    previews.appendChild(con);
-               //    img.src = scource;
-               //}
+               if (!IsIllustrationPage) return;
+               var previews = document.createElement("section");
+               var wdu = document.querySelector("._work-detail-unit");
+               wdu.insertBefore(previews, wdu.lastElementChild);
+               addImage(metadata.illust128URL);
+               addImage(metadata.illust150URL);
+               addImage(metadata.illust240URL);
+               addImage(metadata.illust480URL);
+               addImage(metadata.illust600URL);
+               addImage(metadata.illust1200URL);
+               function addImage(scource)
+               {
+                   var con = document.createElement("div");
+                   var img = document.createElement("img");
+                   con.appendChild(img);
+                   previews.appendChild(con);
+                   img.src = scource;
+               }
            },
 
            /*
            -------------------------------------------------------------------------------------------
             Gets illustration information using Illustration page
+            noincrement is used when mouse hover. It does not increment simultaneousCalls
            -------------------------------------------------------------------------------------------*/
            getDataHTML: function (id, noincrement)
            {
@@ -751,6 +730,7 @@ Close to being a major release due to the amount of changes done.
                    {
                        IllustrationLinker.createLinksBox(id);
                        if (!noincrement && IllustrationLinker.simultaneousCalls > 0) IllustrationLinker.simultaneousCalls--;
+                       if (IllustrationLinker.processList.length < 5) PaginatorHQ.displayResultInfo();
                    }
                }
 
@@ -1307,7 +1287,7 @@ Close to being a major release due to the amount of changes done.
                             if (found) break;
                         }
 
-                        console.log(found);
+                        //console.log(found);
                         filterOut = found;
                     }
                 }
@@ -1464,6 +1444,7 @@ Close to being a major release due to the amount of changes done.
                 var resultCount = PaginatorHQ.getResultCount(); //Number of items returned by search
 
                 var linked = document.querySelectorAll(".marked4linker.linked[pppThumb]").length;
+
 
                 if (resultCount < 0) //We do not know how many pages can be displayed. Might not be paged
                 {
@@ -2039,7 +2020,7 @@ Close to being a major release due to the amount of changes done.
 
             iDoc.head.innerHTML = '<meta charset="utf-8" />';
 
-            iDoc.body.innerHTML = '<section id="PSideBar" style="min-width: 130px;"><div style="text-align: right; margin: 2px 5px 0 0; padding: 0;"><span style="float: left; display: inline-block; margin-left: 5px;"><a name="nextPage" href="#" title="Paging" class="buttonR buttonOn"><span></span></a><a name="metadata" href="#" title="Illustartion Linker" class="buttonG buttonOn"><span></span></a></span><a href="#" id="SidebarClose"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAADpklEQVR42m2U2UuUURjG329Gx3XcNXcll3EZ9UK9rQgsy5soo5v8C9wSR4zIGyHoJosR6b4uCokiiMirwi4S1EhxwxFRxwUV3JfR2XqeU98wmQdeZr7zfed3nvd9zns0OWe0tLSYIyIi0n0+X7nJZKo0Go0ZmPZ7vV7n6enpsMFgmDw+Pl612+2HZ9dqwQ+NjY1GfFyckJDQkJmZeTsrK+tiSkqKwWw2q/f7+/uysbHhdTqds8vLy/1bW1tvsKmjr6/P9x+wqanJFBIScj03N7etoqLiSlpamoZn0bR/9hS/3y8ej0fW1tZ8Y2NjXxYWFp673e5vgHoCQCoLDQ29WVRU1F1eXl4WFxdHpQp2HpABZbKzs+MZHx8fnpmZ6QL0K5Wqr5ubm605OTn2qqqqS7GxsSiZUYEIZQQPgnQgle7u7npGR0c/Ly4u2np7ex0aYOaYmJjHlZWVHXqaMEJQR7Vob28vAONGUC9HR0dqnkAYxfS9IyMjXajxC629vd0C0CfULT88PFwtglpJTU0VpMGPZXt7W7gR5xITE+Xk5ESgSM0T6nK5BKn/XF1dvaO1tbXdLSkpeQtHDVRGYGlpqVLIwcWERkVFKRhLQVXz8/Oyvr6ugNx4aWnpdHp6uk6z2WxPYUQnUyGQSqKjoyUvL08BOLiA8xwE4NgI1Kh5BjeFQVRpI/A1gPcjIyMlLCxM4LYygooKCgokKSkpUEPCmCqBev104OHhoUxMTPRora2trzIyMhqSk5OFUKoklPUsLCwUvAscHdbK4XDIysqKMowwdI6CbW5uUvUzDQf6CdrsEVNmUFl8fLxYrVZljl4z1pYDLSeolaohNzg4OFDmMGU8P9BwqG8h1XcAGQmjutraWrFYLApGBZOTk8IM0I4KSkWDg4MyOzsbSBfhwrc3CCxAwT8i3WKmTGBNTY3gGKmU0F4yNTWljKqurpbs7GylamBgQNB2SiXPJWIImdwjMApKOqCyC0AD0lep46CrVKmOvxxoACkrK1Ogubk5BWIJ8OuGuk500Eu9ly1wtgfQawCG0BA6TbU0STeFYJZAvyD+qiPsPUx6iF5e0IFs2KsofDcA1YTqZ5Jm6P1MZ/WjQjDUEfYd8114/QNAf+AqAZQn9zIWt0BZHYC8gUS/KIKvLgZA4LqpzI5XQ/qdePaCpZQ8AOoBrgfMijAFA6HQhfgFUD+eP2B6kcrOvbGDwBGAXMDffEQFIv0Pz+/E7xhiHrEBkOvs2t9OIDX6eVLvRgAAAABJRU5ErkJggg==" /></a></div><div id="hiddenCtrl" style="font-size: x-small; text-align: center; margin: 2px; display: none;"><input id="pagingOffset" type="text" style="width: 40px; margin: 0px 3px;" title="Page Offset" /><select id="pageFetchMethod" title="Page Fetch Method"><option title="GM_xmlHttpRequest">1G</option><option title="xmlHttpRequest">2X</option><option title="iframe">3F</option></select></div><hr style="margin-top: 2px;" /><div><table id="InfoTable"><tbody><tr><td>Pages</td><td></td></tr><tr><td>Images</td><td></td></tr></tbody></table></div><hr /><section><div style="text-align: center;"><a name="displayOptions" href="#"><div class="bgiY blockButtonOn" style="border-color: yellow;">Display Options</div></a></div><div id="DisplayOptions" class="aY" style="border: 2px solid yellow; padding-bottom: 5px;"><table class="switchTable"><tbody><tr class="switchCellOn"><td><a name="artistName" href="#"><div></div></a></td><td><a name="artistName" href="#">Artist Name</a></td></tr><tr class="switchCellOn"><td><a name="illustTitle" href="#"><div></div></a></td><td><a name="illustTitle" href="#">Illustration Title</a></td></tr><tr class="switchCellOff"><td><a name="illustLink" href="#"><div></div></a></td><td><a name="illustLink" href="#">Illustration Link</a></td></tr><tr class="switchCellOff"><td><a name="mangaLinks" href="#"><div></div></a></td><td><a name="mangaLinks" href="#">Manga Links</a></td></tr><tr class="switchCellOn"><td><a name="countList" href="#"><div></div></a></td><td><a name="countList" href="#">Count-List</a></td></tr></tbody></table><hr /><table class="switchTable"><tbody><tr class="switchCellOff"><td><a name="IQDBLink" href="#"><div></div></a></td><td><a name="IQDBLink" href="#">IQDB Link</a></td></tr></tbody></table><div class="selectHolder"><select id="IQDBOptions"><option>danbooru</option></select></div><hr /><table class="switchTable"><tbody><tr class="switchCellOn"><td><a name="autoPreview" href="#"><div></div></a></td><td><a name="autoPreview" href="#">Preview Image</a></td></tr></tbody></table><div class="selectHolder"><select id="previewDimensions"><option>250px</option></select></div></div></section><section><div style="text-align: center;"><a name="filterOptions" href="#"><div class="bgiC blockButtonOn" style="border-color: cyan;">Filter Options</div></a></div><div id="FilterOptions" class="aC" style="border: 2px solid cyan;"><ul><li><input type="checkbox" name="ageRating" />Safe</li><li><input type="checkbox" name="ageRating" />R18</li><li><input type="checkbox" name="ageRating" />R18G</li></ul><table class="filterTable"><tbody><tr><td><input id="tagsInclude" type="text" /></td><td><a name="tagsInclude" href="#"><div class="bgiG"></div></a></td></tr><tr><td><input id="tagsExclude" type="text" /></td><td><a name="tagsExclude" href="#"><div class="bgiG"></div></a></td></tr></tbody></table><hr /><div style="text-align: center;"><a name="filterSwitch" href="#"><div class="miniButtonOff" style="width: 80%;">Filter Options</div></a></div><table><tbody><tr><td style="width: 16px;"><input type="checkbox" name="filterType" value="2" checked="checked" /></td><td colspan="3">Illustrations</td></tr><tr><td><input type="checkbox" name="filterType" value="4" checked="checked" /></td><td colspan="3">Mangas</td></tr><tr><td><input type="checkbox" name="filterType" value="8" checked="checked" /></td><td>Bookmarks</td><td><input class="filterValue" type="text" /></td><td style="width: 10px;"><input type="radio" name="sortType" value="0" /></td></tr><tr><td><input type="checkbox" name="filterType" value="16" checked="checked" /></td><td>Views</td><td><input class="filterValue" type="text" /></td><td><input type="radio" name="sortType" value="1" /></td></tr><tr><td><input type="checkbox" name="filterType" value="32" checked="checked" /></td><td>Ratings</td><td><input class="filterValue" type="text" /></td><td><input type="radio" name="sortType" value="2" /></td></tr><tr><td><input type="checkbox" name="filterType" value="32" checked="checked" /></td><td>Total</td><td><input class="filterValue" type="text" /></td><td><input type="radio" name="sortType" value="3" /></td></tr></tbody></table><div style="text-align: center; margin-bottom: 3px;"><a name="Sort" href="#"><div class="blockButtonOn bgiC" style="width: 50px;">Sort</div></a><a name="Unsort" href="#"><div class="blockButtonOn bgiC" style="width: 50px;">Unsort</div></a></div><ul class="filterSet"><li><span style="background-color: yellow;"><input type="radio" name="filterSet" value="0" /></span></li><li><span style="background-color: pink;"><input type="radio" name="filterSet" value="1" /></span></li><li><span style="background-color: red;"><input type="radio" name="filterSet" value="2" /></span></li><li><span style="background-color: darkgreen;"><input type="radio" name="filterSet" value="3" /></span></li><li><span style="background-color: blue;"><input type="radio" name="filterSet" value="4" /></span></li></ul></div></section></section>';
+            iDoc.body.innerHTML = '<section id="PSideBar" style="min-width: 130px;"><div style="text-align: right; margin: 2px 5px 0 0; padding: 0;"><a href="#" id="SidebarClose"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAADpklEQVR42m2U2UuUURjG329Gx3XcNXcll3EZ9UK9rQgsy5soo5v8C9wSR4zIGyHoJosR6b4uCokiiMirwi4S1EhxwxFRxwUV3JfR2XqeU98wmQdeZr7zfed3nvd9zns0OWe0tLSYIyIi0n0+X7nJZKo0Go0ZmPZ7vV7n6enpsMFgmDw+Pl612+2HZ9dqwQ+NjY1GfFyckJDQkJmZeTsrK+tiSkqKwWw2q/f7+/uysbHhdTqds8vLy/1bW1tvsKmjr6/P9x+wqanJFBIScj03N7etoqLiSlpamoZn0bR/9hS/3y8ej0fW1tZ8Y2NjXxYWFp673e5vgHoCQCoLDQ29WVRU1F1eXl4WFxdHpQp2HpABZbKzs+MZHx8fnpmZ6QL0K5Wqr5ubm605OTn2qqqqS7GxsSiZUYEIZQQPgnQgle7u7npGR0c/Ly4u2np7ex0aYOaYmJjHlZWVHXqaMEJQR7Vob28vAONGUC9HR0dqnkAYxfS9IyMjXajxC629vd0C0CfULT88PFwtglpJTU0VpMGPZXt7W7gR5xITE+Xk5ESgSM0T6nK5BKn/XF1dvaO1tbXdLSkpeQtHDVRGYGlpqVLIwcWERkVFKRhLQVXz8/Oyvr6ugNx4aWnpdHp6uk6z2WxPYUQnUyGQSqKjoyUvL08BOLiA8xwE4NgI1Kh5BjeFQVRpI/A1gPcjIyMlLCxM4LYygooKCgokKSkpUEPCmCqBev104OHhoUxMTPRora2trzIyMhqSk5OFUKoklPUsLCwUvAscHdbK4XDIysqKMowwdI6CbW5uUvUzDQf6CdrsEVNmUFl8fLxYrVZljl4z1pYDLSeolaohNzg4OFDmMGU8P9BwqG8h1XcAGQmjutraWrFYLApGBZOTk8IM0I4KSkWDg4MyOzsbSBfhwrc3CCxAwT8i3WKmTGBNTY3gGKmU0F4yNTWljKqurpbs7GylamBgQNB2SiXPJWIImdwjMApKOqCyC0AD0lep46CrVKmOvxxoACkrK1Ogubk5BWIJ8OuGuk500Eu9ly1wtgfQawCG0BA6TbU0STeFYJZAvyD+qiPsPUx6iF5e0IFs2KsofDcA1YTqZ5Jm6P1MZ/WjQjDUEfYd8114/QNAf+AqAZQn9zIWt0BZHYC8gUS/KIKvLgZA4LqpzI5XQ/qdePaCpZQ8AOoBrgfMijAFA6HQhfgFUD+eP2B6kcrOvbGDwBGAXMDffEQFIv0Pz+/E7xhiHrEBkOvs2t9OIDX6eVLvRgAAAABJRU5ErkJggg==" /></a></div><div id="hiddenCtrl" style="font-size: x-small; text-align: center; margin: 2px; display: none;"><input id="pagingOffset" type="text" style="width: 40px; margin: 0px 3px;" title="Page Offset" /><select id="pageFetchMethod" title="Page Fetch Method"><option title="GM_xmlHttpRequest">1G</option><option title="xmlHttpRequest">2X</option><option title="iframe">3F</option></select></div><hr style="margin-top: 2px;" /><div><table id="InfoTable"><tbody><tr><td>Pages</td><td></td></tr><tr><td>Images</td><td></td></tr></tbody></table></div><hr /><section><div style="text-align: center;"><a name="displayOptions" href="#"><div class="bgiY blockButtonOn" style="border-color: yellow;">Display Options</div></a></div><div id="DisplayOptions" class="aY" style="border: 2px solid yellow; padding-bottom: 5px;"><table class="switchTable"><tbody><tr class="switchCellOn"><td><a name="artistName" href="#"><div></div></a></td><td><a name="artistName" href="#">Artist Name</a></td></tr><tr class="switchCellOn"><td><a name="illustTitle" href="#"><div></div></a></td><td><a name="illustTitle" href="#">Illustration Title</a></td></tr><tr class="switchCellOff"><td><a name="illustLink" href="#"><div></div></a></td><td><a name="illustLink" href="#">Illustration Link</a></td></tr><tr class="switchCellOff"><td><a name="mangaLinks" href="#"><div></div></a></td><td><a name="mangaLinks" href="#">Manga Links</a></td></tr><tr class="switchCellOn"><td><a name="countList" href="#"><div></div></a></td><td><a name="countList" href="#">Count-List</a></td></tr></tbody></table><hr /><table class="switchTable"><tbody><tr class="switchCellOff"><td><a name="IQDBLink" href="#"><div></div></a></td><td><a name="IQDBLink" href="#">IQDB Link</a></td></tr></tbody></table><div class="selectHolder"><select id="IQDBOptions"><option>danbooru</option></select></div><hr /><table class="switchTable"><tbody><tr class="switchCellOn"><td><a name="autoPreview" href="#"><div></div></a></td><td><a name="autoPreview" href="#">Preview Image</a></td></tr></tbody></table><div class="selectHolder"><select id="previewDimensions"><option>250px</option></select></div></div></section><section><div style="text-align: center;"><a name="filterOptions" href="#"><div class="bgiC blockButtonOn" style="border-color: cyan;">Filter Options</div></a></div><div id="FilterOptions" class="aC" style="border: 2px solid cyan;"><ul><li><input type="checkbox" name="ageRating" />Safe</li><li><input type="checkbox" name="ageRating" />R18</li><li><input type="checkbox" name="ageRating" />R18G</li></ul><table class="filterTable"><tbody><tr><td><input id="tagsInclude" type="text" /></td><td><a name="tagsInclude" href="#"><div class="bgiG"></div></a></td></tr><tr><td><input id="tagsExclude" type="text" /></td><td><a name="tagsExclude" href="#"><div class="bgiG"></div></a></td></tr></tbody></table><hr /><div style="text-align: center;"><a name="filterSwitch" href="#"><div class="miniButtonOff" style="width: 80%;">Filter Options</div></a></div><table><tbody><tr><td style="width: 16px;"><input type="checkbox" name="filterType" value="2" checked="checked" /></td><td colspan="3">Illustrations</td></tr><tr><td><input type="checkbox" name="filterType" value="4" checked="checked" /></td><td colspan="3">Mangas</td></tr><tr><td><input type="checkbox" name="filterType" value="8" checked="checked" /></td><td>Bookmarks</td><td><input class="filterValue" type="text" /></td><td style="width: 10px;"><input type="radio" name="sortType" value="0" /></td></tr><tr><td><input type="checkbox" name="filterType" value="16" checked="checked" /></td><td>Views</td><td><input class="filterValue" type="text" /></td><td><input type="radio" name="sortType" value="1" /></td></tr><tr><td><input type="checkbox" name="filterType" value="32" checked="checked" /></td><td>Ratings</td><td><input class="filterValue" type="text" /></td><td><input type="radio" name="sortType" value="2" /></td></tr><tr><td><input type="checkbox" name="filterType" value="32" checked="checked" /></td><td>Total</td><td><input class="filterValue" type="text" /></td><td><input type="radio" name="sortType" value="3" /></td></tr></tbody></table><div style="text-align: center; margin-bottom: 3px;"><a name="Sort" href="#"><div class="blockButtonOn bgiC" style="width: 50px;">Sort</div></a><a name="Unsort" href="#"><div class="blockButtonOn bgiC" style="width: 50px;">Unsort</div></a></div><ul class="filterSet"><li><span style="background-color: yellow;"><input type="radio" name="filterSet" value="0" /></span></li><li><span style="background-color: pink;"><input type="radio" name="filterSet" value="1" /></span></li><li><span style="background-color: red;"><input type="radio" name="filterSet" value="2" /></span></li><li><span style="background-color: darkgreen;"><input type="radio" name="filterSet" value="3" /></span></li><li><span style="background-color: blue;"><input type="radio" name="filterSet" value="4" /></span></li></ul></div></section></section>';
             var sidebar = iDoc.body.firstElementChild;
             iDoc.body.appendChild(sidebar);
 
@@ -2050,7 +2031,6 @@ Close to being a major release due to the amount of changes done.
 
             TSL.addStyle(null, ".bgiY{background-color: yellow;background-image: linear-gradient(bottom, rgb(255,255,250) 0%, rgb(255,255,0) 50%, rgb(255,255,250) 100%);background-image: -o-linear-gradient(bottom, rgb(255,255,250) 0%, rgb(255,255,0) 50%, rgb(255,255,250) 100%);background-image: -moz-linear-gradient(bottom, rgb(255,255,250) 0%, rgb(255,255,0) 50%, rgb(255,255,250) 100%);background-image: -webkit-linear-gradient(bottom, rgb(255,255,250) 0%, rgb(255,255,0) 50%, rgb(255,255,250) 100%);background-image: -ms-linear-gradient(bottom, rgb(255,255,250) 0%, rgb(255,255,0) 50%, rgb(255,255,250) 100%);background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(255,255,250)), color-stop(0.5, rgb(255,255,0)), color-stop(1, rgb(255,255,250)) );}.bgiC{background-color: cyan;background-image: linear-gradient(bottom, rgb(200,255,255) 0%, rgb(0,255,255) 50%, rgb(200,255,255) 100%);background-image: -o-linear-gradient(bottom, rgb(200,255,255) 0%, rgb(0,255,255) 50%, rgb(200,255,255) 100%);background-image: -moz-linear-gradient(bottom, rgb(200,255,255) 0%, rgb(0,255,255) 50%, rgb(200,255,255) 100%);background-image: -webkit-linear-gradient(bottom, rgb(200,255,255) 0%, rgb(0,255,255) 50%, rgb(200,255,255) 100%);background-image: -ms-linear-gradient(bottom, rgb(200,255,255) 0%, rgb(0,255,255) 50%, rgb(200,255,255) 100%);background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(200,255,255)), color-stop(0.5, rgb(0,255,255)), color-stop(1, rgb(200,255,255)) );}.bgiL, .switchCellOn > td:first-child, .miniButtonOn{background-color: rgb(0,255,0);background-image: linear-gradient(bottom,rgb(200,255,200) 0%, rgb(0,255,0) 50%, rgb(200,255,200) 100%);background-image: -o-linear-gradient(bottom, rgb(200,255,200) 0%, rgb(0,255,0) 50%, rgb(200,255,200) 100%);background-image: -moz-linear-gradient(bottom, rgb(200,255,200) 0%, rgb(0,255,0) 50%, rgb(200,255,200) 100%);background-image: -webkit-linear-gradient(bottom, rgb(200,255,200) 0%, rgb(0,255,0) 50%, rgb(200,255,200) 100%);background-image: -ms-linear-gradient(bottom, rgb(200,255,200) 0%, rgb(0,255,0) 50%, rgb(200,255,200) 100%);background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(200,255,200)), color-stop(0.5, rgb(0,255,0) ), color-stop(1, rgb(200,255,200)) );}.bgiG, .switchCellOff > td:first-child, .miniButtonOff{background-color: rgb(156,156,156);background-image: linear-gradient(bottom, rgb(238,238,238) 0%, rgb(156,156,156) 50%, rgb(238,238,238) 100%);background-image: -o-linear-gradient(bottom, rgb(238,238,238) 0%, rgb(156,156,156) 50%, rgb(238,238,238) 100%);background-image: -moz-linear-gradient(bottom, rgb(238,238,238) 0%, rgb(156,156,156) 50%, rgb(238,238,238) 100%);background-image: -webkit-linear-gradient(bottom, rgb(238,238,238) 0%, rgb(156,156,156) 50%, rgb(238,238,238) 100%);background-image: -ms-linear-gradient(bottom, rgb(238,238,238) 0%, rgb(156,156,156) 50%, rgb(238,238,238) 100%);background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(238,238,238)), color-stop(0.5, rgb(156,156,156)), color-stop(1, rgb(238,238,238)) );}.bgiB, #PSideBar, .blockButtonOff{background-color: black;background-image: linear-gradient(bottom, rgb(80,80,80) 0%, rgb(0,0,0) 50%, rgb(80,80,80) 100%);background-image: -o-linear-gradient(bottom, rgb(80,80,80) 0%, rgb(0,0,0) 50%, rgb(80,80,80) 100%);background-image: -moz-linear-gradient(bottom, rgb(80,80,80) 0%, rgb(0,0,0) 50%, rgb(80,80,80) 100%);background-image: -webkit-linear-gradient(bottom, rgb(80,80,80) 0%, rgb(0,0,0) 50%, rgb(80,80,80) 100%);background-image: -ms-linear-gradient(bottom, rgb(80,80,80) 0%, rgb(0,0,0) 50%, rgb(80,80,80) 100%);background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, rgb(80,80,80)), color-stop(0.5, rgb(0,0,0)), color-stop(1, rgb(80,80,80)) );}.aY a:link, .aY a:visited{color: yellow;}.aC a:link, .aC a:visited{color: cyan;}a, td, input, select, option, ul, span{text-decoration: none;font-size: small;}a, td, ul{color: white;}input, select, option, span{text-align: right;font-size: smaller;}hr{margin: 5px;}", iDoc);
             TSL.addStyle(null, "#PSideBar{top: 0px;left: 0px;border: 2px ridge black;display: inline-block;color: white;}#PSideBar > div, #PSideBar > section > div{margin: 2px 5px 2px 5px;}.blockButtonOff, .blockButtonOn, .miniButtonOn, .miniButtonOff{width: 90%;display: inline-block;text-align: center;border-radius: 20px;border: 2px solid;}.blockButtonOn{color: black;}.blockButtonOff{color: rgb(156,156,156);}.miniButtonOff, .miniButtonOn{color: black;}.switchTable, .filterTable{padding: 2px 5px 0px 5px;text-decoration: none;}.switchTable * tr > td:first-child > a > div{width: 100%;height: 100%;}.switchTable * tr > td:first-child{width: 12px;height: 12px;border-radius: 10px;display: inline-block;}.switchCellOff > td:last-child > a:link, .switchCellOff a:visited{color: white;}#InfoTable tr > td:first-child{padding-right: 5px;border-right: 1px solid gray;}#InfoTable tr > td:last-child{padding-left: 5px;}.selectHolder{padding: 0 8px 0 8px;}.selectHolder > select{font-size: small;width: 100%;}ul{margin: 0;padding: 0;list-style-type: none;text-align: center;}ul > li{display: inline;border-right: 1px solid gray;padding-right: 5px;}ul > li:last-child{border-right: none;}ul > li > span{display: inline-block;}.filterSet{margin-bottom: 5px;}.filterSet > li{border: none;padding-right: 1px;}.filterSet input{margin: 4px;}.filterValue{color: black;width: 38px;}.buttonG > span{background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAEPUlEQVR42m2VW0wcZRiG35md8+7sLLjsdgsL8YoKF5JUNJoYb4y9NKWJ1KaNBuXQQ1ITm0avbGJSIzRpMKWcCmKLpMV0MRhIbKgXSFFCGr3oRcFShG13wT1x2uPs7vjPdFm2hZm8meP/zPt93/9/Q2GPrb+/X3I4HHWyLB9mWbaWyJXJZBCPx/1Es9FodGRtbc3T2NgYe3EsVXjR2dlJlZWV1ZeWlrYqiuLe2NjA4pNH+C/sJ29qcBS7sL+kHCbahGAw6A2Hw+c3NzdvtbS0aLuAAwMDTEVFRXt5eflJ/4qPuj7SgweL9wE2DU5koDEZqIiDYRnUvPwm3q/9GFTWpK2urnYS6NmmpqZ0HtjR0UFVVVVdIcBTd3//FX2e71Bkt4EVaGh0GllTGlqBVCqOLNlPvPYFKpRX4Pf7r25tbZ3RnRrA0dHRo9XV1UO/3btDXfNchmu/C1l6B5A1qTtAZlsqVC2Bj6q/hp2u0AKBwLGGhoabVF9fn1RTU/Mwnoy5P2/7lMCcOUg6505FLLOORHYTGVMKNKeBESji3mQcGZrHZ1XfY9Ub9CYSiQPU2NjY8crKyhtt1y5gKTwHXs9XDriZCiMU95NzAuIBky4hdyRidBHwW9Z6vMHXg+TzBDU5OXnbIlvqTrd+AMe+kmcwWkUw+hRrqYAxMA8rVAFYZl9Ci3UQy0vLHmpqamo5sO53f/vTOThKngHDiRWE4ys7MGEP4Av3P2F/QOhxwkvNzMyofy/MMD/euwxFsSKpRfF0fYGAtN3uhO1QSe7IDNBzqF9TXBZHtDakHlnT1PT0tPpgeZYZ/PMSrIqMQOwJ4tpGHlII1AG8yBJx4ATWAOvPKTaDQ7GvkJyT09TExMTyhhpyX7p7GjbFBt/WglFJA1YQkj4nRUmEKIoQckATRxvvaqyKQysXEZwnIY+Pj98uKi6q+/KXI2DMGiIp/y5nOkwySzBLZgKUIAgCOJ445Mg0JuFCNeHdfy+Song91PDw8HGyQm4M/9WOmbWfodKx58MkEiUJFrNMgBaYBXMOyMHE6sAM7L6DcC2+g1AodILq7e2VXC7XQ1Hm3N/c/xAxNvRc9TiBgWy2wiLJsIhWSKIFEm8Gx/EECGRTFF79pxlL8z4vWXQHjKU3ODh41Ol0DvmSc9T11XPI8ol8VSWSM9msGDBDAoHyMgROAkiPKZ17D7FFTiNr+Vhzc/NNA9jV1UVZrdYrdrv91EpmDp7oBSTEkFFVPUxZzAEFxQCaOQVCqgjOx28j4eUQiUSuEswZAtTy7aunp4fheb6dgE+KCkv9kRzCvHQHJiWVh5l1mGqHM3wQ+0KvI+iL6M46yfCzBJbe1WB1pwzD1NM03Wqz2dyiJCDGB5HkIkZTFdRicDEbolsxvQB6zs4T3dKd7dmxt7fu7m6SINQRHSaqJR9w6fez2Sxp3ZglGiHyENCuX8D/3p++AfxYDl8AAAAASUVORK5CYII=);}.buttonR > span{background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAD+UlEQVR42nWVS0xTWRjHv9PeR1t6+4AC00BpMhsQNiRGExfGnXsxETWaGCIUH4kbY9xpYuJCTQxGBEpAjIQAiWBIIJGwmBBkwjDsJpGO4IwUW5i+0JbS0sed/7lOGRC4yT9fz+k9v37PU0YHPL29vaaysrIGRVHOiKJ4DHLmcjna2toKQvObm5ujGxsbI83Nzckfz7Ldi46ODlZZWdlYUVHxyGq1uuLfvtHa0hLFg0FiqkqK00m2qirS6fUUDof90Wj0TjweH2ptbVX3Afv6+gS3291WVVV1LRQIsF+8XgotLJCUzZIsCKSHh3CRdPhceuIE1Vy5Qlm9Xl1fX+8A9FZLS0t2B9je3s5qa2ufA3j993fv6P2zZ1Ris5Gk05EOQC79LssAzuXz9PPdu2Q8coSCweCLRCJxk3uqAcfGxs7X1dUNLExOsl+fPqUyhLYHlMnsAWrCnppKkfPBA8q53WooFLrY1NQ0yHp6ekz19fWLmWTSNXT1KpWXl+8c1v0Hy339Smo8TvrtbRKRS4kxkpBHbkmW6aeXL2kFOU2lUjVsfHz8UnV19evR+/cp7fORATkqwLLRKKVQEA2ESKRdKqxlgPWNjZSHkM/LbHp6+o1iNjcMnjtHZaWlO16lvnyh7VBoz+EfYQWxkhJi/f3098rKCJuZmVlJBoOu97dvkx1AHm56bU3TYYCD1ulXr2gplfKzubm5TGBuTvChGGaLhWhzkxLLy99zdRgMuZPRAdzytYiKJx8/Jp/FkmWzs7OZf+bnheUnT6hIUSi1ukoqGvogmAYSRZIlSbMiLw72BfRo9N49+qAoWTY1NbWiRiKuP27cIAW9lzzMO3hkMBo1caDEgdjj7wrI+eeHD8nHQ56YmHhTbLc3/Hb2LJnxZQZVPQhmNJnIUFREMqxkMHwHwkMB4W6j0h8B/Oz3j7Dh4eFLmJDXH9vaKPP2LemSyX1AAyBGpEM2m0kGVAPCS4EDEe7q0aO0fOoURSKRy6y7u9vkdDoXrZLk+uvCBZIjkT0wPscGFMsAILcSoBKgIhpa4NUFdNHjoT8DAT+WNdro9ff3n8eEDOR9PpZE+8gYqR0gcma0WkkGrCARcBFe8yvmw+nT9EmSVMzyRY/HM6gBOzs7mcViee5wOK4zTIuKqTHBU15VAw8TQM07WIkDYdN2Oy2dPEl+hB6LxV4AcxNAdef68nq9gizLbQBfs4kiUwcGSJmcJAvGbjds2+GgMHIWPn6cArEY96wDx28B9v/1VXi4p4IgNOp0ukc2m81lQvIN4TDJsZh2qaaLiymJ1kqgcCgAz9kdaIh7duCNXXi6urpMMA3QGegYfsDJ9/P5fBBmHhqFRgDa9xfwL7RWxwHoNf0IAAAAAElFTkSuQmCC);}.buttonOff > span, .buttonOn > span{height: 20px;width: 20px;display: inline-block;}.buttonOff > span{background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAADWElEQVR42nWVyy9rURTG16Ze9Y5nw2EkhEiQmPkTJKIGaJgQj4rE7A7NTAwkotQ7koogUSFhgIGISMSAgYGJiDZR77d6tJy7vp2c3nPb2snK7mn3/u1vfWvtU0FhxvT0tDEzM9OcmJhYGxUVVclh+v7+pvf3dw/Hwdvb2/Lj46Ozra3NG7xX6B/sdrvIzc2tz8nJ6U9OTlaen5/p9PSUrq6uSAhBWVlZxL9RZGQk3d7euu/v7/+8vLwsdHZ2qiHAmZkZQ35+/mBeXp714uJCTE5O0tHRkQTFxsbK2e/3U0xMDFVUVFBNTQ2+U/kwO0N72tvb/QHg8PCwKC4utjGwa2Njg2w2G6WlpcnNgZOFCMxIH7PFYiFFUcjj8Yy8vr52Q6lctbq62lBSUjK3ubkphoaGZFoaIBimD4AbGxspNTVVvbm5sbS0tMyLqakpY1lZ2YnX61WsVmsIDOPj44O+vr5IVVUyGAwUHR0t1WNGtLa20uXlpZvXFYm1tbWmwsJCR19fH52dnQX8wuBq0sPDg/zMlQ4JDVxeXk6lpaUoXrPY2dlZSkhIMOOU7OzsAOzu7o7Y7LAgPRAztxfV1dXR+fm5U+zu7rqur68VKERbAMg9JkO/6TeYFtXV1VDoFvv7+77Dw0ODw+GAueTz+VA16dVvQL2HeMbaqqoq4r71i729Pd/x8bFhdnaWUlJSZKqfn59hYXiOi4uTPiPwDBiCC4us/GJra8vFXikDAwNSIW5FOHVQZDQaKT4+XkI1hbg1ERERxG2HzNxifX19iUHm3t5euejp6SnEJ8xcOBmAakD8BiBGQUEBuVwup1hcXGziG+JwOp3yqqFZg4FQhUoCqFeITKAOnxFsV7OYmJgwmkymE16k4JagKHogvALsNyAEZGRkoIfdLLRINh0XpIFbZo7bR6ysrMjWCVanByJtHISBddz8Kt9lS0dHx7wEjo6OiqSkJFt6enoXv5Zoe3ubfn5+/vMOQMC00AoHzxk4wphuBqqBSzs+Pm7gNAYZbOUNglsJ91OmpkEBwiFatTkjKLPz9h6G/Xt9aQNK+eR6Nrqfe1KBV/AUPqGaUAU7cMe5APDsD8cClIV9Y2tjbGzMyJOZo5ajkg8w4Xu2wcPTAccyh5NBIX8BfwGUUXYBm4oiewAAAABJRU5ErkJggg==);}.filterTable div{width: 15px;height: 15px;border-radius: 2px;border: 2px solid black;}.filterTable input{text-align: left;}", iDoc);
-            TSL.addStyle(null, "[name=metadata], [name=nextPage] {display:none;}", iDoc);
             TSL.addStyle(null, "body {margin: 0; padding:0;}", iDoc);
 
 
@@ -2115,7 +2095,6 @@ Close to being a major release due to the amount of changes done.
             if (PAGETYPE < 2)
             {
                 iDoc.getElementById("FilterOptions").parentElement.style.display = "none";
-                iDoc.getElementsByName("nextPage")[0].style.display = "none";
             }
             else
             {
@@ -2163,10 +2142,6 @@ Close to being a major release due to the amount of changes done.
                             var txt = iDoc.getElementById(s.name);
                             txt.value = Settings.filter[s.name];
                             txt.oninput = SideBar.onInputTagFilter;
-                            break;
-                        case "nextPage":
-                        case "metadata":
-                            SideBar.switchSet(s, Settings.fetch[s.name]);
                             break;
                         default:
                             SideBar.switchSet(s, Settings.display[s.name]);
@@ -2384,12 +2359,6 @@ Close to being a major release due to the amount of changes done.
                 break;
             case "filterOptions":
                 SideBar.iDoc.getElementById("FilterOptions").style.display = (enabled) ? null : "none";
-                break;
-            case "metadata":
-                if (enabled) IllustrationLinker.switchOn();
-                else IllustrationLinker.switchOff();
-                break;
-            case "nextPage":
                 break;
             default:
                 PaginatorHQ.updateVisibilityOfAllElements();
@@ -2811,6 +2780,7 @@ Close to being a major release due to the amount of changes done.
             if (PAGETYPE > 1 && PAGETYPE < 10)
             {
                 el = document.createElement("div");
+                el.id = "AutoPager";
                 el.className = "switch sred";
                 el.title = "Auto Pager";
                 if (Settings.fetch.nextPage) el.setAttribute("enabled", true);
@@ -2818,11 +2788,11 @@ Close to being a major release due to the amount of changes done.
                 quickcontrol.appendChild(el);
                 el.onclick = function ()
                 {
-                    SideBar.iDoc.querySelector("[name=nextPage]").click();
+                    Settings.fetch.nextPage = !Settings.fetch.nextPage;
+                    Settings.saveSettings();
                     if (Settings.fetch.nextPage) this.setAttribute("enabled", true);
                     else this.setAttribute("enabled", false);
                 }
-
 
                 //TSL.addStyle("", "#X-Pager {height:120px;} #X-Pager li{text-align:center;height:20px;width:20px;background-size: 20px 20px;background-repeat: no-repeat;font-size:12px;cursor:pointer;background-color:white;}")
                 //el = document.createElement("section");
@@ -2861,15 +2831,25 @@ Close to being a major release due to the amount of changes done.
             }
 
             el = document.createElement("div");
+            el.id = "AutoLinker";
             el.className = "switch sgreen";
             el.title = "Auto Linker";
             if (Settings.fetch.metadata) el.setAttribute("enabled", true);
             else el.setAttribute("enabled", false);
             el.onclick = function ()
             {
-                SideBar.iDoc.querySelector("[name=metadata]").click();
-                if (Settings.fetch.metadata) this.setAttribute("enabled", true);
-                else this.setAttribute("enabled", false);
+                Settings.fetch.metadata = !Settings.fetch.metadata;
+                Settings.saveSettings();
+                if (Settings.fetch.metadata)
+                {
+                    this.setAttribute("enabled", true);
+                    IllustrationLinker.switchOn();
+                }
+                else
+                {
+                    this.setAttribute("enabled", false);
+                    IllustrationLinker.switchOff();
+                }
             }
             quickcontrol.appendChild(el);
         }
