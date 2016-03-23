@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.85 Beta
+// @version             3.3.86 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
@@ -54,6 +54,8 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.86 Beta (2016-03-23)
+ - Commented out debug code
 3.3.85 Beta (2016-03-23)
  - Removed legacy code
  - Corrected display on result info
@@ -629,24 +631,24 @@ Close to being a major release due to the amount of changes done.
                }
 
                //INFO: View all different sized images
-               if (!IsIllustrationPage) return;
-               var previews = document.createElement("section");
-               var wdu = document.querySelector("._work-detail-unit");
-               wdu.insertBefore(previews, wdu.lastElementChild);
-               addImage(metadata.illust128URL);
-               addImage(metadata.illust150URL);
-               addImage(metadata.illust240URL);
-               addImage(metadata.illust480URL);
-               addImage(metadata.illust600URL);
-               addImage(metadata.illust1200URL);
-               function addImage(scource)
-               {
-                   var con = document.createElement("div");
-                   var img = document.createElement("img");
-                   con.appendChild(img);
-                   previews.appendChild(con);
-                   img.src = scource;
-               }
+               //if (!IsIllustrationPage) return;
+               //var previews = document.createElement("section");
+               //var wdu = document.querySelector("._work-detail-unit");
+               //wdu.insertBefore(previews, wdu.lastElementChild);
+               //addImage(metadata.illust128URL);
+               //addImage(metadata.illust150URL);
+               //addImage(metadata.illust240URL);
+               //addImage(metadata.illust480URL);
+               //addImage(metadata.illust600URL);
+               //addImage(metadata.illust1200URL);
+               //function addImage(scource)
+               //{
+               //    var con = document.createElement("div");
+               //    var img = document.createElement("img");
+               //    con.appendChild(img);
+               //    previews.appendChild(con);
+               //    img.src = scource;
+               //}
            },
 
            /*
