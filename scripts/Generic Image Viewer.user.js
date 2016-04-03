@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.36
+// @version         2.2.37
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Read Copyright inside script
+// @copyright       © 2016 TimidScript, Some Rights Reserved.
+// @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @include         *
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -23,21 +23,23 @@
 // @icon            data:image/png;base64,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
 // ==/UserScript==
 
-/* Copyright Notice
+/* License + Copyright Notice
 ********************************************************************************************
-Copyright © TimidScript, All Rights Reserved.
-[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
+Copyright © TimidScript, Some Rights Reserved.
+GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) This copyright must be included
-2) Due credits and link to original author's homepage (included in copyright).
-3) Notify the original author of redistribution
+1) GPL-3 License is met
+2) This copyright must be included
+3) Due credits and link to original author's homepage (included in copyright).
+4) Notify the original author of redistribution
+5) Clear clarification to end user of the GPL-3 license
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 
 /* Information
@@ -60,6 +62,8 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.37  (2016-03-04)
+ - Changed license to GPL-3
 2.2.36 (2016-03-28)
  - Updated URL for Google Reverse Image Search
 2.2.35 (2016-02-26)
@@ -1068,7 +1072,48 @@ var ControlHQ =
                 }
                 thumbnails.timeoutID = setTimeout(function () { document.getElementById("YoutubeThumbs").style.visibility = "hidden" }, DELAY);
             }
-        }        
+        }
+        else if (hostname.match(/\.hentai-foundry\.com/i)) //Hentai-Foundry
+        {
+            console.info("GIViewer: Hentai-Foundry");
+
+            var user, id = document.location.pathname.match(/^\/\/?.\/([^\/]+)\/(\d+)/);
+
+            if (id)
+            {
+                user = id[1];
+                id = id[2];
+            }
+            else id = location.search.match(/pid=(\d+)/)[1];
+
+            console.log(id, user);
+            if (id)
+            {
+                ControlHQ.data.imgTitle = "Illustration Page";
+                ControlHQ.data.imgURL = "http://www.hentai-foundry.com/pic-" + id + ".html";
+            }
+
+            if (user)
+            {
+                ControlHQ.data.userHome = "http://www.hentai-foundry.com/user/" + user + "/profile";
+                ControlHQ.data.userName = user;
+                ControlHQ.data.userGallery = "http://www.hentai-foundry.com/pictures/user/" + user;
+            }
+
+            ControlHQ.createLinkPanel();
+        }
+        else if (hostname.match(/\w+\.facdn.net/i)) //FurAffinity
+        {
+            console.info("GIViewer: FurAffinity");
+
+            var user = pathname.match(/\/art\/(\w+)\/\d+\//i)[1];
+
+            ControlHQ.data.userHome = "http://www.furaffinity.net/user/" + user;
+            ControlHQ.data.userName = user;
+            ControlHQ.data.userGallery = "http://www.furaffinity.net/gallery/" + user;
+
+            ControlHQ.createLinkPanel();
+        }
         else ControlHQ.createLinkPanel();
 
         ControlHQ.addStyles();
