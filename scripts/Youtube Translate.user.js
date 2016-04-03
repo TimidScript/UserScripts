@@ -5,7 +5,7 @@
 // @description     Adds translate button for video's title  and "About" description. Works in most cases
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, All Rights Reserved.
+// @copyright       © 2014 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         http*://*.youtube.*/watch?*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
