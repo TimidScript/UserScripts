@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.37
+// @version         1.1.38
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Read the License inside the script
+// @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         *//www.youtube.*
 // @exclude         *//www.youtube.*/embed/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
@@ -24,15 +24,17 @@
 
 /* License + Copyright Notice
 ********************************************************************************************
-Copyright © TimidScript, All Rights Reserved.
-[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
+Copyright © TimidScript, Some Rights Reserved.
+GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) This copyright must be included
-2) Due credits and link to original author's homepage (included in copyright).
-3) Notify the original author of redistribution
+1) GPL-3 License is met
+2) This copyright must be included
+3) Due credits and link to original author's homepage (included in copyright).
+4) Notify the original author of redistribution
+5) Clear clarification to end user of the GPL-3 license
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
@@ -45,6 +47,9 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.38  (2016-03-04)
+ - Changed license to GPL-3
+ - A delay on load more videos added
 1.1.37  (2015-11-20)
  - Load more videos permanent fix
 1.1.36  (2015-10-05)
@@ -763,7 +768,7 @@ function MainFunc()
                 player.insertBefore(fs, ss.nextElementSibling);
             }
 
-            LoadMoreVideos();
+            setTimeout(LoadMoreVideos, 5000);
             break;
         case 3: //User Channel
             console.info("YTF: User Channel");
