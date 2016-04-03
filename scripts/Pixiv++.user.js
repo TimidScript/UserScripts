@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.86 Beta
+// @version             3.3.87 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://openuserjs.org/users/TimidScript
-// @copyright           © 2014 TimidScript, All Rights Reserved.
-// @license             Creative Commons BY-NC-SA + Read Copyright inside the script
+// @copyright           © 2014 TimidScript, Some Rights Reserved.
+// @license             GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/*mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/*mode=big&illust_id*
@@ -25,21 +25,23 @@
 // @icon                data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAAB/ElEQVRYR+2XMUpEMRCGvY0n8AKewAt4Ai/gARYruy2txM7CwlLcQsFiG0ELRQsREREbRYstLNaPTHwMs75NJrx9rJCfv1jzJsn3MpPkubI6GC2hK5bHFcvjiuVxxfK4YnncDdbG3njz4FJ7bffMxLhcjgXK8Pxh/Pg+bdHzx2R//ESY6ZjjEqzt45vb1684eRAE8J3evWF+fE6+44MgWrxwPiyAIIizTafA0bI+vDBhmDyCGOOCdk7uTcwc52Ixt84XcExsYma9dXitV+7o6sUEtDkLiyUxeaGqTEybSZ/um7lmaSxeUUbUo+djYdYsdgv6M+nGCSzNxHvLb+TCwroAclI5D4sFl4GEiRb5E3mxzIIlT7V5WHSWxFFb0iKDIi8W1jXQDNjmRBJlwZpNJ4OiAiydx2T3dMlzUjdFGkctwmrKFIFonhqnsbTjqEVYvF7svFRYOokgmqfG/WHpWyt5qPaExaaJPYOSJ2pPWDqDycLCfWBxSsVuQTl3/MKxzFWdLHZxIVbmJ0pzfYkye+FCLCTfxGRk9oKjogHSWw+58l6OZcSXKrWMdcpENC72oznOE16dmVgtvcWMZDm9QOJuSp6skU3tXv8hi1DOQinw/8fSpyIlRaZMQIfOxQIiEv2KHWdiOrQvib25YnlcsTyuWB5XLI8rVr4Hox+cjUxd3KUvOgAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* Copyright Notice
+/* License + Copyright Notice
 ********************************************************************************************
-Copyright © TimidScript, All Rights Reserved.
-[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
+Copyright © TimidScript, Some Rights Reserved.
+GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) This copyright must be included
-2) Due credits and link to original author's homepage (included in copyright).
-3) Notify the original author of redistribution
+1) GPL-3 License is met
+2) This copyright must be included
+3) Due credits and link to original author's homepage (included in copyright).
+4) Notify the original author of redistribution
+5) Clear clarification to end user of the GPL-3 license
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 /* Information
 ********************************************************************************************
@@ -54,6 +56,9 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.87 Beta (2016-04-03)
+ - Bug Fix: Gets extension of single paged manga
+ - Changed license to GPL-3
 3.3.86 Beta (2016-03-23)
  - Commented out debug code
 3.3.85 Beta (2016-03-23)
@@ -218,7 +223,7 @@ Close to being a major release due to the amount of changes done.
 
            getIllust: function (id)
            {
-               var properties = "userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illust1200URL illustURL illustSize pageCount description time tags tools ratings totalRatings viewCount bookmarkCount responseCount R18";
+               var properties = "getExtension userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illust1200URL illustURL illustSize pageCount description time tags tools ratings totalRatings viewCount bookmarkCount responseCount R18";
                var illust = Illustrations["i" + id];
 
                if (!illust)
@@ -433,9 +438,6 @@ Close to being a major release due to the amount of changes done.
                {
                    el = doc.querySelector(".works_display ._layout-thumbnail img");
 
-                   //TODO: Single paged manga (really an illustration) extensions are sometimes marked as jpg when they are png files
-                   //http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46543872
-                   //http://www.pixiv.net/member_illust.php?mode=medium&illust_id=52415438
                    el = doc.querySelector(".original-image");
                    if (el) //Single Image
                    {
@@ -444,6 +446,7 @@ Close to being a major release due to the amount of changes done.
                    }
                    else //Manga
                    {
+                       metadata.getExtension = true;
                        metadata.illustType = 2;
 
                        el = doc.querySelectorAll(".work-info .meta li")[1];
@@ -658,8 +661,6 @@ Close to being a major release due to the amount of changes done.
            -------------------------------------------------------------------------------------------*/
            getDataHTML: function (id, noincrement)
            {
-               //TODO: NEED TO FIX. We do not always get the right png format.
-               //BUG:
                var illust = IllustrationLinker.getIllust(id), START = new Date();
 
                var marks = document.querySelectorAll('.marked4linker[illustration-id="' + id + '"]');
@@ -723,9 +724,9 @@ Close to being a major release due to the amount of changes done.
                    {
                        getBookmarkCount();
                    }
-                   else if (!illust.extensionKnown && illust.pageCount > 1)
+                   else if (illust.getExtension)
                    {
-                       illust.extensionKnown = true;
+                       illust.getExtension = false;
                        getMangaExtension();
                    }
                    else
@@ -786,55 +787,54 @@ Close to being a major release due to the amount of changes done.
                 -------------------------------------------------------------------------------------------*/
                function getMangaExtension()
                {
-                   if (illust.illust128URL.indexOf("/img-master/") > 0) //New naming format
+                   var url = (illust.pageCount > 1) ? "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0" : "http://www.pixiv.net/member_illust.php?mode=big&illust_id=" + id;
+
+                   if (illust.pageCount == 1 || (IsIllustrationPage && (Settings.requestMethod & 8)) ||
+                    (!IsIllustrationPage && (Settings.requestMethod & 4)))
                    {
-                       if ((IsIllustrationPage && (Settings.requestMethod & 8)) ||
-                        (!IsIllustrationPage && (Settings.requestMethod & 4)))
-                       {
-                           GM_xmlhttpRequest({
-                               url: "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0",
-                               method: "GET",
-                               timeout: 15000,
-                               headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
-                               onload: function (response)
-                               {
-                                   if (response.status == 200)
-                                   {
-                                       var doc = new DOMParser().parseFromString(response.responseText, "text/html");
-                                       try
-                                       {
-                                           illust.illustURL = doc.getElementsByTagName("img")[0].src;
-                                       }
-                                       catch (err) { }
-                                   }
-                                   finalise();
-                               }
-                           });
-                       }
-                       else
-                       {
-                           var oReq = new XMLHttpRequest();
-                           oReq.open("GET", "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0", true);
-                           oReq.responseType = "text";
-                           oReq.timeout = 15000;
-                           oReq.onload = function (e)
+                       GM_xmlhttpRequest({
+                           url: url,
+                           method: "GET",
+                           timeout: 15000,
+                           headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id },
+                           onload: function (response)
                            {
-                               if (oReq.status == 200)
+                               console.log(response.responseText);
+                               if (response.status == 200)
                                {
-                                   var doc = new DOMParser().parseFromString(oReq.response, "text/html");
+                                   var doc = new DOMParser().parseFromString(response.responseText, "text/html");
                                    try
                                    {
                                        illust.illustURL = doc.getElementsByTagName("img")[0].src;
                                    }
                                    catch (err) { }
                                }
-
                                finalise();
-                           };
-                           oReq.send();
-                       }
+                           }
+                       });
                    }
-                   else finalise(); //Old naming format
+                   else
+                   {
+                       var oReq = new XMLHttpRequest();
+                       oReq.open("GET", url, true);
+                       oReq.responseType = "text";
+                       oReq.timeout = 15000;
+                       oReq.onload = function (e)
+                       {
+                           if (oReq.status == 200)
+                           {
+                               var doc = new DOMParser().parseFromString(oReq.response, "text/html");
+                               try
+                               {
+                                   illust.illustURL = doc.getElementsByTagName("img")[0].src;
+                               }
+                               catch (err) { }
+                           }
+
+                           finalise();
+                       };
+                       oReq.send();
+                   }
                }
            }
        };
@@ -2935,4 +2935,10 @@ pixiv.context.ugokuIllustFullscreenData  = {"src":"http:\/\/i2.pixiv.net\/img-zi
 </script>
 
 http://pixiv.me/<userID>
+
+
+Single Paged Mangas
+http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46543872
+http://www.pixiv.net/member_illust.php?mode=medium&illust_id=52415438
+http://www.pixiv.net/member_illust.php?mode=big&illust_id=
 */
