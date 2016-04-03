@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Youtube Load More Channel Videos
 // @namespace       TimidScript
-// @version         1.0.6
+// @version         1.0.7
 // @description     Auto loads more videos in channel
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, All Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Read the License inside the script
+// @copyright       © 2016 TimidScript, Some Rights Reserved.
+// @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         http://www.youtube.*/user/*
 // @include         https://www.youtube.*/user/*
 // @include         http://www.youtube.*/channel/*
@@ -25,24 +25,28 @@
 
 /* License + Copyright Notice
 ********************************************************************************************
-Copyright © TimidScript, All Rights Reserved.
-[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
+Copyright © TimidScript, Some Rights Reserved.
+GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) This copyright must be included
-2) Due credits and link to original author's homepage (included in copyright).
-3) Notify the original author of redistribution
+1) GPL-3 License is met
+2) This copyright must be included
+3) Due credits and link to original author's homepage (included in copyright).
+4) Notify the original author of redistribution
+5) Clear clarification to end user of the GPL-3 license
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
-*/
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
+
 /* Information
 **************************************************************************************************
     Version History
 ----------------------------------------------
+1.0.7  (2016-03-04)
+ - Changed license to GPL-3
 1.0.6 (2015-10-05)
  - Replaced base64 bmp icon with png version
 1.0.5 (2015-06-27)
