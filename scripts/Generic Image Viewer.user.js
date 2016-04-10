@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.37e
+// @version         2.2.38
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
+// @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @include         *
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Generic_Image_Viewer
+// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Generic_Image_Viewer.meta.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_listValues
@@ -27,13 +28,16 @@
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
 GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
+
 1) GPL-3 License is met
 2) This copyright must be included
 3) Due credits and link to original author's homepage (included in copyright).
 4) Notify the original author of redistribution
 5) Clear clarification to end user of the GPL-3 license
+
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
@@ -54,10 +58,13 @@ Hotkeys:
   [C] => Mirror Vertically
   [E], [Num 0] => Change colour scheme (down)
   [R], [Num .] => Change colour scheme (up)
+
 TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.38 (2016-04-10)
+ - updateURL added
 2.2.37  (2016-03-04)
  - Changed license to GPL-3
 2.2.36 (2016-03-28)
