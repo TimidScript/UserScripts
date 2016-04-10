@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.2.27
+// @version         2.2.28e
 // @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, Some Rights Reserved.
+// @homepageURL     https://github.com/TimidScript
+// @copyright       © 2016 TimidScript, All Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv_Manga_Viewer
+// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Pixiv_Manga_Viewer.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_listValues
 // @grant           GM_info
@@ -61,7 +62,9 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
-2.2.27  (2016-03-04)
+2.2.28 (2016-04-10)
+ - updateURL added
+2.2.28 (2016-04-03)
  - Changed license to GPL-3
 2.2.26 (2015-10-05)
  - Replaced base64 bmp icon with png version
