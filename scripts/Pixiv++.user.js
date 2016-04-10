@@ -1,19 +1,20 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.87 Beta
+// @version             3.3.88e Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
-// @homepageURL         https://openuserjs.org/users/TimidScript
-// @copyright           © 2014 TimidScript, Some Rights Reserved.
+// @homepageURL         https://github.com/TimidScript
+// @copyright           © 2016 TimidScript, Some Rights Reserved.
 // @license             GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/*mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/*mode=big&illust_id*
 // @exclude             http://www.pixiv.net/*mode=manga_big*
-// @require		        https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
+// @require		          https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
+// @updateURL           https://openuserjs.org/meta/TimidScript/[TS]_Pixiv++.meta.js
 // @grant               GM_info
 // @grant               GM_getMetadata
 // @grant               GM_registerMenuCommand
@@ -56,6 +57,8 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
 
  Version History
 ------------------------------------
+3.3.88 Beta (2016-04-03)
+ - //@updateURL added
 3.3.87 Beta (2016-04-03)
  - Bug Fix: Gets extension of single paged manga
  - Changed license to GPL-3
