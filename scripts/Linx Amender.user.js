@@ -12,6 +12,7 @@
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Draggable_Table_Rows.js
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Linx_Amender
+// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Linx_Amender.meta.js
 // @grant           GM_registerMenuCommand
 // @grant           GM_getValue
 // @grant           GM_setValue
@@ -62,6 +63,8 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.30e (2016-04-10)
+ - updateURL added
 3.0.30 (2015-06-27)
  - Bug Fix: Check if rule urls are defined
 3.0.29 (2015-06-27)
