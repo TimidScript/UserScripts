@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.18
+// @version             1.0.19
 // @description         Loads all deviations in Inbox DeviantWatch
 // @author              TimidScript
-// @homepageURL         https://openuserjs.org/users/TimidScript
+// @homepageURL         https://github.com/TimidScript
 // @copyright           © 2016 TimidScript, Some Rights Reserved.
 // @license             GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include             *://www.deviantart.com/notifications/*
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_DeviationWatch_Load_All
+// @updateURL           https://openuserjs.org/meta/TimidScript/[TS]_deviantART_DeviationWatch_Load_All.meta.js
 // @grant               GM_xmlhttpRequest
 // @grant               GM_info
 // @grant               GM_getMetadata
@@ -42,7 +43,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
-1.0.18 (2016-03-04)
+1.0.19 (2016-04-10)
+ - updateURL added
+1.0.18 (2016-04-03)
  - Changed license to GPL-3
 1.0.17 (2015-07-02)
  - Support https
