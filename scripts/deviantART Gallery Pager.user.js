@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.15
+// @version         1.0.16
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
+// @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         *://*.deviantart.com/gallery/*
 // @include         *://*.deviantart.com/favourites/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Gallery_Pager
+// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_deviantART_Gallery_Pager.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -45,7 +46,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
-1.0.15 (2016-03-04)
+1.0.16 (2016-04-10)
+ - updateURL added
+1.0.15 (2016-04-03)
  - Changed license to GPL-3
 1.0.14
  - Ability to set the scroll offset to allow more pages loaded as you scroll
