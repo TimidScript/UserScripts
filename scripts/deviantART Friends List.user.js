@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name                [TS] deviantART Friends List
 // @namespace           TimidScript
-// @version             1.0.7
+// @version             1.0.8
 // @description         In your Watching list, links go to root Gallery instead of Profile Page
 // @author              TimidScript
-// @homepageURL         https://openuserjs.org/users/TimidScript
+// @homepageURL         https://github.com/TimidScript
 // @copyright           © 2016 TimidScript, Some Rights Reserved.
 // @license             GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include             *://www.deviantart.com/watching/*
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Friends_List
+// @updateURL           https://openuserjs.org/meta/TimidScript/[TS]_deviantART_Friends_List.meta.js
 // @grant               GM_xmlhttpRequest
 // @grant               GM_info
 // @grant               GM_getMetadata
@@ -43,7 +44,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
-1.0.7 (2016-03-04)
+1.0.8 (2016-04-10)
+ - updateURL added
+1.0.7 (2016-04-03)
  - Changed license to GPL-3
 1.0.6 (2015-02-07)
  - Bug Fix: URL has changed from "deviants" to "watching"
