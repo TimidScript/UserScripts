@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name            [TS] Youtube Translate
 // @namespace       TimidScript
-// @version         1.0.8
+// @version         1.0.9
 // @description     Adds translate button for video's title  and "About" description. Works in most cases
 // @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2014 TimidScript, Some Rights Reserved.
+// @homepageURL     https://github.com/TimidScript
+// @copyright       © 2016 TimidScript, All Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         http*://*.youtube.*/watch?*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Translate
+// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Youtube_Translate.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -42,7 +43,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ----------------------------------------------
-1.0.8  (2016-03-04)
+1.0.9 (2016-04-10)
+ - updateURL added
+1.0.8  (2016-04-03)
  - Changed license to GPL-3
 1.0.7 (2015-10-05)
  - Replaced base64 bmp icon with png version
