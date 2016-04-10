@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.26e
+// @version                 1.0.26f
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -44,6 +44,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.26f (2016-04-10)
+ - updateURL added
 1.0.26e (2016-03-04)
  - Changed license to GPL-3
 1.0.26 (2016-02-27)
