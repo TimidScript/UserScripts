@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name            [TS] deviantART Download Link
 // @namespace       TimidScript
-// @version         1.1.15
+// @version         1.1.16
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
-// @homepageURL     https://openuserjs.org/users/TimidScript
+// @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         *//*.deviantart.com/*
 // @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Download_Link
+// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_deviantART_Download_Link.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -46,7 +47,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
-1.1.15 (2016-03-04)
+1.0.16 (2016-04-10)
+ - updateURL added
+1.1.15 (2016-04-03)
  - Changed license to GPL-3
 1.1.14 (2015-09-06)
  - Bug Fix: Check redirection status before redirection click
