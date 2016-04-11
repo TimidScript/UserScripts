@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.30e
+// @version         3.0.31
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -63,6 +63,8 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+3.0.31 (2016-04-11)
+ - Bug fix for amending title https://github.com/TimidScript/UserScripts/issues/7#issuecomment-208044262
 3.0.30e (2016-04-10)
  - updateURL added
 3.0.30 (2015-06-27)
@@ -1186,7 +1188,12 @@ function ParseNodes(resetTitle)
     if (resetTitle)
     {
         var title = document.head.getElementsByTagName("title")[0];
-        if (title.original) title.textContent = title.original;
+        delete title.newTitle;
+        if (title.original)
+        {
+            title.textContent = title.original;
+            delete title.original;
+        }
     }
 
     var rules = GetSiteRules();
@@ -1310,7 +1317,7 @@ function ParseNodes(resetTitle)
     function amendPageTitle(rules)
     {
         var title = document.head.getElementsByTagName("title")[0];
-        if (title && (title.original != title.textContent))
+        if (title && title.original != title.textContent && title.newTitle != title.textContent)
         {
             title.original = title.textContent;
             var newTitle = title.textContent;
@@ -1330,6 +1337,7 @@ function ParseNodes(resetTitle)
             }
 
             title.textContent = newTitle;
+            title.newTitle = newTitle;
         }
     }
 
