@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.88e Beta
+// @version             3.3.89 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -11,7 +11,7 @@
 // @exclude             http://www.pixiv.net/*mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/*mode=big&illust_id*
 // @exclude             http://www.pixiv.net/*mode=manga_big*
-// @require		          https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
+// @require		        https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
 // @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
 // @updateURL           https://openuserjs.org/meta/TimidScript/[TS]_Pixiv++.meta.js
@@ -54,9 +54,12 @@ TODO: Consider using mixed fetch methods as the api is a lot faster...
       Maybe different levels of metadata fetching. Level 1 - API, Level 2 HTML, Level 3 Response & Bookmark Count.
       Also stages of thumbnail update. Get all links using API, then use slower methods to get extra information.
       Also extract all information you can from thumbnails, such as response, bookmark and fullsize URL.
+TODO: Add auto filter to remove private/blocked and deleted illustrations from bookmark
 
  Version History
 ------------------------------------
+3.3.89 Beta (2016-04-03)
+ - Bug Fix to support private (locked/blocked) illustrations
 3.3.88 Beta (2016-04-03)
  - //@updateURL added
 3.3.87 Beta (2016-04-03)
@@ -281,6 +284,10 @@ Close to being a major release due to the amount of changes done.
                        {
                            PaginatorHQ.tidyThumbnail(id);
                            IllustrationLinker.createLinksBox(id);
+                       }
+                       else if (thumbnail.querySelector('[src*="limit_mypixiv"]')) //Private Images
+                       {
+                           TSL.addClass(thumbnail, "private");
                        }
                        else IllustrationLinker.addToProcessList(id);
                    }
@@ -719,7 +726,6 @@ Close to being a major release due to the amount of changes done.
                    };
                    oReq.send();
                }
-
                function finalise()
                {
                    if (illust.bookmarkCount == "?" &&
@@ -1126,6 +1132,7 @@ Close to being a major release due to the amount of changes done.
                     + ".marked4linker.before .pppMarker {right: 60px;left:auto;}"
                     + ".marked4linker.linking img, .linking > a:first-child > div {cursor:wait;} .marked4linker.linking .pppMarker {background-color:yellow;border:1px groove #969628;}"
                     + ".marked4linker.linked .pppMarker {background-color:lime;border:1px groove green; }"
+                    + ".marked4linker.private .pppMarker {background-color:gray;border:1px groove black; }"
                     );
 
                 /* Right Side
@@ -1448,7 +1455,7 @@ Close to being a major release due to the amount of changes done.
                 var it = SideBar.iDoc.getElementById("InfoTable");
                 var resultCount = PaginatorHQ.getResultCount(); //Number of items returned by search
 
-                var linked = document.querySelectorAll(".marked4linker.linked[pppThumb]").length;
+                var linked = document.querySelectorAll(".marked4linker.linked[pppThumb],.marked4linker.private[pppThumb]").length;
 
 
                 if (resultCount < 0) //We do not know how many pages can be displayed. Might not be paged
