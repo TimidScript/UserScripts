@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.19
+// @version             1.0.20
 // @description         Loads all deviations in Inbox DeviantWatch
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -43,6 +43,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.20 (2016-05-02)
+ - BugFix in url checking
 1.0.19 (2016-04-10)
  - updateURL added
 1.0.18 (2016-04-03)
@@ -123,7 +125,7 @@ document.addEventListener("DOMSubtreeModified", CheckURL, true);
 =========================================================================================================*/
 function CheckURL()
 {
-    if (document.getElementsByClassName("alink nav2").length > 0 && (document.URL == "http://www.deviantart.com/notifications/#view=deviations" || document.URL == "http://www.deviantart.com/notifications/#view=deviations&page=1"))
+    if (document.getElementsByClassName("alink nav2").length > 0 && document.location.hash.match(/#view=deviations(&page=1)?$/))
     {
         if (!document.getElementById("deviantScriptButton"))
         {
