@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.89 Beta
+// @version             3.3.90 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -11,10 +11,10 @@
 // @exclude             http://www.pixiv.net/*mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/*mode=big&illust_id*
 // @exclude             http://www.pixiv.net/*mode=manga_big*
-// @require		        https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
-// @updateURL           https://openuserjs.org/meta/TimidScript/[TS]_Pixiv++.meta.js
+// @require             https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require             https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @homeURL             https://greasyfork.org/en/scripts/4685
+// @updateURL           https://greasyfork.org/scripts/4685/code/4685.meta.js
 // @grant               GM_info
 // @grant               GM_getMetadata
 // @grant               GM_registerMenuCommand
@@ -58,6 +58,8 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.90 Beta (2016-05-25)
+ - Moving to GreasyFork and preparing to remove OUJS files
 3.3.89 Beta (2016-04-03)
  - Bug Fix to support private (locked/blocked) illustrations
 3.3.88 Beta (2016-04-03)
