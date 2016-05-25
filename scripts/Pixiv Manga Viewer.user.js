@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.2.28e
+// @version         2.2.29
 // @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, All Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv_Manga_Viewer
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Pixiv_Manga_Viewer.meta.js
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @homeURL         https://greasyfork.org/en/scripts/4684
+// @updateURL       https://greasyfork.org/scripts/4684/code/4684.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_listValues
 // @grant           GM_info
@@ -62,6 +62,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.2.29 (2016-05-25)
+ - Moving to GreasyFork and preparing to remove OUJS files
 2.2.28 (2016-04-10)
  - updateURL added
 2.2.28 (2016-04-03)
