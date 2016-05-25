@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Load More Channel Videos
 // @namespace       TimidScript
-// @version         1.0.8
+// @version         1.0.9
 // @description     Auto loads more videos in channel
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -11,9 +11,9 @@
 // @include         https://www.youtube.*/user/*
 // @include         http://www.youtube.*/channel/*
 // @include         https://www.youtube.*/channel/*
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Load_More_Channel_Videos
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Youtube_Load_More_Channel_Videos.meta.js
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @homeURL         https://greasyfork.org/en/scripts/4688
+// @updateURL       https://greasyfork.org/scripts/4688/code/4688.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -46,6 +46,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
     Version History
 ----------------------------------------------
+1.0.9 (2016-05-25)
+ - Moving to GreasyFork and preparing to remove OUJS files
 1.0.8 (2016-04-10)
  - updateURL added
 1.0.7 (2016-04-03)
