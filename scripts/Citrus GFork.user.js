@@ -8,8 +8,8 @@
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Read Copyright inside the script
 // @include         https://greasyfork.org/*
-// @require         https://greasyfork.org/scripts/19967-tsl-gm-update/code/TSL%20-%20GM_update.js?version=127663
-// @require         https://greasyfork.org/scripts/19968-tslibrary-generic/code/TSLibrary%20-%20Generic.js?version=127665
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
 // @homeURL         https://greasyfork.org/en/scripts/4336
 // @updateURL       https://greasyfork.org/scripts/4336/code/4336.meta.js
 // @grant           GM_getValue
