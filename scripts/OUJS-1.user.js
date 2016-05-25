@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.26f
+// @version                 1.0.27
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
-// @copyright               © 2014 TimidScript, Some Rights Reserved.
-// @license                 GNU General Public License v3 (GPL-3) + Read the License inside the script
+// @copyright               © 2014 TimidScript, All Rights Reserved.
+// @license                 Creative Commons BY-NC-SA + Read Copyright inside the script
 // @include                 http*://openuserjs.org/*
-// @require                 https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @require                 https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL                 https://openuserjs.org/scripts/TimidScript/[TS]_OUJS-1
+// @require                 https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require                 https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @homeURL                 https://greasyfork.org/en/scripts/5412
+// @updateURL               https://greasyfork.org/scripts/5412/code/5412.meta.js
 // @grant                   GM_getValue
 // @grant                   GM_setValue
 // @grant                   GM_deleteValue
@@ -22,32 +23,28 @@
 // ==/UserScript==
 
 
-/* License + Copyright Notice
+/* Copyright Notice
 ********************************************************************************************
-Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
+Copyright © TimidScript, All Rights Reserved.
+[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
-2) This copyright must be included
-3) Due credits and link to original author's homepage (included in copyright).
-4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+1) This copyright must be included
+2) Due credits and link to original author's homepage (included in copyright).
+3) Notify the original author of redistribution
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [OpenUserJS](https://openuserjs.org/users/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
 */
 /*
 ********************************************************************************************
  Version History
 ------------------------------------
-1.0.26f (2016-04-10)
- - updateURL added
-1.0.26e (2016-03-04)
- - Changed license to GPL-3
+1.0.27 (2016-05-25)
+ - Moving to GreasyFork and preparing to remove OUJS files
 1.0.26 (2016-02-27)
  - Ratings bar and "Flaggins" are now separate elements, so removed unnecessary code and notice.
  - Removed flagged information as it seems admin hide it so might as well hide it also.
