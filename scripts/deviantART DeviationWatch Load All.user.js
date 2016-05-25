@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.20
+// @version             1.0.21
 // @description         Loads all deviations in Inbox DeviantWatch
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
 // @copyright           © 2016 TimidScript, Some Rights Reserved.
 // @license             GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include             *://www.deviantart.com/notifications/*
-// @require             https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL             https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_DeviationWatch_Load_All
-// @updateURL           https://openuserjs.org/meta/TimidScript/[TS]_deviantART_DeviationWatch_Load_All.meta.js
+// @require             https://greasyfork.org/scripts/19967-tsl-gm-update/code/TSL - GM_update.js
+// @homeURL             https://greasyfork.org/en/scripts/4678
+// @updateURL           https://greasyfork.org/scripts/4678/code/4678.meta.js
 // @grant               GM_xmlhttpRequest
 // @grant               GM_info
 // @grant               GM_getMetadata
@@ -43,6 +43,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.21 (2016-05-25)
+ - Moving 100% to GreasyFork and preparing to remove OUJS files
 1.0.20 (2016-05-02)
  - BugFix in url checking
 1.0.19 (2016-04-10)
