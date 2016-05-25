@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name            [TS] deviantART Download Link
 // @namespace       TimidScript
-// @version         1.1.16
+// @version         1.1.17
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         *//*.deviantart.com/*
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_deviantART_Download_Link
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_deviantART_Download_Link.meta.js
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @homeURL         https://greasyfork.org/en/scripts/4679
+// @updateURL       https://greasyfork.org/scripts/4679/code/4679.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -47,6 +47,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.17 (2016-05-25)
+ - Moving to GreasyFork and preparing the removal of files from OUJS
 1.0.16 (2016-04-10)
  - updateURL added
 1.1.15 (2016-04-03)
@@ -353,6 +355,7 @@ var MO =
         }
     }
 }
+
 
 console.info("[TS] deviantArt Download Link");
 (function ()
