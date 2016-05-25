@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.39
+// @version         1.1.40
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -9,10 +9,10 @@
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         *//www.youtube.*
 // @exclude         *//www.youtube.*/embed/*
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Youtube_Filter
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Youtube_Filter.meta.js
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @homeURL         https://greasyfork.org/en/scripts/4687
+// @updateURL       https://greasyfork.org/scripts/4687/code/4687.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -48,6 +48,8 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.40 (2016-05-25)
+ - Moving to GreasyFork and preparing to remove OUJS files
 1.1.39 (2016-04-10)
  - updateURL added
 1.1.38 (2016-04-03)
