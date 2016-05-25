@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.38
+// @version         2.2.39
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
 // @include         *
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Generic_Image_Viewer
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Generic_Image_Viewer.meta.js
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @homeURL         https://greasyfork.org/en/scripts/18448
+// @updateURL       https://greasyfork.org/scripts/18448/code/18448.meta.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_listValues
@@ -63,6 +63,8 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.39 (2016-25-25)
+ - Moving to GreasyFork and preparing the removal of files from OUJS
 2.2.38 (2016-04-10)
  - updateURL added
 2.2.37  (2016-03-04)
