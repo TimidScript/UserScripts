@@ -1,18 +1,18 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.31
+// @version         3.0.32
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
 // @include         *
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Draggable_Table_Rows.js
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Linx_Amender
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Linx_Amender.meta.js
+// @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
+// @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @require         https://greasyfork.org/scripts/19970/code/TSLibrary - Draggable Table Rows.js
+// @homeURL         https://greasyfork.org/en/scripts/4407
+// @updateURL       https://greasyfork.org/scripts/4407/code/4407.meta.js
 // @grant           GM_registerMenuCommand
 // @grant           GM_getValue
 // @grant           GM_setValue
@@ -63,6 +63,8 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
+1.0.32 (2016-05-25)
+ - Moving to GreasyFork and preparing the removal of files from OUJS
 3.0.31 (2016-04-11)
  - Bug fix for amending title https://github.com/TimidScript/UserScripts/issues/7#issuecomment-208044262
 3.0.30e (2016-04-10)
