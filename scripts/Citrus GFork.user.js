@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.36
+// @version         1.1.37
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         Creative Commons BY-NC-SA + Read Copyright inside the script
 // @include         https://greasyfork.org/*
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_Generic.js
-// @require         https://openuserjs.org/src/libs/TimidScript/TSL_-_GM_Update.js
-// @homeURL         https://openuserjs.org/scripts/TimidScript/[TS]_Citrus_GFork
-// @updateURL       https://openuserjs.org/meta/TimidScript/[TS]_Citrus_GFork.meta.js
+// @require         https://greasyfork.org/scripts/19967-tsl-gm-update/code/TSL%20-%20GM_update.js?version=127663
+// @require         https://greasyfork.org/scripts/19968-tslibrary-generic/code/TSLibrary%20-%20Generic.js?version=127665
+// @homeURL         https://greasyfork.org/en/scripts/4336
+// @updateURL       https://greasyfork.org/scripts/4336/code/4336.meta.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_deleteValue
@@ -45,6 +45,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.37 (2016-05-25)
+ - Moving to GreasyFork and preparing to remove OUJS files
 1.1.36 (2016-04-10)
  - updateURL added
 1.1.35 (2016-04-03)
