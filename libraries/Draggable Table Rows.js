@@ -1,31 +1,30 @@
 // ==UserScript==
 // @name                    TSLibrary - Draggable Table Rows
 // @namespace               TimidScript
-// @version                 1.0.8
+// @version                 1.0.9
 // @description             Allows dragging of table rows
 // @author                  TimidScript
-// @homepageURL             https://openuserjs.org/users/TimidScript
+// @homepageURL             https://github.com/TimidScript
 // @copyright               © 2016 TimidScript, Some Rights Reserved.
-// @license                 Creative Commons BY-NC-SA + Read the License inside the script
+// @license                 Read "License + Copyright Notice" inside the script
 // @exclude                 *
 // ==/UserScript==
 
 /* License + Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
-2) This copyright must be included
-3) Due credits and link to original author's homepage (included in copyright).
+1) GPL-3 License is met that does not conflict with the rest of the license
+2) This notice must be included
+3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+5) Clear clarification of the License and Notice to the end user
+6) Do not upload on OpenUserJS.org
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 /* Information
@@ -38,6 +37,8 @@ Use the function TSUNRegisterTable(table) to un-register table.
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.0.9 (2016-05-27)
+ - License altered
 1.0.8 (2016-04-03)
  - Changed license to GPL-3
 1.0.7 (2015/10/06)
