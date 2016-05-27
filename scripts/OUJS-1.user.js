@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.27
+// @version                 1.0.28
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -25,24 +25,24 @@
 
 /* Copyright Notice
 ********************************************************************************************
-Copyright © TimidScript, All Rights Reserved.
-[Creative Commons BY-NC-SA](http://en.wikipedia.org/wiki/Creative_Commons_license)
-
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) This copyright must be included
-2) Due credits and link to original author's homepage (included in copyright).
-3) Notify the original author of redistribution
+1) GPL-3 License is met that does not conflict with the rest of the license
+2) This notice must be included
+3) Due credits and link to original author's homepage (included in this notice).
+4) Notify the original author of redistribution
+5) Clear clarification of the License and Notice to the end usera
+6) Do not upload on OpenUserJS.org
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript)
-*/
+                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
 /*
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.28 (2016-05-25)
+ - Altered license
 1.0.27 (2016-05-25)
  - Moving to GreasyFork and preparing to remove OUJS files
 1.0.26 (2016-02-27)
