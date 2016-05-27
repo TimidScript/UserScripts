@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.37
+// @version         1.1.38
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
-// @license         Creative Commons BY-NC-SA + Read Copyright inside the script
+// @license         Read "License + Copyright Notice" inside Script
 // @include         https://greasyfork.org/*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
@@ -26,25 +26,26 @@
 /* License + Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
+1) GPL-3 License is met that does not conflict with the rest of the license
 2) This copyright must be included
 3) Due credits and link to original author's homepage (included in copyright).
 4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+5) Clear clarification to end user of this License
+6) Do not upload on OUJS in any form
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 /* Information
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.38 (2016-05-27)
+ - Altered the license
 1.1.37 (2016-05-25)
  - Moving to GreasyFork and preparing to remove OUJS files
 1.1.36 (2016-04-10)
