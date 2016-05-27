@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.28
+// @version                 1.0.28k
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
-// @copyright               © 2014 TimidScript, All Rights Reserved.
-// @license                 Creative Commons BY-NC-SA + Read Copyright inside the script
+// @copyright               © 2016 TimidScript, All Rights Reserved.
+// @license                 Read "License + Copyright Notice" inside the Script
 // @include                 http*://openuserjs.org/*
 // @require                 https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require                 https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
