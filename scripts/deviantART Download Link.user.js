@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] deviantART Download Link
 // @namespace       TimidScript
-// @version         1.1.17
+// @version         1.1.18
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
-// @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
+// @license         Read "License + Copyright Notice" inside Script
 // @include         *//*.deviantart.com/*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @homeURL         https://greasyfork.org/en/scripts/4679
@@ -27,19 +27,18 @@
 /* License + Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
-2) This copyright must be included
-3) Due credits and link to original author's homepage (included in copyright).
+1) GPL-3 License is met that does not conflict with the rest of the license
+2) This notice must be included
+3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+5) Clear clarification of the License and Notice to the end usera
+6) Do not upload on OpenUserJS.org in any form
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 
@@ -47,6 +46,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.18 (2016-05-27)
+ - Altered license
 1.0.17 (2016-05-25)
  - Moving to GreasyFork and preparing the removal of files from OUJS
 1.0.16 (2016-04-10)
