@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                    TSL - GM_update
 // @namespace               TimidScript
-// @version                 1.0.9
+// @version                 1.1.11
 // @description             An advance user-script updater library that supports OpenUserJS, GreasyFork, MonkeyGuts and any other site that provides meta.js support. Should work with GreaseMonkey v2+ (FireFox), Scriptish v0.1.12+ (FireFox), TamperMonkey (Chrome) and ViolentMonkey (Opera).
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
 // @copyright               © 2016 TimidScript, Some Rights Reserved.
-// @license                 GNU General Public License v3 (GPL-3) + Read the License inside the script
+// @license                 Read "License + Copyright Notice" inside the script
 // @exclude                 *
 // ==/UserScript==
 
@@ -14,19 +14,18 @@
 /* License + Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
-2) This copyright must be included
-3) Due credits and link to original author's homepage (included in copyright).
+1) GPL-3 License is met that does not conflict with the rest of the license
+2) This notice must be included
+3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+5) Clear clarification of the License and Notice to the end user
+6) Do not upload on OpenUserJS.org
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 /* Information
@@ -37,11 +36,6 @@ If the version number do not match it brings the update script dialog box.
 
 Should work with any GreaseMonkey alternative that supports GM_setValue, GM_getValue and
 GM_info/GM_getMetadata.
-
-There is a Scriptish bug with GM_getMetadata and Firefox 31:
-Reason: https://github.com/scriptish/scriptish/issues/237
-Download Location: https://addons.mozilla.org/en-US/firefox/addon/scriptish/versions/
-This should hopefully be fixed with the next release (0.1.12+).
 
 ----------------------------------------------
  How to use on your script
@@ -56,19 +50,22 @@ You must add the following to the user script header:
 // @grant               GM_setValue
 // @grant               GM_deleteValue
 // @grant               GM_registerMenuCommand
-// @homeURL             <url>
+// @homeURL             <url1>
+// @metaURL             <url2>
 ##################################################
 
 
-// @homeURL             <url>
-    <url> is the homepage of the user script. Example of "url" values:
+<url1> is the homepage of the user script. Example of "url" values:
         - https://greasyfork.org/scripts/4336-ts-citrus-gfork
         - https://openuserjs.org/scripts/TimidScript/%5BTS%5D_Citrus_GFork
         - https://monkeyguts.com/code.php?id=288
 
-Currently it gets the latest version information from the scripts homepage, unless
-the metaURL is provided. It is not recommended to use the @metaURL property if
-you are using GF, OUJS or MG.
+<url2> us the meta.js file
+
+
+From version 1.1+ it no longer gets information from the scripts homepage. It requires
+the meta.js file. For GreasyMonkey and OUJS, it can figure out the meta.js file location
+from the homepage (if entered correctly).
 
 @homeURL should not point to a user.js file. The reason for this is mainly for
 security reasons. There currently no checks on this, but later release may disallow
@@ -80,11 +77,9 @@ community and have checks and balances.
 #### Below are optional header properties.
 
 // @metaURL             <url>
-    <url> is the link to the meta.js file. As of writing, this feature is not
-    supported in OpenUserJs or MonkeyGuts current user scripts sites, however
-    if provided it will use the meta.js file to extract the latest version
-    information instead of the script-url. This allows other sites to be
-    supported.
+    <url> is the link to the meta.js file. For GFork and OUJS this can be extracted from
+    the homepage, but it is still recommened to enter it. For personal sites, well it is
+    a must.
 
 // @changelog           <list of changes in html>
     Allows you to provide changelog in html format, that will be displayed on the
@@ -99,6 +94,11 @@ community and have checks and balances.
 ----------------------------------------------
  Version History
 ----------------------------------------------
+1.1.11 (2016-05-27)
+ - License altered
+1.1.10 (2016-04-10)
+ - Force using meta.js and no longer parsing home page
+ - Removed support for MonkeyGuts
 1.0.9 (2016-04-03)
  - Changed license to GPL-3
 1.0.8 (2016/02/14)
@@ -184,15 +184,7 @@ var GM_update =
                 if (xhr.status == 200)
                 {
                     var online;
-                    if (url.search(/meta\.js$/) > 0) online = GM_update.parseMeta(xhr.responseText);
-                    else
-                    {
-                        //var doc = new DOMParser().parseFromString(xhr.responseText, 'text/xml');
-                        var doc = document.implementation.createHTMLDocument('MPIV');
-                        doc.documentElement.innerHTML = xhr.responseText;
-
-                        online = GM_update.parseDocument(url, doc);
-                    }
+                    online = GM_update.parseMeta(xhr.responseText);
 
                     if (checkCallback && online.version) checkCallback(true);
                     else if (checkCallback) checkCallback(false);
@@ -214,40 +206,6 @@ var GM_update =
                 checkCallback(false);
             }
         });
-    },
-
-
-    /* Parses html document
-    =====================================================================================*/
-    parseDocument: function (url, doc)
-    {
-        var online = GM_update.online;
-        if (url.match(/greasyfork\.org\//i))
-        {
-            online.name = doc.querySelector("#script-info h2").textContent;
-            online.description = doc.querySelector("#script-info p").textContent;
-            online.version = doc.querySelector("dd.script-show-version span").textContent;
-            online.date = doc.querySelector("dd.script-show-updated-date time").getAttribute("datetime");
-            online.userURL = "https://greasyfork.org" + doc.querySelector(".install-link").href;
-        }
-        else if (url.match(/monkeyguts\.com\//i))
-        {
-            online.name = doc.querySelector(".codeName").textContent;
-            online.description = doc.querySelector(".codeTagline").textContent;
-            online.version = doc.querySelector(".codeVersion .codeFieldVar").textContent;
-            online.date = doc.querySelector(".codeTime .codeFieldVar").textContent;
-            online.userURL = doc.querySelector(".codeInstall").href;
-        }
-        else if (url.match(/openuserjs\.org\//i))
-        {
-            online.name = doc.querySelector(".script-name").textContent;
-            online.description = doc.querySelector(".script-meta p:nth-child(2)").textContent;
-            online.version = doc.querySelector("code").textContent.trim();
-            online.date = doc.querySelector("time").getAttribute("datetime");
-            online.userURL = "https://openuserjs.org/" + doc.querySelector("a.btn-info").href;
-        }
-
-        return online;
     },
 
     /* Parses meta.js file
@@ -397,6 +355,8 @@ var GM_update =
 
 (function ()
 {
+    if (window.self !== window.top) return;
+
     var installed = GM_update.installed;
 
     if (typeof GM_info !== "undefined")
@@ -430,8 +390,34 @@ var GM_update =
 
     if (installed.enabled && installed.version && installed.homeURL && installed.name)
     {
-        if (window.self !== window.top) return;
         console.info("Register GM_update menu for: " + installed.name);
+
+        if (!installed.metaURL)
+        {
+            /*
+                https://openuserjs.org/scripts/TimidScript/[TS]_Pixiv++
+                https://openuserjs.org/install/TimidScript/[TS]_Pixiv++.user.js
+                https://openuserjs.org/meta/TimidScript/[TS]_Pixiv++.meta.js
+            */
+            /*
+                https://greasyfork.org/en/scripts/4685-ts-pixiv
+                https://greasyfork.org/scripts/4685-ts-pixiv/code/[TS]%20Pixiv++.meta.js
+                https://greasyfork.org/scripts/4685-ts-pixiv/code/[TS]%20Pixiv++.user.js
+                https://greasyfork.org/scripts/4685/code/4685.user.js
+                https://greasyfork.org/scripts/4685/code/4685.meta.js
+            */
+
+            if (installed.homeURL.match("//greasyfork.org"))
+            {
+                var id = installed.homeURL.match(/\/scripts\/(\d+)/)[1];
+                installed.metaURL = "https://greasyfork.org/scripts/" + id + "/code/" + id + ".meta.js";
+            }
+            else if (installed.homeURL.match(/\/\/(oujs\.org|openuserjs\.org)/))
+            {
+                installed.metaURL = installed.homeURL.replace(/\/scripts\/(.+)\/(.+)/, "/meta/$1/$2.meta.js");
+            }
+            console.warn(installed.metaURL);
+        }
 
         GM_registerMenuCommand("Update Check: " + installed.name, function ()
         {
