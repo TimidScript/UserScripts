@@ -6,7 +6,7 @@
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
 // @copyright           © 2016 TimidScript, Some Rights Reserved.
-// @license             Read "License + Copyright Notice" inside Script
+// @license             Read "License + Copyright Notice" inside the Script
 // @include             *://www.deviantart.com/watching/*
 // @require             https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @homeURL             https://greasyfork.org/en/scripts/4680
