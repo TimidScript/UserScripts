@@ -41,7 +41,7 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
  Version History
 ------------------------------------
-1.0.28 (2016-05-25)
+1.0.28 (2016-05-27)
  - Altered license
 1.0.27 (2016-05-25)
  - Moving to GreasyFork and preparing to remove OUJS files
