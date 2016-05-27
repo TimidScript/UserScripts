@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.17
+// @version         1.0.18
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
-// @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
+// @license         Read "License + Copyright Notice" inside the script
 // @include         *://*.deviantart.com/gallery/*
 // @include         *://*.deviantart.com/favourites/*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
@@ -27,25 +27,26 @@
 /* License + Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
-2) This copyright must be included
-3) Due credits and link to original author's homepage (included in copyright).
+1) GPL-3 License is met that does not conflict with the rest of the license
+2) This notice must be included
+3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+5) Clear clarification of the License and Notice to the end usera
+6) Do not upload on OpenUserJS.org
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 /* Information
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.18 (2016-05-27)
+ - Altered license
 1.0.17 (2016-05-25)
  - Moving to GreasyFork and preparing the removal of files from OUJS
 1.0.16 (2016-04-10)
