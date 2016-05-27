@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.2.29
+// @version         2.2.30
 // @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
-// @copyright       © 2016 TimidScript, All Rights Reserved.
-// @license         GNU General Public License v3 (GPL-3) + Read the License inside the script
+// @copyright       © 2016 TimidScript, Some Rights Reserved.
+// @license         Read "License + Copyright Notice" inside the Script
 // @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
@@ -27,19 +27,18 @@
 /* License + Copyright Notice
 ********************************************************************************************
 Copyright © TimidScript, Some Rights Reserved.
-GNU General Public License v3 (GPL-3) - http://www.gnu.org/licenses/gpl-3.0.en.html
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met
-2) This copyright must be included
-3) Due credits and link to original author's homepage (included in copyright).
+1) GPL-3 License is met that does not conflict with the rest of the license
+2) This notice must be included
+3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification to end user of the GPL-3 license
+5) Clear clarification of the License and Notice to the end usera
+6) Do not upload on OpenUserJS.org
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 
@@ -62,6 +61,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.2.30 (2016-05-27)
+ - Altered license
 2.2.29 (2016-05-25)
  - Moving to GreasyFork and preparing to remove OUJS files
 2.2.28 (2016-04-10)
