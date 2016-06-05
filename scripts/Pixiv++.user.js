@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.91 Beta
+// @version             3.3.92 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -41,7 +41,6 @@ following conditions are met:
 6) Do not upload on OpenUserJS.org
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [OpenUserJS](https://openuserjs.org/users/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
 */
 /* Information
@@ -58,6 +57,8 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.92 (2016-06-05)
+ - Added link to Manga page in page info
 3.3.91 (2016-05-27)
  - Altered license
 3.3.90 Beta (2016-05-25)
@@ -582,7 +583,7 @@ Close to being a major release due to the amount of changes done.
                        + '<a href="/response.php?type=illust&amp;id=' + metadata.illustID + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metascore[4] + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metascore[4] + '</a>'
                        + '<a href="/bookmark_detail.php?illust_id=' + metadata.illustID + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metascore[0] + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metascore[0] + '</a>';
 
-                       if (metadata.pageCount > 1) linkbox.innerHTML = "<a class='meta-box page-count'>P" + metadata.pageCount + "</a>" + linkbox.innerHTML;
+                       if (metadata.pageCount > 1) linkbox.innerHTML = "<a class='meta-box page-count' href='http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID + "'>P" + metadata.pageCount + "</a>" + linkbox.innerHTML;
 
                        for (var i = 1; i < 4; i++) linkbox.innerHTML += "<span class='meta-box'>" + metaname[i] + " " + metascore[i] + "</span>";
 
@@ -1653,10 +1654,11 @@ Close to being a major release due to the amount of changes done.
                     el.innerHTML = '<span style="color:gray;">by: </span>' + metadata.userName;
                     meta.appendChild(el);
 
+
                     //Counters
                     el = document.createElement("ul");
                     el.className = "count-list";
-                    el.innerHTML = (metadata.pageCount > 1 ? '<a class="meta-box page-count">P' + metadata.pageCount + '</a>' : '')
+                    el.innerHTML = (metadata.pageCount > 1 ? '<a class="meta-box page-count" href="http://www.pixiv.net/member_illust.php?mode=manga&illust_id=' + metadata.illustID + '">P' + metadata.pageCount + '</a>' : '')
                             + '<a href="/bookmark_detail.php?illust_id=' + metadata.illustID + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metadata.bookmarkCount + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metadata.bookmarkCount + '</a>'
                             + '<a href="/response.php?type=illust&amp;id=' + metadata.illustID + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metadata.responseCount + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metadata.responseCount + '</a>';
                     meta.appendChild(el);
