@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Load More Channel Videos
 // @namespace       TimidScript
-// @version         1.0.10
+// @version         1.0.11
 // @description     Auto loads more videos in channel
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -13,7 +13,6 @@
 // @include         https://www.youtube.*/channel/*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @homeURL         https://greasyfork.org/en/scripts/4688
-// @updateURL       https://greasyfork.org/scripts/4688/code/4688.meta.js
 // @grant           GM_xmlhttpRequest
 // @grant           GM_info
 // @grant           GM_getMetadata
@@ -45,6 +44,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
     Version History
 ----------------------------------------------
+1.0.11 (2016-07-01)
+ - BigFix for Google Chrome
 1.0.10 (2016-05-27)
  - Altered license
 1.0.9 (2016-05-25)
@@ -70,27 +71,17 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 
 
 var scrollOffset = 1000;
-var intervalID = setInterval(ScrollPosition, 250)
+var intervalID = setInterval(ScrollPosition, 250);
 
 function ScrollPosition()
 {
-    if ((window.scrollMaxY - window.scrollY) < scrollOffset)
-    {
-        LoadMoreVideos();
-    }
+    var scrollMaxY = window.scrollMaxY | (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+    if ((scrollMaxY - window.scrollY) < scrollOffset) LoadMoreVideos();
 }
 
 function LoadMoreVideos()
 {
-    var loadMore = document.getElementsByClassName("yt-uix-load-more load-more-button yt-uix-button yt-uix-button-default");
-    if (loadMore.length == 0) loadMore = document.getElementsByClassName("more-videos yt-uix-button yt-uix-button-default");
-
-    if (loadMore.length > 0)
-    {
-        loadMore = loadMore[0]
-        var evt = document.createEvent("MouseEvents");
-        evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-        loadMore.dispatchEvent(evt);
-    }
+    var loadMore = document.querySelector(".load-more-button");
+    if (loadMore) loadMore.click();
     else clearInterval(intervalID);
 }
