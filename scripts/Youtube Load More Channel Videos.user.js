@@ -1,16 +1,13 @@
 // ==UserScript==
 // @name            [TS] Youtube Load More Channel Videos
 // @namespace       TimidScript
-// @version         1.0.11
+// @version         1.0.12
 // @description     Auto loads more videos in channel
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
 // @license         Read "License + Copyright Notice" inside the script
-// @include         http://www.youtube.*/user/*
-// @include         https://www.youtube.*/user/*
-// @include         http://www.youtube.*/channel/*
-// @include         https://www.youtube.*/channel/*
+// @include         https://www.youtube.*/*/Videos*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @homeURL         https://greasyfork.org/en/scripts/4688
 // @grant           GM_xmlhttpRequest
@@ -44,6 +41,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
     Version History
 ----------------------------------------------
+1.0.12 (2016-07-13)
+ - Support more URL includes
 1.0.11 (2016-07-01)
  - BigFix for Google Chrome
 1.0.10 (2016-05-27)
