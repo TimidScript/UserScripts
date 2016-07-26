@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.40
+// @version         2.2.41
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -62,13 +62,15 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.41 (2016-07-26)
+ - Moved SWF controls to the bottom
 2.2.40 (2016-05-27)
  - Altered license
 2.2.39 (2016-25-25)
  - Moving to GreasyFork and preparing the removal of files from OUJS
 2.2.38 (2016-04-10)
  - updateURL added
-2.2.37  (2016-03-04)
+2.2.37 (2016-04-03)
  - Changed license to GPL-3
 2.2.36 (2016-03-28)
  - Updated URL for Google Reverse Image Search
@@ -401,6 +403,9 @@ var ControlHQ =
 
         if (ControlHQ.flash)
         {
+            document.body.appendChild(linkPanel);
+            //TSL.addStyle("","#LinkPanel {position:fixed;top:0;left:0;width:100%;z-index:100;}");
+
             var flash = document.getElementsByTagName("Embed")[0];
             panel = CreatePanelMeta("[SWF]", flash.src);
             panel.firstElementChild.style.marginLeft = "10px";
@@ -1078,7 +1083,7 @@ var ControlHQ =
                 }
                 thumbnails.timeoutID = setTimeout(function () { document.getElementById("YoutubeThumbs").style.visibility = "hidden" }, DELAY);
             }
-        }        
+        }
         else ControlHQ.createLinkPanel();
 
         ControlHQ.addStyles();
