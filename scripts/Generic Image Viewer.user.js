@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.41
+// @version         2.2.42
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -62,6 +62,12 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.42 (2016-09-03)
+ - Bug Fix: "z-index" added to panels
+ - Bug Fix: Video panel no longer shows on sites like steam
+ - Removed no longer needed nicoseiga image checking
+ - Removed the article container and just kept the image in the default body parent node
+ - Added my own center algorithm that handles the rotation aspect.
 2.2.41 (2016-07-26)
  - Moved SWF controls to the bottom
 2.2.40 (2016-05-27)
@@ -280,7 +286,7 @@ var ControlHQ =
 
         TSL.addStyle("CSS-LinkPaneM", '#LinkPanel a {color:red; font-size:14px; font-weight:700;font-family:font-family: "Times New Roman", Times, serif;}');
 
-        TSL.addStyle("CSS-LinkPanel", '#LinkPanel {position: fixed; left: 10px; top: 10px; z-index:100; border: 2px ridge white; padding: 2px 5px; background-image:linear-gradient(to bottom,#818180 0%,#F3F3F5 50%, #818180 100% ); box-shadow: 0 0 2px 3px black;}'
+        TSL.addStyle("CSS-LinkPanel", '#LinkPanel {position: fixed; z-index: 100; left: 10px; top: 10px; z-index:100; border: 2px ridge white; padding: 2px 5px; background-image:linear-gradient(to bottom,#818180 0%,#F3F3F5 50%, #818180 100% ); box-shadow: 0 0 2px 3px black;}'
             + '.metaPanel {text-align: center;vertical-align: middle;display: table-cell;margin: 0;padding: 0;}'
             + '#LinkPanel img {height:24px;width:24px;border: 1px solid white; padding: 1px; background-color:black; margin-right: 5px;} .metaPanel + #UserHome {padding-left: 10px;} .metaPanel + [title=IQDB] {padding-left: 20px;}'
             );
@@ -288,7 +294,7 @@ var ControlHQ =
 
         TSL.addStyle("YoutubeStyler", " #YoutubeThumbs {position:fixed;right:10px;top:10px;max-width:120px;padding: 1px;background-color:white; border:1px ridge black;}");
 
-        TSL.addStyle("CSS-ControlPanel", "#ControlPanel {position:fixed; top: 60px; left: 10px; display:inline-block; background-image:linear-gradient(to right,#818180 0%,#F3F3F5 50%, #818180 100% ); padding: 2px; border: 2px ridge white; box-shadow: 0 0 2px 3px black;}"
+        TSL.addStyle("CSS-ControlPanel", "#ControlPanel {position:fixed; z-index: 100; top: 60px; left: 10px; display:inline-block; background-image:linear-gradient(to right,#818180 0%,#F3F3F5 50%, #818180 100% ); padding: 2px; border: 2px ridge white; box-shadow: 0 0 2px 3px black;}"
             + '#ControlPanel div {display:inline-block; margin:1px;} #ControlPanel {width: 80px; text-align:center;}'
             + ".resizeBTN, .transformBTN {height:32px;width: 32px; background-color: #F9FAFA; border: 2px ridge #05F505; border-radius: 5px; background-position: center center; background-repeat: no-repeat; cursor:pointer;}"
             + ".resizeBTN + .transformBTN, .transformBTN + .cssBTN {margin-top: 8px;}"
@@ -312,9 +318,8 @@ var ControlHQ =
         }
     },
 
-    displayImage: function (imageSrc)
+    displayImage: function ()
     {
-        ControlHQ.data.imgSrc = imageSrc;
         for (var i = document.head.children.length - 1; i >= 0; i--)
         {
             var child = document.head.children[i];
@@ -324,26 +329,23 @@ var ControlHQ =
         for (var i = document.body.children.length - 1; i >= 0; i--)
         {
             var child = document.body.children[i];
-            if (child.id != "USOUpdaterMenu") document.body.removeChild(child);
+            //document.body.removeChild(child);
+            //if (child.id != "USOUpdaterMenu") document.body.removeChild(child);
+            if (child.tagName != "IMG") document.body.removeChild(child);
         }
 
         /* Add Image
         ********************/
-        var imagebox = document.createElement("article");
-        imagebox.id = "imageBox"
-        var img = document.createElement("img");
+        var img = document.querySelector("img");
         img.id = "theImage";
+
+        ControlHQ.data.imgSrc = img.src;
         img.onload = ControlHQ.readjustImageSize;
-        img.src = imageSrc.replace(/(\?\d+$|\?[^\\\.\/]+$)/, "");
-        //TODO: Remove irrelevant image source prefix
-        img.src = imageSrc.replace(/\?\d+$/, "");
         setTimeout(ControlHQ.readjustImageSize, 500);
 
-        imagebox.appendChild(img);
-        document.body.appendChild(imagebox);
-
         var a = document.createElement("a");
-        a.href = img.src;
+        a.href = img.src.replace(/(\?\d+$|\?[^\\\.\/]+$)/, "");
+        a.href =  a.href.replace(/\?\d+$/, "");
         a.title = "***IMAGE***";
         document.body.appendChild(a);
 
@@ -663,13 +665,12 @@ var ControlHQ =
     readjustImageSize: function ()
     {
         var img = document.getElementById("theImage");
-        var box = img.parentElement;
-
-        box.style.textAlign = "left";
-        box.style.width = window.innerWidth + "px";
-        box.style.height = window.innerHeight + "px";
+        img.removeAttribute("class");
+        img.removeAttribute("width");
+        img.removeAttribute("height");
 
         var reverse = (document.getElementsByClassName("transformBTN")[0].value % 2 == 1);
+
         // 2=Height, 4=Width, 8=Stretch, 16=Fit
         if (!reverse)
         {
@@ -682,7 +683,7 @@ var ControlHQ =
             img.style.maxHeight = (ResizeMode & 4) ? window.innerWidth + "px" : null;
         }
 
-        if (ResizeMode & 16)
+        if (ResizeMode & 16) //Fit image
         {
             var imageRatio = (reverse) ? (img.naturalHeight / img.naturalWidth) : (img.naturalWidth / img.naturalHeight);
             var clientRatio = window.innerWidth / window.innerHeight;
@@ -697,7 +698,7 @@ var ControlHQ =
                 img.style.width = (imageRatio < clientRatio) ? window.innerHeight + "px" : null;
             }
         }
-        else if (ResizeMode & 8)
+        else if (ResizeMode & 8) //Stretch
         {
             if (!reverse)
             {
@@ -716,7 +717,7 @@ var ControlHQ =
                 if (ResizeMode & 4 && document.body.scrollHeight > document.body.clientHeight) img.style.height = (window.innerWidth - ScrollBarThickness) + "px";
             }
         }
-        else
+        else //Height & Width
         {
             img.style.height = null;
             img.style.width = null;
@@ -725,29 +726,33 @@ var ControlHQ =
             if (ResizeMode & 4 && document.body.scrollHeight > document.body.clientHeight) img.style.maxWidth = (window.innerWidth - ScrollBarThickness) + "px";
         }
 
-        console.log("Box Height | Image Height | Image Width\n", box.clientHeight, img.clientHeight, img.clientWidth);
+
+        //Image placement algorithm
+        var w = img.clientWidth,
+            h = img.clientHeight;
+        console.log(w/h, h/w);
+        img.style.position = "absolute";
         if (reverse)
         {
-            if (box.clientHeight < img.clientWidth) box.style.height = img.clientWidth + "px";
-            if (box.clientWidth < img.clientHeight) box.style.width = img.clientHeight + "px";
-        }
-        console.log(box.clientHeight+ "/" + box.clientWidth,  window.innerHeight + "/" + window.innerWidth);
-        box.style.textAlign = "center";
-        //if (reverse)
-        //{
-        //    var abs = TSL.getAbsolutePosition(img);
-        //    TSL.addStyle("ReverseImage", '#theImage {position:absolute;}');
-        //    var diff = img.clientWidth - img.clientHeight;
+            var offsetW = ((h-w) / 2);
+            var offsetH = ((w-h) / 2);
 
-        //    console.log(abs, img.clientWidth, img.clientHeight), diff;
-        //    img.style.left = abs.left + "px";
-        //    img.style.top = (diff / 4) + "px";
-        //    if (window.innerWidth > img.clientHeight)
-        //    {
-        //        img.clientWidth
-        //    }
-        //}
-        //else TSL.removeNode("ReverseImage");
+            if (h < window.innerWidth) img.style.marginLeft =  (((window.innerWidth - h) / 2) + offsetW) + "px";
+            else img.style.marginLeft = (offsetW) + "px";
+
+            if (w < window.innerHeight) img.style.marginTop = (((window.innerHeight - w) / 2) + offsetH)  + "px";
+            else img.style.marginTop = (offsetH) + "px";
+        }
+        else
+        {
+            if (w < window.innerWidth) img.style.marginLeft = ((window.innerWidth - w) / 2)  + "px";
+            else img.style.marginLeft = "0px";
+
+            if (h < window.innerHeight) img.style.marginTop = ((window.innerHeight - h) / 2)  + "px";
+            else img.style.marginTop = "0px";
+        }
+
+
 
         ControlHQ.showControlsPanel();
     },
@@ -911,15 +916,10 @@ var ControlHQ =
             console.info("GIViewer: FLASH");
             ControlHQ.flash = true;
         }
-        else if (document.body.children.length == 1  && document.querySelector('video'))
+        else if (document.body.children.length == 1  && document.body.children[0].tagName == "VIDEO")
         {
             console.info("GIViewer: VIDEO");
             ControlHQ.video = true;
-        }
-        else if (hostname.match(/^lohas.nicoseiga\.jp$/i))
-        {
-            var imgs = document.getElementsByTagName("img");
-            ControlHQ.displayImage(imgs[imgs.length - 1].src);
         }
         else if (document.body.children[0].tagName == "IMG" && (
                     document.URL.match(/.+\.(jpg|gif|jpeg|png|bmp)(\?\d+|:large|\?[^\\\.\/]+)?$/i)
@@ -930,7 +930,7 @@ var ControlHQ =
         {
             var imgs = document.getElementsByTagName("img");
             if (!document.URL.match("img.youtube") && (imgs.length == 0 || imgs.length > 1 || document.body.children.length > 2)) return;
-            ControlHQ.displayImage(imgs[0].src);
+            ControlHQ.displayImage();
         }
         else return;
 
