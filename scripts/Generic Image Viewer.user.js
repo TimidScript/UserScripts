@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.42
-// @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. NEW: Image rotation and flip added.
+// @version         2.2.43
+// @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. Support numpad keys now.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
@@ -44,27 +44,36 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 
 /* Information
 ********************************************************************************************
+
+There are two sets of keys now. One using character keys the second using are numpad keys.
 Hotkeys:
-  [A] => Auto-Height
-  [S] => Auto-Width
-  [Z] => Auto-Stretch
-  [X] => Enlarge/Shrink to Client Area
-  [Q] => Reset Size
-  [W] => Reset other transformation (rotate/mirror)
-  [D] => Rotate Left
-  [F] => Rotate Right
-  [X] => Mirror Horizontally
-  [C] => Mirror Vertically
-  [E], [Num 0] => Change colour scheme (down)
-  [R], [Num .] => Change colour scheme (up)
+  [A], [Num 1] => Auto-Height
+  [S], [Num 2] => Auto-Width
+  [Z], [Num 3] => Auto-Stretch
+  [X], [Num 0] => Enlarge/Shrink to Client Area
+  [Q], [Num .] => Reset Size
+
+  [D], [Num 4] => Rotate Left
+  [W], [Num 5] => Reset rotation transformation 
+  [F], [Num 6] => Rotate Right  
+  
+  [X], [Num 7] => Mirror Horizontally
+  [E], [Num 8] => Reset mirror transformation 
+  [C], [Num 9] => Mirror Vertically
+
+  [T], [Num *] => Change colour scheme (down)
+  [R], [Num /] => Change colour scheme (up)
 
 TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.43 (2016-09-13)
+ - Separated hotkey for reset rotation and mirror image. 
+ - Revised hotkeys and added numpad keys
 2.2.42 (2016-09-03)
- - Bug Fix: "z-index" added to panels
- - Bug Fix: Video panel no longer shows on sites like steam
+ - Bugfix: "z-index" added to panels
+ - Bugfix: Video panel no longer shows on sites like steam
  - Removed no longer needed nicoseiga image checking
  - Removed the article container and just kept the image in the default body parent node
  - Added my own center algorithm that handles the rotation aspect.
@@ -83,11 +92,11 @@ TODO: Replace the video controls
 2.2.35 (2016-02-26)
  - Support for TamperMonkey window object separation
 2.2.34 (2015-12-27)
- - Bug Fix: Original title of image kept
- - Bug Fix: getScrollBarThickness is called after the document has finished loading (interactive or complete).
- - Bug Fix: Resizing and centring of image corrected
+ - Bugfix: Original title of image kept
+ - Bugfix: getScrollBarThickness is called after the document has finished loading (interactive or complete).
+ - Bugfix: Resizing and centring of image corrected
  - Better support for Pixiv images
- - Bug Fix: SWF Support
+ - Bugfix: SWF Support
  - Added support for mp4, flv abnd webm
  - Added loop button for videos
 2.2.33 (2015-10-05)
@@ -98,7 +107,7 @@ TODO: Replace the video controls
  - Links only appear when you hover link panel
 2.2.31 (2015-07-31) Major release due to major changes in inner workings and addition of CSS
 styler.
- - Bug Fix: "Unknown" is used for missing DeviantArt artist's name
+ - Bugfix: "Unknown" is used for missing DeviantArt artist's name
  - Does not wait for the image to load. It attempts to alter page at interactive stage
  - Corrected a few typos
  - Improved all regular expressions for extracting information from url. Using match instead of replace
@@ -118,7 +127,7 @@ styler.
 1.2.28 (2015-06-19)
  - Removed cloneInto as it's no longer needed
  - In flash controls are always visible
- - Bug Fix: where controls are missing for deviantart images/swf that do not have id
+ - Bugfix: where controls are missing for deviantart images/swf that do not have id
  - Remove postfix "?timidscript_*" from image source and url. The tag is used in a personal script that has been in beta phase since forever.
  - Source links now have the prefix "timidscript_source" to avoid being picked up by downloaders
  - Using styles to toggle visibility
@@ -340,7 +349,7 @@ var ControlHQ =
         img.id = "theImage";
 
         ControlHQ.data.imgSrc = img.src;
-        img.onload = ControlHQ.readjustImageSize;
+        img.onload = ControlHQ.readjustImageSize;        
         setTimeout(ControlHQ.readjustImageSize, 500);
 
         var a = document.createElement("a");
@@ -792,10 +801,10 @@ var ControlHQ =
 
         console.log("KEY", key);
         //Load Styles
-        if (key == 96 || key == 110 || key == 69 || key == 82) //Num 0
+        if (key == 82 || key == 84 || key == 106 || key == 111) // [r] [t] [Num *] [Num /] 
         {
             var n = document.body.className.match(/CSS(\d)/)[1];
-            if (key == 69 || key == 96) n++; else n--;
+            if (key == 82 || key == 111) n++; else n--;
             if (n > 9) n = 1; else if (n < 1) n = 9;
 
             document.body.className = "CSS" + n;
@@ -805,7 +814,7 @@ var ControlHQ =
         }
 
 
-        if (key == 81)
+        if (key == 81 || key == 110) //Reset Size [Q] [Num .]
         {
             e.stopImmediatePropagation();
             var btns = document.querySelectorAll('.resizeBTN[style*=background-color]');
@@ -813,21 +822,29 @@ var ControlHQ =
             return false;
         }
 
-        if (key == 87)
+        if (key == 87 || key == 101) //Reset Rotation [W] [Num 5]
         {
             e.stopImmediatePropagation();
             btns = document.querySelectorAll('.transformBTN');
-            btns[0].value = -5; btns[0].click();
+            btns[0].value = -5; btns[0].click();            
+            return false;
+        }
+
+        if (key == 69 || key == 104) //Reset Mirror [E] [Num 8]
+        {
+            e.stopImmediatePropagation();
+            btns = document.querySelectorAll('.transformBTN');
             btns[2].value = -5; btns[2].click();
             btns[3].value = -5; btns[3].click();
             return false;
         }
 
-        var hk = [65, 83, 90, 88, 68, 70, 67, 86];
+        var hk = [65, 83, 90, 88, 68, 70, 67, 86]; // a s z x d f c v
+        var hkNum = [97, 98, 99, 96, 100, 102, 103, 105]; // Num Keys: 1 2 3 0 4 6 7 9
         var btns = document.querySelectorAll(".resizeBtn, .transformBtn");
         for (var i = 0; i < hk.length; i++)
         {
-            if (hk[i] == key)
+            if (hk[i] == key || hkNum[i] == key)
             {
                 e.stopImmediatePropagation();
                 btns[i].click();
