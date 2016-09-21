@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.43
+// @version         2.2.44
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. Support numpad keys now.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -50,15 +50,15 @@ Hotkeys:
   [A], [Num 1] => Auto-Height
   [S], [Num 2] => Auto-Width
   [Z], [Num 3] => Auto-Stretch
-  [X], [Num 0] => Enlarge/Shrink to Client Area
-  [Q], [Num .] => Reset Size
+  [X], [Num .] => Enlarge/Shrink to Client Area
+  [Q], [Num 0] => Reset Size
 
   [D], [Num 4] => Rotate Left
-  [W], [Num 5] => Reset rotation transformation 
-  [F], [Num 6] => Rotate Right  
-  
+  [W], [Num 5] => Reset rotation transformation
+  [F], [Num 6] => Rotate Right
+
   [X], [Num 7] => Mirror Horizontally
-  [E], [Num 8] => Reset mirror transformation 
+  [E], [Num 8] => Reset mirror transformation
   [C], [Num 9] => Mirror Vertically
 
   [T], [Num *] => Change colour scheme (down)
@@ -68,8 +68,10 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.44 (2016-09-21)
+ - Changed the hotkeys
 2.2.43 (2016-09-13)
- - Separated hotkey for reset rotation and mirror image. 
+ - Separated hotkey for reset rotation and mirror image.
  - Revised hotkeys and added numpad keys
 2.2.42 (2016-09-03)
  - Bugfix: "z-index" added to panels
@@ -349,7 +351,7 @@ var ControlHQ =
         img.id = "theImage";
 
         ControlHQ.data.imgSrc = img.src;
-        img.onload = ControlHQ.readjustImageSize;        
+        img.onload = ControlHQ.readjustImageSize;
         setTimeout(ControlHQ.readjustImageSize, 500);
 
         var a = document.createElement("a");
@@ -801,7 +803,7 @@ var ControlHQ =
 
         console.log("KEY", key);
         //Load Styles
-        if (key == 82 || key == 84 || key == 106 || key == 111) // [r] [t] [Num *] [Num /] 
+        if (key == 82 || key == 84 || key == 106 || key == 111) // [r] [t] [Num *] [Num /]
         {
             var n = document.body.className.match(/CSS(\d)/)[1];
             if (key == 82 || key == 111) n++; else n--;
@@ -814,7 +816,7 @@ var ControlHQ =
         }
 
 
-        if (key == 81 || key == 110) //Reset Size [Q] [Num .]
+        if (key == 81 || key == 96) //Reset Size [Q] [Num .]
         {
             e.stopImmediatePropagation();
             var btns = document.querySelectorAll('.resizeBTN[style*=background-color]');
@@ -826,7 +828,7 @@ var ControlHQ =
         {
             e.stopImmediatePropagation();
             btns = document.querySelectorAll('.transformBTN');
-            btns[0].value = -5; btns[0].click();            
+            btns[0].value = -5; btns[0].click();
             return false;
         }
 
@@ -840,7 +842,7 @@ var ControlHQ =
         }
 
         var hk = [65, 83, 90, 88, 68, 70, 67, 86]; // a s z x d f c v
-        var hkNum = [97, 98, 99, 96, 100, 102, 103, 105]; // Num Keys: 1 2 3 0 4 6 7 9
+        var hkNum = [97, 98, 99, 110, 100, 102, 103, 105]; // Num Keys: 1 2 3 . 4 6 7 9
         var btns = document.querySelectorAll(".resizeBtn, .transformBtn");
         for (var i = 0; i < hk.length; i++)
         {
