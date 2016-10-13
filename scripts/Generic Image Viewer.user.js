@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.44
+// @version         2.2.45
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. Support numpad keys now.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -68,6 +68,8 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.45 (2016-10-13)
+ - Bugfix: Video loop
 2.2.44 (2016-09-21)
  - Changed the hotkeys
 2.2.43 (2016-09-13)
@@ -427,7 +429,7 @@ var ControlHQ =
         else if (ControlHQ.video)
         {
             var video = document.getElementsByTagName("video")[0];
-            video.loop == true;
+            video.loop = true;
 
             panel = CreatePanelMeta("[VIDEO]", video.baseURI);
             panel.firstElementChild.style.marginLeft = "10px";
