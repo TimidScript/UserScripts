@@ -33,7 +33,7 @@ following conditions are met:
 3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
 5) Clear clarification of the License and Notice to the end usera
-6) Do not upload on OpenUserJS.org
+6) Do not upload on OpenUserJS.org as it does not meet their strict TOS
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
