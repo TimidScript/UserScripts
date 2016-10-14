@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.40
+// @version         1.1.41
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -45,6 +45,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.41 (2016-10-14)
+ - Relative date added
+ - Removed date format settings
 1.1.40 (2016-10-14)
  - Bugfix: When editting post the reply type is now stored
  - Added a settings link to change the date format
@@ -308,7 +311,6 @@ script-list-set
                       + "#site-name {text-decoration: underline; color: white;}"
                       + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
                       + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; font-weight: 400; margin: 0 10px; line-height: 48px;}"
-                      + "#settings-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 70px; top: 43px; font-weight: 400 !important;}"
                       + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 43px; font-weight: 400 !important;}"
                       + "#nav-user-info {top: 3px;}"
                       + "pre {background-color: #FFFF99; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
@@ -338,21 +340,8 @@ script-list-set
         link.href = "/";
         link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
                         + '<span id="title-text">Greasy Fork&nbsp;</span>'
-                        + '<span id="settings-subtext">Settings</span>'
                         + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
         sname.appendChild(link);
-
-        document.getElementById("settings-subtext").onclick = function (e)
-        {
-            e.stopImmediatePropagation();
-            var val = prompt("Please enter the date format using 'y' for year, 'm' for month, 'd' for day (default y-m-d).", GM_getValue("DateFormat", "y-m-d"));
-            if (val)
-            {
-                if (val == "y-m-d") GM_deleteValue("DateFormat");
-                else GM_setValue("DateFormat", val);
-            }
-            return false;
-        };
 
         var require = document.querySelector("#script-content > p > code");
         if (require && require.textContent.match("@require"))
@@ -549,8 +538,10 @@ script-list-set
                 script.ratings = li.querySelector("dd.script-list-ratings").innerHTML;
                 script.installsDaily = li.getAttribute("data-script-daily-installs");
                 script.installsTotal = li.getAttribute("data-script-total-installs");
-                script.dateCreated = li.getAttribute("data-script-created-date");
-                script.dateUpdated = li.getAttribute("data-script-updated-date");
+                //script.dateCreated = li.getAttribute("data-script-created-date");
+                script.dateCreated = li.querySelector(".script-list-created-date time").textContent;
+                //script.dateUpdated = li.getAttribute("data-script-updated-date");
+                script.dateUpdated = li.querySelector(".script-list-updated-date time").textContent
                 script.type = li.getAttribute("data-script-type");
                 script.deleted = deleted;
                 scripts.push(script);
@@ -733,31 +724,8 @@ script-list-set
             cell.title = "Favoured plus Good Feedback, OK Feedback, Bad Feedback, Total Score (" + script.rating + ")";
             row.insertCell(-1).textContent = script.installsDaily;
             row.insertCell(-1).textContent = script.installsTotal;
-            var dateformat = GM_getValue("DateFormat");
-
-            if (dateformat)
-            {
-                var m, newdate;
-
-                newdate = dateformat;
-                m = script.dateCreated.match(/\d+/g);
-                newdate = newdate.replace("y", m[0]);
-                newdate = newdate.replace("m", m[1]);
-                newdate = newdate.replace("d", m[2]);
-                row.insertCell(-1).textContent = newdate;
-
-                newdate = dateformat;
-                m = script.dateUpdated.match(/\d+/g);
-                newdate = newdate.replace("y", m[0]);
-                newdate = newdate.replace("m", m[1]);
-                newdate = newdate.replace("d", m[2]);
-                row.insertCell(-1).textContent = newdate;
-            }
-            else
-            {
-                row.insertCell(-1).textContent = script.dateCreated;
-                row.insertCell(-1).textContent = script.dateUpdated;
-            }
+            row.insertCell(-1).textContent = script.dateCreated;
+            row.insertCell(-1).textContent = script.dateUpdated;
         }
 
         filterTable();
