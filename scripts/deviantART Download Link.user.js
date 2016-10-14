@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Download Link
 // @namespace       TimidScript
-// @version         1.1.18
+// @version         1.1.19
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -35,9 +35,8 @@ following conditions are met:
 2) This notice must be included
 3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification of the License and Notice to the end usera
+5) Clear clarification of the License and Notice to the end user
 6) Do not upload on OpenUserJS.org
-
 
 TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
                           [GreasyFork](https://greasyfork.org/users/1455-timidscript
@@ -47,6 +46,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.19 (2016-10-10)
+ - Implemented a better system of cleaning illustration download button redirection
 1.0.18 (2016-05-27)
  - Altered license
 1.0.17 (2016-05-25)
@@ -109,19 +110,22 @@ function CreateDownloadButton(src, imgWidth, imgHeight)
 {
     var holder = document.querySelector('body > div:not([style*="none"]) .dev-meta-actions');
     if (!holder) return;
-    var btn = holder.querySelector("a.dev-page-button.dev-page-button-with-text.dev-page-download");
     MO.disconnect();
+
+    var btn = holder.querySelector("a.dev-page-button.dev-page-button-with-text.dev-page-download");
     if (btn && !btn.cleaned)
     {
         console.log("Remove onclick tracker");
+        btn.outerHTML = btn.outerHTML;
+        btn = holder.querySelector("a.dev-page-button.dev-page-button-with-text.dev-page-download");
         btn.querySelector(".label").style.color = "blue";
+        //btn.style.textShadow = "text-shadow: 2px 2px #ff0000";
 
         btn.addEventListener("click", function (e)
         {
             e.stopImmediatePropagation();
             return false;
         }, true);
-
         btn.cleaned = true;
         redirectToImage();
     }
