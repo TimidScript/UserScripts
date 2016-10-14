@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.28k
+// @version                 1.0.29
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
 // @author                  TimidScript
 // @homepageURL             https://openuserjs.org/users/TimidScript
@@ -41,6 +41,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
  Version History
 ------------------------------------
+1.0.29 (2016-10-15)
+ - Link to Github instead of the dead OUJS account
 1.0.28 (2016-05-27)
  - Altered license
 1.0.27 (2016-05-25)
@@ -511,7 +513,7 @@ function SortScriptTable(e)
 
 (function ()
 {
-    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="/users/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
+    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="https://github.com/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
     var timestamp = Date.now();
     var loggedUsername = "";
 
