@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.39
+// @version         1.1.40
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -45,6 +45,9 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.40 (2016-10-14)
+ - Bugfix: When editting post the reply type is now stored
+ - Added a settings link to change the date format
 1.1.39 (2016-09-03)
  - Added Copy button to library page
 1.1.38 (2016-05-27)
@@ -180,7 +183,7 @@ script-list-set
         btn1.value = "Report bug"; btn1.style.marginRight = "4px";
         btn2.value = "Review";
 
-        btn1.onclick = function ()
+        btn1.onclick = function (e)
         {
             btn1.style.color = "#2DCD05";
             btn2.style.color = "";
@@ -193,10 +196,10 @@ script-list-set
             options[3].setAttribute("style", "display: none !important;");
             lbl.setAttribute("style", "display: none !important;");
 
-            options[0].click();
+            if (e) options[0].click();
         }
 
-        btn2.onclick = function ()
+        btn2.onclick = function (e)
         {
             btn1.style.color = "";
             btn2.style.color = "#2DCD05";
@@ -209,13 +212,16 @@ script-list-set
             options[3].removeAttribute("style");
             lbl.removeAttribute("style");
 
-            options[3].click();
+            if (e) options[3].click();
         }
 
         hld.appendChild(btn1);
         hld.appendChild(btn2);
         po.insertBefore(hld, po.firstElementChild);
-        btn1.click();
+
+        //for (var i = 0; i < options.length; i++) console.log(options[i].firstElementChild.checked);
+        if (options[0].firstElementChild.checked || options[4].firstElementChild.checked) btn1.click(false);
+        else btn2.click(false);
     }
     else if (pathname.match(/\/[\w-]+\/scripts\/\d+/)) //Script Page
     {
@@ -302,6 +308,7 @@ script-list-set
                       + "#site-name {text-decoration: underline; color: white;}"
                       + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
                       + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; font-weight: 400; margin: 0 10px; line-height: 48px;}"
+                      + "#settings-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 70px; top: 43px; font-weight: 400 !important;}"
                       + "#title-subtext {color: yellow !important; font-size: 10px; text-decoration: none; position: absolute; left: 210px; top: 43px; font-weight: 400 !important;}"
                       + "#nav-user-info {top: 3px;}"
                       + "pre {background-color: #FFFF99; padding: 5px; margin-left: 30px; padding: 5px 10px;}"
@@ -331,9 +338,21 @@ script-list-set
         link.href = "/";
         link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
                         + '<span id="title-text">Greasy Fork&nbsp;</span>'
+                        + '<span id="settings-subtext">Settings</span>'
                         + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
         sname.appendChild(link);
 
+        document.getElementById("settings-subtext").onclick = function (e)
+        {
+            e.stopImmediatePropagation();
+            var val = prompt("Please enter the date format using 'y' for year, 'm' for month, 'd' for day (default y-m-d).", GM_getValue("DateFormat", "y-m-d"));
+            if (val)
+            {
+                if (val == "y-m-d") GM_deleteValue("DateFormat");
+                else GM_setValue("DateFormat", val);
+            }
+            return false;
+        };
 
         var require = document.querySelector("#script-content > p > code");
         if (require && require.textContent.match("@require"))
@@ -714,8 +733,31 @@ script-list-set
             cell.title = "Favoured plus Good Feedback, OK Feedback, Bad Feedback, Total Score (" + script.rating + ")";
             row.insertCell(-1).textContent = script.installsDaily;
             row.insertCell(-1).textContent = script.installsTotal;
-            row.insertCell(-1).textContent = script.dateCreated;
-            row.insertCell(-1).textContent = script.dateUpdated;
+            var dateformat = GM_getValue("DateFormat");
+
+            if (dateformat)
+            {
+                var m, newdate;
+
+                newdate = dateformat;
+                m = script.dateCreated.match(/\d+/g);
+                newdate = newdate.replace("y", m[0]);
+                newdate = newdate.replace("m", m[1]);
+                newdate = newdate.replace("d", m[2]);
+                row.insertCell(-1).textContent = newdate;
+
+                newdate = dateformat;
+                m = script.dateUpdated.match(/\d+/g);
+                newdate = newdate.replace("y", m[0]);
+                newdate = newdate.replace("m", m[1]);
+                newdate = newdate.replace("d", m[2]);
+                row.insertCell(-1).textContent = newdate;
+            }
+            else
+            {
+                row.insertCell(-1).textContent = script.dateCreated;
+                row.insertCell(-1).textContent = script.dateUpdated;
+            }
         }
 
         filterTable();
