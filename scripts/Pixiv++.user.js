@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.92 Beta
+// @version             3.3.93 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -57,7 +57,9 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
-3.3.92 (2016-06-05)
+3.3.93 Beta (2016-07-24)
+ - Date added to preview
+3.3.92 Beta (2016-06-05)
  - Added link to Manga page in page info
 3.3.91 (2016-05-27)
  - Altered license
@@ -234,7 +236,7 @@ Close to being a major release due to the amount of changes done.
 
            getIllust: function (id)
            {
-               var properties = "getExtension userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illust1200URL illustURL illustSize pageCount description time tags tools ratings totalRatings viewCount bookmarkCount responseCount R18";
+               var properties = "getExtension userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illust1200URL illustURL illustSize pageCount description time tags tools ratings totalRatings viewCount bookmarkCount responseCount R18 date";
                var illust = Illustrations["i" + id];
 
                if (!illust)
@@ -405,6 +407,8 @@ Close to being a major release due to the amount of changes done.
                if (doc.querySelector(".r-18g")) metadata.R18 = 2;
                metadata.pageCount = 1;
                metadata.illustSize = context.illustSize;
+               metadata.date = doc.querySelector(".work-info .meta li").textContent;
+
 
                if (doc.querySelector(".tools")) metadata.tools = doc.querySelector(".tools").textContent;
 
@@ -1874,6 +1878,7 @@ Close to being a major release due to the amount of changes done.
             a.setAttribute("style", "display:inline-block;min-width:50px;");
             a.href = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
             el.appendChild(a);
+            el.innerHTML += '<span style="color:orange;"> (' + metadata.date + ')</span>';
             data.appendChild(el);
 
             //Artist Details
