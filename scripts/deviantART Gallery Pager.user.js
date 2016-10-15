@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.18
+// @version         1.0.19
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -45,6 +45,8 @@ TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.19 (2016-10-15)
+ - Fix for Google Chrome as not longer able to access href property in link element.
 1.0.18 (2016-05-27)
  - Altered license
 1.0.17 (2016-05-25)
@@ -202,7 +204,8 @@ function GetNextPageURL(doc)
 
     if (next)
     {
-        nextPageURL = next.href;
+        //nextPageURL = next.href; No longer works on google
+        nextPageURL = next.getAttribute("href");
         return true;
     }
 
