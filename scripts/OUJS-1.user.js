@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.29
-// @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... It now should work on Opera and Chrome.
+// @version                 1.0.29.1
+// @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... [UnSupported]
 // @author                  TimidScript
-// @homepageURL             https://openuserjs.org/users/TimidScript
-// @copyright               © 2016 TimidScript, All Rights Reserved.
-// @license                 Read "License + Copyright Notice" inside the Script
+// @homepageURL             https://github.com/TimidScript
+// @copyright               © 2014+ TimidScript, Some Rights Reserved.
+// @license                 https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include                 http*://openuserjs.org/*
 // @require                 https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require                 https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
@@ -22,31 +22,40 @@
 // @icon                    data:image/gif;base64,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
 // ==/UserScript==
 
-
-/* Copyright Notice
+/* License + Copyright Notice
 ********************************************************************************************
+License can be found at: https://github.com/TimidScript/UserScripts/blob/master/license.txt
+Below is a copy of the license the may not be up-to-date.
+
+Copyright © TimidScript, Some Rights Reserved.
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met that does not conflict with the rest of the license
+1) GPL-3 License is met that does not conflict with the rest of the license (http://www.gnu.org/licenses/gpl-3.0.en.html)
 2) This notice must be included
 3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification of the License and Notice to the end usera
-6) Do not upload on OpenUserJS.org as it does not meet their strict TOS
+5) Clear clarification of the License and Notice to the end user
+6) Do not upload on OpenUserJS.org or any other site that infringes on this license
 
-TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
-/*
-********************************************************************************************
+TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
+                          GreasyFork:  https://greasyfork.org/users/1455
+*/
+/* Information
+**************************************************************************************************
  Version History
 ------------------------------------
-1.0.29 (2016-10-15)
- - Link to Github instead of the dead OUJS account
 1.0.28 (2016-05-27)
- - Altered license
+ - Altered Licence
+ - Added latest scripts column to the front page to give more coverage to new scripts
+ - Bug fixes to changes in OUJS library page
 1.0.27 (2016-05-25)
  - Moving to GreasyFork and preparing to remove OUJS files
+1.0.26f (2016-04-10)
+ - updateURL added
+1.0.26e (2016-04-03)
+ - Changed license to GPL-3
 1.0.26 (2016-02-27)
  - Ratings bar and "Flaggins" are now separate elements, so removed unnecessary code and notice.
  - Removed flagged information as it seems admin hide it so might as well hide it also.
@@ -513,7 +522,7 @@ function SortScriptTable(e)
 
 (function ()
 {
-    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="https://github.com/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
+    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="/users/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
     var timestamp = Date.now();
     var loggedUsername = "";
 
@@ -572,7 +581,6 @@ function SortScriptTable(e)
         addLibraryIcons();
         addScriptListingNumbers();
 
-
         var columns = columns = ["name", "installs", "rating", "updated"],
             search = document.location.search,
             orderBy = search.match(/orderBy=(\w+)/i);
@@ -593,6 +601,28 @@ function SortScriptTable(e)
                 return 3;
             }
             )() + ")"), ((search.match(/orderDir=asc/i)) ? "ascen" : "descen"));
+
+        if (!pathname.match(/^\/$/)) return;
+
+        //Display latest script on the right side column
+        var latestURL = document.URL.replace(/orderBy=\w+&orderDir=\w+/, "orderBy=updated&orderDir=desc");
+        if (!latestURL.match("orderBy=updated&orderDir=desc"))
+        {
+            latestURL = latestURL.replace(/(\?|$)/,"?orderBy=updated&orderDir=desc&");
+            latestURL = latestURL.replace(/\?&/,"?");
+            latestURL = latestURL.replace(/\&$/,"");
+        }
+
+        var rcoloumn = document.querySelector(".col-sm-4");
+        var panel = document.createElement("div");
+        panel.className = "panel panel-default";
+        panel.innerHTML = '<a class="panel-heading"><div class="panel-title">Latest Updated Scripts</div></a>';
+        rcoloumn.appendChild(panel);
+
+        xhrPage(latestURL, function()
+        {
+            //console.log("
+        });
     }
     else if (pathname.match(/^\/users\/\w+$/i)) //User profile page
     {
@@ -967,12 +997,6 @@ function SortScriptTable(e)
 
         DisplayStats(oldCurrent, meta.current);
 
-        //alert("Bring Up Console");
-        //for (var i = meta.history.length - 1, j = HistoryMAX - HistoryMIN; i >= 0; i--, j--)
-        //{
-        //    console.warn(i, timePassed(meta.history[i].timestamp));
-        //}
-
         if (meta.history.length > HistoryMAX) //History Cleanup greater than
         {
             for (var i = 0, j = HistoryMAX - HistoryMIN; i < HistoryMAX - HistoryMIN; i++, j--)
@@ -1137,7 +1161,7 @@ function SortScriptTable(e)
         var scriptmeta = document.querySelector(".script-meta");
         scriptmeta.parentElement.insertBefore(copyBox, scriptmeta);
 
-        var panel = document.querySelector(".panel-default .panel-body h4");
+        var panel = document.querySelector(".col-sm-8 .panel.panel-default > .panel-body > h4");
         if (panel)
         {
             panel.textContent += " (" + panel.parentElement.getElementsByTagName("li").length + ")";
