@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.33.1
+// @version         3.0.33.2
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
-// @copyright       © 2016 TimidScript, Some Rights Reserved.
+// @copyright       © 2014+ TimidScript, Some Rights Reserved.
 // @license         https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include         *
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
