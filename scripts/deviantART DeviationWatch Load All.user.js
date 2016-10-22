@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                [TS] deviantART DeviationWatch Load All
 // @namespace           TimidScript
-// @version             1.0.22
+// @version             1.0.22.1
 // @description         Loads all deviations in Inbox DeviantWatch
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
-// @copyright           © 2016 TimidScript, Some Rights Reserved.
-// @license             Read "License + Copyright Notice" inside the script
+// @copyright           © 2013+ TimidScript, Some Rights Reserved.
+// @license             https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include             *://www.deviantart.com/notifications/*
 // @require             https://greasyfork.org/scripts/19967-tsl-gm-update/code/TSL - GM_update.js
 // @homeURL             https://greasyfork.org/en/scripts/4678
@@ -23,20 +23,23 @@
 
 /* License + Copyright Notice
 ********************************************************************************************
+License can be found at: https://github.com/TimidScript/UserScripts/blob/master/license.txt
+Below is a copy of the license the may not be up-to-date.
+
 Copyright © TimidScript, Some Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met that does not conflict with the rest of the license
+1) GPL-3 License is met that does not conflict with the rest of the license (http://www.gnu.org/licenses/gpl-3.0.en.html)
 2) This notice must be included
 3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
 5) Clear clarification of the License and Notice to the end user
-6) Do not upload on OpenUserJS.org
+6) Do not upload on OpenUserJS.org or any other site that infringes on this license
 
-TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
+TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
+                          GreasyFork:  https://greasyfork.org/users/1455
 */
 /* Information
 **************************************************************************************************
