@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.93.1 Beta
+// @version             3.3.94 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -60,6 +60,8 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.94 Beta (2016-10-22)
+ - Preview date format is now y-m-d
 3.3.93 Beta (2016-07-24)
  - Date added to preview
 3.3.92 Beta (2016-06-05)
@@ -1881,7 +1883,7 @@ Close to being a major release due to the amount of changes done.
             a.setAttribute("style", "display:inline-block;min-width:50px;");
             a.href = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
             el.appendChild(a);
-            el.innerHTML += '<span style="color:orange;"> (' + metadata.date + ')</span>';
+            el.innerHTML += '<span style="color:orange;"> (' + metadata.date.replace(/(\d+)\/(\d+)\/(\d+)/, "$3-$1-$2") + ')</span>';
             data.appendChild(el);
 
             //Artist Details
