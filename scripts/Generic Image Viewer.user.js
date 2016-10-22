@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.45.1
+// @version         2.2.45.2
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. Support numpad keys now.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
-// @copyright       © 2016 TimidScript, Some Rights Reserved.
+// @copyright       © 2013+ TimidScript, Some Rights Reserved.
 // @license         https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include         *
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
