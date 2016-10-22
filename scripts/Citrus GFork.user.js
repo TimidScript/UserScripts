@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.42
+// @version         1.1.42.1
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -55,6 +55,8 @@ Suggestions
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.42.1 (2016-10-22)
+ - Hotfix: Settings not being stored as I changed the stored name
 1.1.42 (2016-10-22)
  - Depreciated, Obsolete, Defunct and now Unsupported are checked first in description and then version. If it
  is present the script is tagged with "No Longer Supported" orange tag to signify that it is no longer maintained.
@@ -418,7 +420,7 @@ script-list-set
             btn.onclick = function (e)
             {
                 if (ipts[0].checked) GM_setValue("Use Standard Date Format", true); else GM_deleteValue("Use Standard Date Format");
-                if (ipts[1].checked) GM_setValue("Use Original Search", true); else GM_deleteValue("Use Standard Search");
+                if (ipts[1].checked) GM_setValue("Use Original Search", true); else GM_deleteValue("Use Original Search");
 
                 TSL.removeNode(settings);
             }
