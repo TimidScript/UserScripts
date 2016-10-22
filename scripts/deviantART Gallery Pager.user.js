@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name            [TS] deviantART Gallery Pager
 // @namespace       TimidScript
-// @version         1.0.19.1
+// @version         1.0.19.2
 // @description     Auto-pager for DeviantArt gallery/favourites. On-top of FireFox, it now works with G-Chrome and Opera. NOW: With sticky paging button switch.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
-// @copyright       © 2016 TimidScript, Some Rights Reserved.
+// @copyright       © 2013+ TimidScript, Some Rights Reserved.
 // @license         https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include         *://*.deviantart.com/gallery/*
 // @include         *://*.deviantart.com/favourites/*
