@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.41.1
+// @version         1.1.41.2
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2016 TimidScript, Some Rights Reserved.
-// @license         Read "License + Copyright Notice" inside the script
+// @license         https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include         https://greasyfork.org/*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
