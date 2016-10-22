@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.93 Beta
+// @version             3.3.93.1 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
-// @copyright           © 2016 TimidScript, Some Rights Reserved.
-// @license             GNU General Public License v3 (GPL-3) + Read the License inside the script
+// @copyright           © 2012+ TimidScript, Some Rights Reserved.
+// @license             https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include             http://www.pixiv.net/*
 // @exclude             http://www.pixiv.net/*mode=manga&illust_id*
 // @exclude             http://www.pixiv.net/*mode=big&illust_id*
@@ -28,20 +28,23 @@
 
 /* License + Copyright Notice
 ********************************************************************************************
+License can be found at: https://github.com/TimidScript/UserScripts/blob/master/license.txt
+Below is a copy of the license the may not be up-to-date.
+
 Copyright © TimidScript, Some Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
 
-1) GPL-3 License is met that does not conflict with the rest of the license
+1) GPL-3 License is met that does not conflict with the rest of the license (http://www.gnu.org/licenses/gpl-3.0.en.html)
 2) This notice must be included
 3) Due credits and link to original author's homepage (included in this notice).
 4) Notify the original author of redistribution
-5) Clear clarification of the License and Notice to the end usera
-6) Do not upload on OpenUserJS.org
+5) Clear clarification of the License and Notice to the end user
+6) Do not upload on OpenUserJS.org or any other site that infringes on this license
 
-TimidScript's Homepages:  [GitHub](https://github.com/TimidScript)
-                          [GreasyFork](https://greasyfork.org/users/1455-timidscript
+TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
+                          GreasyFork:  https://greasyfork.org/users/1455
 */
 /* Information
 ********************************************************************************************
