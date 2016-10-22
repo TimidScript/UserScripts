@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Translate
 // @namespace       TimidScript
-// @version         1.0.11
+// @version         1.0.11.1
 // @description     Adds translate button for video's title  and "About" description. Works in most cases
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
