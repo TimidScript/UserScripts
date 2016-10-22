@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.18.1
+// @version                 1.0.18.2
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
-// @copyright               © 2016 TimidScript, Some Rights Reserved.
+// @copyright               © 2014+ TimidScript, Some Rights Reserved.
 // @license                 https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @exclude                 *
 // ==/UserScript==
