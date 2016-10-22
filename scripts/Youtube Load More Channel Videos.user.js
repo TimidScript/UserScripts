@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Load More Channel Videos
 // @namespace       TimidScript
-// @version         1.0.12
+// @version         1.0.12.1
 // @description     Auto loads more videos in channel
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
