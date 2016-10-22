@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    TSLibrary - Draggable Table Rows
 // @namespace               TimidScript
-// @version                 1.0.9
+// @version                 1.0.9.1
 // @description             Allows dragging of table rows
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
