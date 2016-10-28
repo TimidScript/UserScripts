@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Linx Amender
 // @namespace       TimidScript
-// @version         3.0.33.2
+// @version         3.0.34
 // @description     Generic tracking/redirection/open-in-new-tab removal; Amend page title; URL redirector; and more power functionality. Has rules for Pixiv, deviantArt, twitter, youtube, blogger, Batota etc.
 // @author          TimidScript
 // @homepageURL     https://openuserjs.org/users/TimidScript
@@ -12,7 +12,6 @@
 // @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
 // @require         https://greasyfork.org/scripts/19970/code/TSLibrary - Draggable Table Rows.js
 // @homeURL         https://greasyfork.org/en/scripts/4407
-// @updateURL       https://greasyfork.org/scripts/4407/code/4407.meta.js
 // @grant           GM_registerMenuCommand
 // @grant           GM_getValue
 // @grant           GM_setValue
@@ -65,9 +64,12 @@ GM_setValue("OnlineRulesURL", "https://newlocation/LinxAmenderRules.txt");
 ------------------------------------
  Version History
 ------------------------------------
-1.0.33 (2016-05-27)
+3.0.34 (2016-10-28)
+ - Set default background and text color
+     https://github.com/TimidScript/UserScripts/issues/10
+3.0.33 (2016-05-27)
  - Altered license
-1.0.32 (2016-05-25)
+3.0.32 (2016-05-25)
  - Moving to GreasyFork and preparing the removal of files from OUJS
 3.0.31 (2016-04-11)
  - Bug fix for amending title https://github.com/TimidScript/UserScripts/issues/7#issuecomment-208044262
@@ -515,6 +517,7 @@ var DialogMain =
         {
             iDocument = iframe.contentDocument || iframe.contentWindow.document;
 
+            TSL.addStyle(null, 'body {color: black; background-color:white;}', iDocument);
             TSL.addStyle(null, '#LinxMain{position: fixed;min-width: 800px;border: 1px solid black;background-color: transparent;left: 10px;right: 10px;top: 10px;bottom: 10px;z-index: 1;}.gradientBar{background-image: linear-gradient(bottom, rgb(72, 138, 199 ) 37%, rgb( 92, 179, 255 ) 69%);background-image: -o-linear-gradient(bottom, rgb(72, 138, 199 ) 37%, rgb( 92, 179, 255 ) 69%);background-image: -moz-linear-gradient(bottom, rgb(72, 138, 199 ) 37%, rgb( 92, 179, 255 ) 69%);background-image: -webkit-linear-gradient(bottom, rgb(72, 138, 199 ) 37%, rgb( 92, 179, 255 ) 69%);background-image: -ms-linear-gradient(bottom, rgb(72, 138, 199 ) 37%, rgb( 92, 179, 255 ) 69%);background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.37, rgb(82,106,179)), color-stop(0.69, rgb(157,117,217)));font-weight: bold;padding: 1px 5px;}.gradientBar input[type="button"]{width: 120px;}.solidBar{background-color: #E0F0FF;border: 1px black solid;padding: 5px 5px;text-align: right;}.solidBar input[type="button"]{width: 100px;}#LinxTable{border-spacing: 1px;background-color: gray;width: 100%;user-select: none;-ms-user-select: none;-moz-user-select: none;-webkit-user-select: none;}#LinxTable td{padding: 0 5px;}#LinxTable td button:last-child{margin-right: 10px;}#LinxTable tr:hover{background-color: yellow !important;}#LinxTable.localRules tr:nth-child(odd){background-color: #E0F0FF;}#LinxTable.localRules tr:nth-child(even){background-color: #F0FFF0;}#LinxTable.onlineRules tr:nth-child(odd){background-color: #E9DBF7;}#LinxTable.onlineRules tr:nth-child(even){background-color: #F7DBF4;}.btnEnabled, .btnDisabled, .rowBtn, .btnCA, .btnCT, .btnCU, .btnCC, .btnCS, .btnCX{border-radius: 3px;font-size: 11px;margin: 2px 1px;display: inline-block;padding: 0 2px 0 2px;border: 1px groove;text-align: center;}.inputHolder{display: inline-block;width: 200px;}.inputHolder > button{display: inline-block;font-size: 12px;border-radius: 3px;padding: 0 2px 0 2px;border: 1px groove;text-align: center;width: 20px;margin: 0 0 0 2px;}.inputHolder > button:nth-child(1){margin-right: 6px;}.inputHolder > button:hover{color: black;}.inputHolder > input{margin-left: 35px;}.btnCA, .btnCT, .btnCU, .btnCC, .btnCS, .btnCX{width: 40px;margin: 2px 10px;}.btnCA{border-color: #895EB6;background-color: #D8C2EF;color: #895EB6;}.btnCT{border-color: #FF5572;background-color: #FDCFD7;color: #FF5572;}.btnCU{border-color: #3970CD;background-color: #96C5EF;color: #3970CD;}.btnCW{border-color: #A21C0F;background-color: #F51601;color: #A21C0F;}.btnCC{border-color: #C88517;background-color: #FBCD5A;color: #C88517;}.btnCS{border-color: #9C8F3F;background-color: #FDF797;color: #9C8F3F;}.btnCX{border-color: #0A9783;background-color: #10E7C9;color: #0A9783;}a .btnCA, a .btnCT, a .btnCU, a .btnCC, a .btnCS, a .btnCX{cursor: pointer;text-decoration: underline;}.btnEnabled, .btnCD{border-color: #015601;background-color: #BFFBBF;color: #015601;}.btnDisabled{border-color: #808080;background-color: #DBDADA;color: #808080;}.rowBtn{width: 40px;border-color: #08850A;background-color: #8EEB94;color: #08850A;}.rowBtn:hover, .btnEnabled:hover, .btnDisabled:hover{color: red;}td span.rowBtn:last-child{margin: 10px;}.rowSelected{background-color: yellow !important;}</style><style type="text/css">#LinxEditDialog, #LinxPasteDialog{position: fixed;width: 80%;min-width: 800px;border: 1px double #000000;left: 0;right: 0;margin: 50px auto;padding: 3px;background-color: #BABAB3;z-index: 100;}#LinxEdit{width: 100%;background-color: #FFFFBC;border: 1px solid black;padding: 5px 0 0 0;}#LinxEdit input, #LinxEdit textarea{width: 99%;}#LinxURLs{resize: vertical;}#RegexesTable{width: 100%;text-align: left;cursor: pointer;user-select: none;-ms-user-select: none;-moz-user-select: none;-webkit-user-select: none;background-color: #E5DEAE;}#RegexesTable tr td:last-child{width: 140px;}.class2Columns tr td:first-child{display: none;}.class3Columns td:nth-child(1){width: 100px;}.class3Columns input:nth-child(1){width: auto;}.class3Columns tr td:nth-child(2){text-align: center;}code{background-color: #CDC6C6;}', iDocument);
             TSL.addStyle(null, '#LinxEditDialog, #LinxPasteDialog{position: fixed;width: 80%;min-width: 800px;border: 1px double #000000;left: 0;right: 0;margin: 50px auto;padding: 3px;background-color: #BABAB3;z-index: 100;}#LinxEdit{width: 100%;background-color: #FFFFBC;border: 1px solid black;padding: 5px 0 0 0;}#LinxEdit input, #LinxEdit textarea{width: 99%;}#LinxURLs{resize: vertical;}#RegexesTable{width: 100%;text-align: left;cursor: pointer;user-select: none;-ms-user-select: none;-moz-user-select: none;-webkit-user-select: none;background-color: #E5DEAE;}#RegexesTable tr td:last-child{width: 140px;}.class2Columns tr td:first-child{display: none;}.class3Columns td:nth-child(1){width: 100px;}.class3Columns input:nth-child(1){width: auto;}.class3Columns tr td:nth-child(2){text-align: center;}code{background-color: #CDC6C6;}', iDocument);
             TSL.addStyle(null, '.descriptionBox {background-color:#EDF4FF; padding: 0 4px; margin: 0 0 2px 240px; }', iDocument);
