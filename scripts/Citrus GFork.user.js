@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Citrus GFork
 // @namespace       TimidScript
-// @version         1.1.42.1
+// @version         1.1.43
 // @description     NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -10,6 +10,7 @@
 // @include         https://greasyfork.org/*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
+// @resource        MonkeyIcon https://i.imgur.com/RqikjW1.jpg
 // @homeURL         https://greasyfork.org/en/scripts/4336
 // @updateURL       https://greasyfork.org/scripts/4336/code/4336.meta.js
 // @grant           GM_getValue
@@ -20,7 +21,9 @@
 // @grant           GM_getMetadata
 // @grant           GM_registerMenuCommand
 // @grant           GM_setClipboard
+// @grant           GM_getResourceURL
 // @icon            data:image/png;base64,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
+
 // ==/UserScript==
 
 
@@ -47,14 +50,30 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 /* Information
 
 
+
 Suggestions
  - Install record similar to OUJS-1
  - Highlight your username in the forum
  - Highlight your scripts in the forum
 
+Unnecessary, unused Code:
+    getScriptHTML
+    getScriptJSON
+    makeStruct
+
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.43
+ - BugFix: Relevance when searching was not being supported. Now it is always the default in a search
+ - BugFix: Search bugs
+ - BugFix: Image size to fit parent element (script preview)
+ - BugFix: JSON structure has changed
+ - Monkey icon is now resource. Should have been years ago
+ - Changed the styling of the script preview
+ - Stores version numbers, so no longer does a JSON version call if version is up-to-date.
+ - Purge all stored script version details if older the 90 days
+ - Relative date in the discussion
 1.1.42.1 (2016-10-22)
  - Hotfix: Settings not being stored as I changed the stored name
 1.1.42 (2016-10-22)
@@ -284,7 +303,8 @@ script-list-set
 
         if (scripts.length > 0)
         {
-            createScriptTable();
+            var isRelativeSearch = pathname.match(/scripts\/search/i) != null;
+            createScriptTable(pathname.match(/scripts\/search/i) != null);
             populateScriptTable();
 
 
@@ -292,6 +312,22 @@ script-list-set
             {
                 document.body.insertBefore(document.getElementById("script-table"), document.getElementById("main-header").nextElementSibling);
                 //document.querySelector("#script-table tr td:nth-child(2)").appendChild(document.getElementById("UserSets"));
+
+                if (isRelativeSearch)
+                {
+                    el = document.createElement("div");
+                    el.setAttribute("style", "text-align: right; padding: 1px 50px");
+                    el.appendChild(document.createElement("span"));
+                    document.body.insertBefore(el, document.getElementById("script-table"));
+
+                    el = el.firstElementChild;
+                    el.id = "RelativeSearch";
+                    el.setAttribute("tag", "");
+                    el.textContent = "Relative Search";
+                    el.onclick = onTableHeaderClick;
+
+                    TSL.addStyle("RelativeSearchCSS", '#RelativeSearch {display: inline-block; background-color:orange; border-radius: 3px; padding: 3px 20px; text-align: center; width: 300px;cursor:pointer;}');
+                }
 
                 TSL.addStyle("TheBlackLagoon", "#UserSets {position: absolute !important;display: inline-table !important;float: none !important;left: 30px !important;top: 68px!important;padding: 2px 5px;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility: hidden!important;opacity: 1!important;}"
                            + "#UserSets:hover {visibility: visible!important;opacity: 1!important;}"
@@ -306,7 +342,7 @@ script-list-set
                 //header.appendChild(sets);
             }
 
-            selectSortOrder("ListingPage");
+            selectSortOrder("ListingPage", isRelativeSearch);
 
             TSL.removeNode("browse-script-list");
         }
@@ -326,6 +362,17 @@ script-list-set
 
             selectSortOrder(pageType);
         }
+    }
+
+
+    //Purge script details older than 90 days
+    var now = Date.now(), names = GM_listValues();
+    for (var i = 0; i < names.length; i++)
+    {
+        if (! /^Script:\d+/.test(names[i])) continue;
+
+        //If greater than 30 days remove    1000*60*60*24=86400000
+        if ((now - JSON.parse(GM_getValue(names[i])).timestamp) / 86400000 > 90) GM_deleteValue(names[i]);
     }
 
     /* Base CSS styling
@@ -348,6 +395,8 @@ script-list-set
                       + "#CForkSettings > div {margin: 5px 10px}"
                       + "#CForkSettings > footer {background-color:orange; padding: 1px 5px;text-align:right;}"
                       + "#CForkSettings label {cursor: default;}"
+                      + ".preview-result {background-color: white; border-top: 10px ridge black;}"
+                      + ".preview-result img {max-width: 98%;}"
                       );
 
         TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
@@ -370,7 +419,7 @@ script-list-set
 
         var link = document.createElement("a");
         link.href = "/";
-        link.innerHTML = '<img id="title-image" src="https://i.imgur.com/RqikjW1.jpg" />'
+        link.innerHTML = '<img id="title-image" src="' + GM_getResourceURL("MonkeyIcon") + '" />'
                         + '<span id="title-text">Greasy Fork&nbsp;</span>'
                         + '<span id="settings-subtext">Settings</span>'
                         + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
@@ -577,9 +626,9 @@ script-list-set
                         item.innerHTML = '<a href="' + localURL + '/scripts/' + post.ScriptID + '">' + post.DiscussionAboutName + '</a> : '
                             + '<a href="' + post.Url + '">' + post.Name + '</a> by '
                             + '<a href="' + localURL + "/forum/profile/" + post.FirstUserID + "/" + post.FirstName + '">' + post.FirstName + '</a> '
-                            + '<time datetime="' + post.FirstDate + '">' + getDate(post.FirstDate) + '</time>, last comment by '
+                            + '<time datetime="' + post.FirstDate + '">(' + getRelativeDate(post.FirstDate) + ')</time>, last comment by '
                             + '<a href="' + localURL + "/forum/profile/" + post.LastUserID + "/" + post.LastName + '">' + post.LastName + '</a> '
-                            + '<time datetime="' + post.LastDate + '">' + getDate(post.LastDate) + '</time>';
+                            + '<time datetime="' + post.LastDate + '">(' + getRelativeDate(post.LastDate) + ')</time>';
 
 
                         list.appendChild(item);
@@ -587,10 +636,27 @@ script-list-set
                 }
                 else callback(xhr, null);
 
-                function getDate(date)
+                function getRelativeDate(date)
                 {
-                    return date.replace(/\s+.+/, "");
-                    //return date.match(/^\d+-\d+-\d+/)[0];
+                    var ms = Date.now() - parseInt(new Date(date).getTime()),
+                        secs = Math.floor(ms / (1000)) % 60,
+                        mins = Math.floor(ms / (60 * 1000)) % 60,
+                        hrs = Math.floor(ms / (60 * 60 * 1000)) % 24,
+                        days = Math.floor(ms / (60 * 60 * 1000 * 24) % 7),
+                        weeks = Math.floor(ms / (60 * 60 * 1000 * 24) / 7);
+
+                    if (weeks) return date.replace(/\s+.+/, "");
+                    if (days) return days + "day" + isPlural(days) + " and " + hrs + "hr" + isPlural(hrs);
+                    if (hrs) return hrs + "hr" + isPlural(hrs) + " and " + mins + "min" + isPlural(mins);
+                    if (mins) return mins + "min" + isPlural(mins) + " and " + secs + "sec" + isPlural(secs);
+                    return secs + "sec" + isPlural(secs);
+
+                    function isPlural(val)
+                    {
+                        if (val == 1) return "";
+
+                        return "s";
+                    }
                 }
             }
         });
@@ -605,14 +671,14 @@ script-list-set
         var ids = ["user-script-list", "user-deleted-script-list", "browse-script-list"];
         scripts = new Array();
 
-        for (var i = 0; i < ids.length; i++)
+        for (var i = 0, el, deleted, list; i < ids.length; i++)
         {
-            var el = doc.getElementById(ids[i]);
+            el = doc.getElementById(ids[i]);
             if (!el) continue;
 
-            var deleted = ids[i].indexOf("deleted") > 0;
-            var list = el.children;
-            for (var j = 0; j < list.length; j++)
+            deleted = ids[i].indexOf("deleted") > 0;
+            list = el.children;
+            for (var j = 0, stamp; j < list.length; j++)
             {
                 var li = list[j];
                 var script = new Object();
@@ -628,16 +694,30 @@ script-list-set
                 script.dateCreated = li.getAttribute("data-script-created-date") + "|" + li.querySelector(".script-list-created-date time").textContent;
                 script.dateUpdated = li.getAttribute("data-script-updated-date") + "|" + li.querySelector(".script-list-updated-date time").textContent;
                 script.type = li.getAttribute("data-script-type");
+                script.defunct = /defunct|depreciated|obselete|unsupported/i.test(script.description);
                 script.deleted = deleted;
                 scripts.push(script);
+
+                stamp = GM_getValue("Script:" + script.id, false);
+
+                if (stamp)
+                {
+                    stamp = JSON.parse(stamp);
+                    if (li.querySelector(".script-list-updated-date time").getAttribute("datetime") != stamp.datetime) stamp.version = "";
+                    else script.version = stamp.version;
+                }
+                else stamp = { datetime: li.querySelector(".script-list-updated-date time").getAttribute("datetime"), version: "", timestamp: "" };
+
+                stamp.timestamp = Date.now();
+                GM_setValue("Script:" + script.id, JSON.stringify(stamp));
             }
         }
     }
 
 
-    /* Creates scripts table
+    /* Creates scripts table (relative search)
     ---------------------------------------------------------------------------*/
-    function createScriptTable()
+    function createScriptTable(isRelativeSearch)
     {
         var scriptTable = document.createElement("table");
         scriptTable.id = "script-table";
@@ -645,7 +725,7 @@ script-list-set
         var row = thead.insertRow(-1);
 
         var headers = ["Name", "Ratings", "Daily", "Total", "Created", "Updated"];
-        var tags = ["name", "ratings", "", "total_installs", "created", "updated"];
+        var tags = ["name", "ratings", (isRelativeSearch ? "daily_installs" : ""), "total_installs", "created", "updated"];
 
         cell = row.insertCell(-1);
         cell.textContent = "#";
@@ -678,13 +758,12 @@ script-list-set
             + "#script-table tbody td:first-child{background-color: #F9D5A6;}"
             + "#script-table tbody td:nth-child(2){width: 99%; background-color: white;text-align:left;}"
             + "#script-table tbody tr:hover td {background-color: yellow;}"
-            + "td[busy] { background-color: #FFFFD8 !important;}"
             + ".loadingSort {background-color: #FDFDC3 !important;}"
             + ".type-library, .type-unlisted, .type-deleted, .type-defunct {font-size:smaller; display: inline-block; border-radius: 3px; padding: 0 5px; border: 1px solid black;}"
             + ".type-library, .type-unlisted, .type-deleted, .type-defunct {box-shadow: 2px 2px 1px #888888; margin: 2px 5px 3px 0;}"
             + ".type-library {background-color: #CEFD8A;}"
             + ".type-deleted {background-color: #F77A7A;}"
-            + ".type-defunct {background-color: #F1D25C;}"
+            + ".type-defunct {background-color: #FF8600;}"
             + ".type-unlisted, .filterU {background-color: #CEE7F3;}"
             + ".type-library:before {content: 'Library';}"
             + ".type-deleted:before {content: 'Deleted';}"
@@ -725,8 +804,7 @@ script-list-set
             var el = document.createElement("div");
             el.className = "thetitle";
             el.innerHTML = "<a href='https://greasyfork.org/scripts/"
-                            + script.id + "' style='margin-right: 10px;'><b>" + script.name + "</b></a>";
-
+                            + script.id + "' style='margin-right: 10px;'><b>" + script.name + "</b></a><span class='theversion'></span>";
 
             if (script.type == "library") AddScriptTag("library");
             else if (script.type == "unlisted") AddScriptTag("unlisted");
@@ -734,6 +812,7 @@ script-list-set
 
             if (script.deleted) AddScriptTag("deleted");
             if (script.defunct) AddScriptTag("defunct");
+
 
             // If page listing add author detail
             if (document.body.getAttribute("PageType") == "ListingPage")
@@ -758,6 +837,8 @@ script-list-set
                 el.innerHTML += '<span class="type-' + tag + '" />';
                 row.setAttribute(tag, "");
             }
+
+            if (script.version) addScriptVersion(script);
         }
 
         OrganizeTableByCategory();
@@ -767,6 +848,24 @@ script-list-set
             var properties = "name id author authorID description rating ratings installsDaily installsTotal dateCreated dateUpdated type deleted";
             return makeStruct(properties, scripts[idx]);
         }
+    }
+
+    function addScriptVersion(script)
+    {
+        var el = document.querySelector("#s" + script.id + " .thetitle .theversion");
+
+        if (!el) return;
+        el.innerHTML = "(<b>" + script.version + "</b>)";
+
+        if (/defunct|depreciated|obselete|unsupported/i.test(script.version))
+        {
+            el.innerHTML += '<span class="type-defunct" />';
+            el.parentElement.parentElement.setAttribute("defunct", "");
+        }
+
+        stamp = JSON.parse(GM_getValue("Script:" + script.id));
+        stamp.version = script.version;
+        GM_setValue("Script:" + script.id, JSON.stringify(stamp));
     }
 
     function numberScriptListing()
@@ -834,19 +933,20 @@ script-list-set
 
     /*
     ---------------------------------------------------------------------------*/
-    function selectSortOrder(pageType)
+    function selectSortOrder(pageType, isRelativeSearch)
     {
-        var tag = GM_getValue(pageType, "updated");
+        var tag = (isRelativeSearch) ? "" : GM_getValue(pageType, "updated");
 
         var m = document.URL.match(/[\?&]sort=(\w+)/);
         var tagURL = (m) ? m[1] : "";
 
         var page = document.URL.match(/[\?&]page=(\d+)/);
 
-        TSL.addStyle("SelectedSortColumn", "td[tag='" + tagURL + "'] {background-color: yellow !important;}");
-        if (!page && (tagURL != tag || (document.URL.indexOf("per_page=100") < 0)))
+        TSL.addStyle("SelectedSortColumn", "[tag='" + tagURL + "'] {background-color: yellow !important;}");
+
+        if (!isRelativeSearch && !page && (tagURL != tag || (document.URL.indexOf("per_page=100") < 0)))
         {
-            document.querySelector(("td[tag='" + tag + "']")).click();
+            document.querySelector(("[tag='" + tag + "']")).click();
             return;
         }
         getScriptVersionNumbers();
@@ -856,8 +956,7 @@ script-list-set
     ---------------------------------------------------------------------------*/
     function onTableHeaderClick(e)
     {
-        if (this.className || this.parentElement.getAttribute("busy")) return;
-        this.parentElement.setAttribute("busy", true);
+        if (document.querySelector("loadingSort")) return;
         this.className = "loadingSort";
 
         getScriptListing(this.getAttribute("tag"), true);
@@ -905,7 +1004,7 @@ script-list-set
                 {
                     GM_setValue(document.body.getAttribute("PageType"), tag);
 
-                    TSL.addStyle("SelectedSortColumn", "td[tag='" + tag + "'] {background-color: yellow !important;}");
+                    TSL.addStyle("SelectedSortColumn", "[tag='" + tag + "'] {background-color: yellow !important;}");
 
                     //stackoverflow.com/questions/19193335/change-the-url-in-browser-bar-without-reloading-page
                     window.history.pushState(null, "", xhr.finalUrl); //Change document URL
@@ -930,7 +1029,7 @@ script-list-set
                     getScriptVersionNumbers();
                 }
 
-                document.querySelector(("td[tag='" + tag + "']")).parentElement.removeAttribute("busy");
+                TSL.removeClass(document.querySelector(".loadingSort"), "loadingSort")
                 console.warn("getScriptListing OUT: " + url);
             }
         });
@@ -938,6 +1037,9 @@ script-list-set
 
     function getScriptVersionNumbers()
     {
+        //No need to do a JSON call as the stored information is already up-to-date
+        if (document.querySelectorAll(".theversion").length == document.querySelectorAll(".theversion b").length) return;
+
         var jsonURL = document.URL.replace(/(\?|$)/, ".json$1");
         console.log("JSON: " + jsonURL);
 
@@ -957,25 +1059,14 @@ script-list-set
                 if (xhr.status == 200)
                 {
                     var data = JSON.parse(xhr.responseText), scripts;
+                    //console.log(data);
                     if (typeof data !== "object") return;
-                    scripts = data.scripts || data.all_listable_scripts;
+                    scripts = data.all_listable_scripts || data;
+
                     for (var i = 0, script; i < scripts.length; i++)
                     {
                         script = scripts[i];
-                        var el = document.querySelector("#s" + script.id + " .thetitle");
-
-                        if (el)
-                        {
-                            var s = document.createElement("span");
-                            s.className = "theversion";
-                            s.innerHTML = "(<strong>" + script.version + "</strong>)";
-                            el.insertBefore(s, el.firstElementChild.nextElementSibling);
-                            if (script.version.match(/defunct|depreciated|obselete/i))
-                            {
-                                el.innerHTML += '<span class="type-defunct" />';
-                                el.parentElement.parentElement.setAttribute("defunct", "");
-                            }
-                        }
+                        addScriptVersion(script);
                     }
 
                     OrganizeTableByCategory();
