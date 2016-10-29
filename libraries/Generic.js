@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.18.2
+// @version                 1.0.19
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -35,6 +35,8 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.0.19 (2016-10-29)
+ - CSS Styles are places in same position if they exists, to not break the page's style precedence. Did the same for javascript.
 1.0.18 (2016-05-27)
  - License altered
 1.0.17 (2016-04-03)
@@ -108,32 +110,29 @@ var TimidScriptLibrary =
     addStyle: function (id, CSS, doc)
     {
         if (!doc) doc = document;
-        var style = doc.createElement("style");
-        style.type = "text/css";
-        if (id)
-        {
-            style.id = id;
-            TimidScriptLibrary.removeNode(id, doc);
-        }
+        var el = doc.createElement("style");
 
-        style.innerHTML = CSS;
-        doc.head.appendChild(style);
-        return style;
+        if (id && doc.getElementById(id)) el = doc.getElementById(id);
+        else doc.head.appendChild(el);
+
+        if (id) el.id = id;
+        el.type = "text/css";
+        el.innerHTML = CSS;
+
+        return el;
     },
 
     addScript: function (id, text, doc)
     {
         if (!doc) doc = document;
-        var script = doc.createElement("script");
-        if (id)
-        {
-            script.id = id;
-            TimidScriptLibrary.removeNode(id, doc);
-        }
+        var el = doc.createElement("script");
 
-        script.innerHTML = text;
-        doc.head.appendChild(script);
-        return script;
+        if (id && doc.getElementById(id)) el = doc.getElementById(id);
+        else doc.head.appendChild(el);
+
+        if (id) el.id = id;
+        el.innerHTML = text;
+        return el;
     },
 
     createElement: function (tag, attributes, doc)
