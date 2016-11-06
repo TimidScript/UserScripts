@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    TSL - GM_update
 // @namespace               TimidScript
-// @version                 1.1.11.1
+// @version                 1.1.12
 // @description             An advance user-script updater library that supports OpenUserJS, GreasyFork, MonkeyGuts and any other site that provides meta.js support. Should work with GreaseMonkey v2+ (FireFox), Scriptish v0.1.12+ (FireFox), TamperMonkey (Chrome) and ViolentMonkey (Opera).
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -97,6 +97,8 @@ community and have checks and balances.
 ----------------------------------------------
  Version History
 ----------------------------------------------
+1.1.12 (2016-11-06)
+ - Set referer
 1.1.11 (2016-05-27)
  - License altered
 1.1.10 (2016-04-10)
@@ -179,7 +181,8 @@ var GM_update =
             headers: {
                 "User-agent": navigator.userAgent,
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.5"
+                "Accept-Language": "en-US,en;q=0.5",
+                "Referer": "https://www.greasyfork.org"
             },
             onload: function (xhr)
             {
