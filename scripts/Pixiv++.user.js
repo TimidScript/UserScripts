@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.94 Beta
+// @version             3.3.95 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -60,6 +60,9 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.95 Beta (2016-11-11)
+ - Added some testing code. 
+ - Link to Pixiv Whitecube alpha
 3.3.94 Beta (2016-10-22)
  - Preview date format is now y-m-d
 3.3.93 Beta (2016-07-24)
@@ -167,6 +170,47 @@ Close to being a major release due to the amount of changes done.
 (function ()
 {
     if (window.self !== window.top) return;
+    
+    if (/^\/whitecube/i.test(location.pathname))
+    {
+        if (GM_getValue("NONONONONO", false)) return;
+
+        setTimeout(function()
+        {
+            if (document.getElementById("SideMenuBar")) return;
+            var h = document.createElement("div");
+            h.setAttribute("style", "z-index: 5000; position: fixed; top: 10px; left: 40px; display:inline-block;");
+
+            var el = document.createElement("a");
+            el.href = "https://greasyfork.org/scripts/24502";
+            el.textContent = "Pixiv++: Install Pixiv Whitecube";
+            el.setAttribute("style", "display:inline-block;padding: 3px 6px; background-color:white; border: 1px solid red;color:black;font-weight:900;");
+            h.appendChild(el);
+
+            el = document.createElement("button");
+            el.textContent = "Do not show this again";
+            el.setAttribute("style", "display:inline-block;padding: 3px 6px; background-color:white;border: 1px black solid; margin-left: 5px;color: red;font-weight:900;cursor:pointer;");
+            el.onclick = function ()
+            {
+                GM_setValue("NONONONONO", true);
+                TSL.removeNode(this);
+            };
+            h.appendChild(el);
+            
+            document.body.appendChild(h);
+
+
+            if (GM_getValue("MessageNotSeen", true))
+            {
+                if (confirm("Please install Pixiv Whitecube (Alpha). In time it will be integrated with Pixiv++."))
+                {
+                    GM_setValue("MessageNotSeen", false);                    
+                }
+            }
+        }, 1000);
+
+        return;
+    }
 
     var IsIllustrationPage = (document.URL.indexOf("http://www.pixiv.net/member_illust.php?") != -1 && document.URL.match(/mode=medium/i) != null);
     var Illustrations = {};
@@ -487,7 +531,7 @@ Close to being a major release due to the amount of changes done.
                    }
                }
                metadata.bookmarkCount = IllustrationLinker.getBookmarkCount(id);
-               //console.log(metadata);
+               //if (IsIllustrationPage) console.log(metadata);
                return metadata;
            },
 
@@ -520,14 +564,21 @@ Close to being a major release due to the amount of changes done.
                var thumbnails = document.querySelectorAll('[illustration-id="' + id + '"], #i' + id);
                metadata = IllustrationLinker.getIllust(id);
 
+
+
                //TODO: Need to clean up this code.
                clb(thumbnails[0])
                for (var t = 1; t < thumbnails.length, thumbnails[t]; t++) clb(thumbnails[t]);
+
+
 
                function clb(thumbnail)
                {
                    var linksBox = document.createElement("div");
                    linksBox.className = "pppLinksBox";
+
+                   linksBox.setAttribute("data-json", JSON.stringify(metadata));
+                   linksBox.setAttribute("data-base", metadata.illustURL.replace(/.+img-(master|original|zip-ugoira)\/img\/(.+)\/\d+(_p\d+)?_.+/, "$2"));
 
                    if (IsIllustrationPage && IllustrationLinker.getIllustID(document.URL) == id)
                    {
@@ -548,7 +599,6 @@ Close to being a major release due to the amount of changes done.
                        var sortButton = evaluator.evaluate("//a[@name='Sort']", SideBar.iDoc.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                        if (sortButton.firstElementChild.style.borderColor == "rgb(0, 255, 0)") sortButton.firstElementChild.style.borderColor = "#F00";
                    }
-
 
                    if (metadata.illustType != 2) //Single Illustration
                    {
@@ -574,6 +624,9 @@ Close to being a major release due to the amount of changes done.
                        mangaLinks = mangaLinks.replace(/ | $/, "") + "]";
                        linksBox.innerHTML = mangaLinks;
                    }
+
+
+
 
                    if (IsIllustrationPage)
                    {
@@ -657,25 +710,72 @@ Close to being a major release due to the amount of changes done.
                    if (PAGETYPE > 1) PaginatorHQ.filterThumbnail(thumbnail);
                }
 
+
+
+               if (!IsIllustrationPage || !GM_getValue("TimidScript", false) || document.getElementById("PreviewTester")) return;
+               //#region TESTING
                //INFO: View all different sized images
-               //if (!IsIllustrationPage) return;
-               //var previews = document.createElement("section");
-               //var wdu = document.querySelector("._work-detail-unit");
-               //wdu.insertBefore(previews, wdu.lastElementChild);
-               //addImage(metadata.illust128URL);
-               //addImage(metadata.illust150URL);
-               //addImage(metadata.illust240URL);
-               //addImage(metadata.illust480URL);
-               //addImage(metadata.illust600URL);
-               //addImage(metadata.illust1200URL);
-               //function addImage(scource)
-               //{
-               //    var con = document.createElement("div");
-               //    var img = document.createElement("img");
-               //    con.appendChild(img);
-               //    previews.appendChild(con);
-               //    img.src = scource;
-               //}
+               TSL.addStyle("PreviewTesterCCC", "#PreviewTester hr {background-color: black; height: 4px; margin: 3px 0; box-shadow: 0 0 2px 2px yellow;}");
+               var previews = document.createElement("section");
+               previews.id = "PreviewTester";
+               var el = document.querySelector("._work-detail-unit");
+               el.insertBefore(previews, el.lastElementChild);
+
+               el = document.createElement("input");
+               el.setAttribute("style", "width:100%;")
+               el.value = el.value = metadata.illust128URL;
+               previews.appendChild(el);
+               el = document.createElement("button");
+               el.setAttribute("style", "width:100%;")
+               el.textContent = "Add above images";
+               el.onclick = function (e)
+               {
+                   var els = document.querySelectorAll(".test_image");
+                   for (var i = 0; i < els.length; i++) TSL.removeNode(els[i]);
+                   displayAllSizes(this.previousElementSibling.value);
+               }
+               previews.appendChild(el);
+
+               function displayAllSizes(base)
+               {
+                   console.info(base);
+                   base = base.replace(/.+img-(master|original|zip-ugoira)\/img(\/.+\/\d+)(_p\d+)?_.+/, "$2");
+                   console.log(base);
+                   var cu = [], wc = []; //current, whitecube
+
+                   var urls = {
+                       cu: [],
+                       wc: []
+                   };
+
+
+                   addImage("http://i3.pixiv.net/c/128x128/img-master/img" + base + ((metadata.illustType == 3) ? "" : "_p0") + "_square1200.jpg");
+                   addImage("https://i.pximg.net/c/250x250_80_a2/img-master/img" + base + ((metadata.illustType == 3) ? "" : "_p0") + "_square1200.jpg");
+
+                   previews.appendChild(document.createElement("hr"));
+
+                   base = "/img-master/img" + base;
+                   var ar = ["128x128", "150x150", "240x480", "480x960", "600x600", "1200x1200"];
+                   for (var i = 0; i < ar.length; i++) addImage("http://i4.pixiv.net/c/" + ar[i] + base + ((metadata.illustType == 3) ? "" : "_p0") + "_master1200.jpg");
+
+                   previews.appendChild(document.createElement("hr"));
+
+                   ar = ["c/400x250_80", "c/960x400_80", ""];
+                   for (var i = 0; i < ar.length; i++) addImage("https://i.pximg.net/" + ar[i] + base + ((metadata.illustType == 3) ? "" : "_p0") + "_master1200.jpg");
+               }
+
+               function addImage(source)
+               {
+                   console.log(source);
+                   var con = document.createElement("div");
+                   con.className = "test_image"
+                   var img = document.createElement("img");
+                   con.appendChild(img);
+                   previews.appendChild(con);
+                   img.src = source;
+                   img.title = source;
+               }
+               //#endregion
            },
 
            /*
