@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Citrus GFork
 // @namespace           TimidScript
-// @version             1.1.45
+// @version             1.1.45.1
 // @date                2017-01-07
 // @description         NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author              TimidScript
@@ -67,6 +67,8 @@ Unnecessary, unused Code:
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.45.1 2017-01-07
+ - Quickfix in CSS
 1.1.45 2017-01-07
  - Change to the Header background-image
 1.1.44 2016-12-16
@@ -487,7 +489,7 @@ script-list-set
         //#region Adding CSS Styles E3E2E2
         TSL.addStyle("CitrusGF_Main", "body {font-size: 14px;}"
                       + "#main-header, #Head {background-color: orange !important; background-image: none !important;} #Head a, #site-nav a {color: yellow !important;}"
-                      + ".current, .HomepageTitle, .Discussions.Active a {border-color: orange !important;}"
+                      + ".current, .HomepageTitle, .Active a {border-color: orange !important;}"
                       + "#site-name {text-decoration: underline; color: white;}"
                       + "#title-image {height: 50px; border-radius: 20px; margin-left: 5px;}"
                       + "#title-text {font-size: 40px; color:black; font-family:'Open Sans',sans-serif; font-weight: 400; margin: 0 10px; line-height: 48px;}"
