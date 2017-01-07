@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.95 Beta
+// @version             3.3.96 Beta
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -60,8 +60,10 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.96 Beta (2017-01-07)
+ - BugFix for changes in Pixiv
 3.3.95 Beta (2016-11-11)
- - Added some testing code. 
+ - Added some testing code.
  - Link to Pixiv Whitecube alpha
 3.3.94 Beta (2016-10-22)
  - Preview date format is now y-m-d
@@ -170,7 +172,7 @@ Close to being a major release due to the amount of changes done.
 (function ()
 {
     if (window.self !== window.top) return;
-    
+
     if (/^\/whitecube/i.test(location.pathname))
     {
         if (GM_getValue("NONONONONO", false)) return;
@@ -196,7 +198,7 @@ Close to being a major release due to the amount of changes done.
                 TSL.removeNode(this);
             };
             h.appendChild(el);
-            
+
             document.body.appendChild(h);
 
 
@@ -204,7 +206,7 @@ Close to being a major release due to the amount of changes done.
             {
                 if (confirm("Please install Pixiv Whitecube (Alpha). In time it will be integrated with Pixiv++."))
                 {
-                    GM_setValue("MessageNotSeen", false);                    
+                    GM_setValue("MessageNotSeen", false);
                 }
             }
         }, 1000);
@@ -1840,6 +1842,9 @@ Close to being a major release due to the amount of changes done.
                     if (containers) IllustrationLinker.getContainerLinks(containers);
                 }
             }
+
+            var imgs = document.querySelectorAll('[src$="transparent.gif"]');
+            for (var i = 0; i < imgs.length; i++) imgs[i].src = imgs[i].getAttribute("data-src");
 
             //TODO: Change the code here
             //var thumbs = document.querySelectorAll(".image-item, li ._work,  .with-thumbnail li.after a, .with-thumbnail li.before a, .work_wrapper ._work, .ranking-image-item ._work, .image-item .work, .stacc_ref_illust_img, .response .linkStyleWorks a, .thumbnail-container > a._work, .cool-work .works .work");
