@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Youtube Filter
 // @namespace       TimidScript
-// @version         1.1.42.2
+// @version         1.1.43
 // @description     Filter out users and channels from search with GUI. Include Auto-Paging and ScreenShot Links.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -50,6 +50,8 @@ Known Issues:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+1.1.43 (2017-01-27)
+ - Bugfix: Support other URLs
 1.1.42 (2016-06-19)
  - Fix auto-paging
 1.1.41 (2016-05-27)
@@ -198,7 +200,7 @@ function GetPageType()
     if (document.URL.match(/\.youtube\.[^\/]+\/?$/i)) PageTYPE = 0; //Main Page
     else if (document.URL.match(/youtube\.[^\/]+\/result/gi)) PageTYPE = 1; //Search Result
     else if (document.URL.match(/youtube\.[^\/]+\/watch/gi)) PageTYPE = 2; //Video Page
-    else if (document.URL.match(/youtube\.[^\/]+\/(user|channel)\/.+\/videos/gi)) PageTYPE = 3; //User Channel
+    else if (document.URL.match(/youtube\.[^\/]+\/(user|channel\/)?.+\/videos/gi)) PageTYPE = 3; //User Channel
 }
 
 function GetUserData(link)
