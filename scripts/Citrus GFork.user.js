@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Citrus GFork
 // @namespace           TimidScript
-// @version             1.1.45.1
+// @version             1.1.46
 // @date                2017-01-07
 // @description         NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author              TimidScript
@@ -64,9 +64,14 @@ Unnecessary, unused Code:
     getScriptJSON
     makeStruct
 
+TODO: Clean up the code
+
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.46 2017-02-02
+ - Changed the styling and layout
+ - Added library link
 1.1.45.1 2017-01-07
  - Quickfix in CSS
 1.1.45 2017-01-07
@@ -222,7 +227,6 @@ script-list-set
     TSL.addStyle("OverFlowCode", ".Comment .Message p {overflow-x:auto;}");
     TSL.addStyle("FontAwesomeCSS", GM_getResourceText("FontAS"));
 
-
     OrangifyPage();
     if (pathname.match(/(\w|-)+\/forum\/(post|discussion)\//) && document.getElementById("Form_Rating"))
     {
@@ -282,8 +286,8 @@ script-list-set
     else if (pathname.match(/\/[\w-]+\/scripts\/\d+/)) //Script Page
     {
         TSL.addStyle("", "#script-content {background-color: #F9ECDB; margin: 0; padding-bottom: 5px;} #script-links > li:hover { background-color: yellow; } .current {background-color: #F9ECDB !important;}");
-        TSL.addStyle("", ".install-link {background-color: #F7A207;} .install-help-link {background-color: #F9C565 !important;}");
-        TSL.addStyle("", "#additional-info {border-radius: 5px; background-color: #F9DACD;} #additional-info > div {background-color: white;}");
+        TSL.addStyle("", ".install-link {background-color: #F7A207;} .install-help-link {background-color: #F9C565 !important;} #script-meta {padding-bottom:5px;} #script-feedback-suggestion, #script-meta {padding-left:5px;padding-right:5px;}");
+        TSL.addStyle("", "#additional-info {padding: 5px 0;} #additional-info, #additional-info > div {background-color: white;} #additional-info > h3 {padding: 5px 0; margin:0;} #additional-info > div.script-author-description {margin: 0 0;}");
         TSL.addStyle("", "header:first-child {background-color:white; padding: 5px 10px;}");
         TSL.addStyle("", ".fa-sort-alpha-asc[on] {color:blue; background-color: yellow;} .fa-sort-alpha-asc {margin-left: 5px;cursor:pointer; padding: 0 3px;} .fa-sort-alpha-asc:hover {background-color: brown; color: yellow;}");
 
@@ -458,6 +462,7 @@ script-list-set
     {
         var pageType = (document.getElementById("control-panel")) ? "PersonalProfile" : "UserProfile";
         document.body.setAttribute("PageType", pageType);
+        document.body.setAttribute("ProfilePage", "");
 
         getScripts();
         OrangifyUserPage();
@@ -505,6 +510,8 @@ script-list-set
                       + "#CForkSettings label {cursor: default;}"
                       + ".preview-result {background-color: white; border-top: 10px ridge black;}"
                       + ".preview-result img {max-width: 98%;}"
+                      + "#script-table, [ProfilePage] > .width-constraint {display: block; margin: 5px auto; max-width:1000px;min-width:700px;border-radius: 0;box-shadow: 0 0 2px gray;}"
+                      + "#script-search > input[type=submit] {background-color:rgba(255,255,255,1) !important;position:relative !important;cursor:pointer;}"
                       );
 
         TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
@@ -532,6 +539,14 @@ script-list-set
                         + '<span id="settings-subtext">Settings</span>'
                         + '<a id="title-subtext" href="/users/1455-timidscript">100% Citrusy Goodness by <b>TimidScript</b></span>';
         sname.appendChild(link);
+
+        var li = document.createElement("li");
+        link = document.createElement("a")
+        link.textContent = "Libraries";
+        link.href = "/scripts/libraries";
+        link.style.marginRight = "20px";
+        li.appendChild(link);
+        document.querySelector("nav").insertBefore(li, document.querySelector("nav").firstElementChild);
 
         var scriptsearch = document.getElementById("script-search");
         if (scriptsearch)
@@ -581,7 +596,7 @@ script-list-set
                 if (ipts[0].checked) GM_setValue("Use Standard Date Format", true); else GM_deleteValue("Use Standard Date Format");
                 if (ipts[1].checked) GM_setValue("Use Original Search", true); else GM_deleteValue("Use Original Search");
                 if (ipts[2].checked) GM_setValue("Feedback Table View", true); else GM_deleteValue("Feedback Table View");
-
+                document.location.reload();
                 TSL.removeNode(settings);
             }
 
@@ -671,26 +686,15 @@ script-list-set
     ---------------------------------------------------------------------------*/
     function OrangifyUserPage()
     {
-        TSL.addStyle("CitrusGF_Shared", ".white-panel, #control-panel, #user-profile, #user-discussions-on-scripts-written {margin: 5px; border-radius: 8px; padding: 10px; }");
-        TSL.addStyle("CitrusGF_Profile", ".white-panel, #user-discussions-on-scripts-written, #control-panel, #user-profile {background-color: white; }");
-        TSL.addStyle("", "#user-control-panel, #control-panel h3 {margin: 0; padding: 0;}  #user-control-panel > li { display: inline-block; margin: 0 5px; padding: 2px 5px; border-radius: 5px; background-color: #F5F2F2; border: 1px solid #404040; box-shadow: 3px 3px 2px #888888;} #user-control-panel a {text-decoration: none;} #user-control-panel li:hover {background-color: #FBEACA;}");
-        TSL.addStyle("", ".white-panel *, #user-discussions-on-scripts-written * {margin: 0;}");
+        TSL.addStyle("CitrusGF_Shared", ".text-content {border: 0; box-shadow:0 0 0;padding:0;} #user-profile {background-color:#F9ECDB; margin: 0 15px}"
+            + "body > .width-constraint {background-color:white; margin: 5px auto;padding: 2px 10px;} #control-panel {margin-top: 15px;}"
+            );
+        TSL.addStyle("", "#user-control-panel, #control-panel h3 {margin: 0; padding: 0;}  #user-control-panel a {text-decoration: none;} #user-control-panel li:hover {background-color: #FBEACA;}"
+            + "#user-control-panel > li {background-color: #f5f2f2;border: 1px solid #404040;border-radius: 5px;box-shadow: 3px 3px 2px #888888;display: inline-block;margin: 2px 5px;min-width: 150px;padding: 2px 5px;text-align: center;}"
+            );
         TSL.addStyle("CitrusGF_OUJS", 'code {padding: 2px 4px;font-size: 90%;color: #C7254E;background-color: #F9F2F4;white-space: nowrap;border-radius: 4px;font-family: Menlo,Monaco,Consolas,"Courier New",monospace; }');
 
-        var author = document.createElement("h1");
-        var name = document.getElementsByTagName("h2")[0];
 
-        var up = document.getElementById("user-profile");
-        if (!up)
-        {
-            up = document.createElement("section");
-            up.id = "user-profile";
-            up.textContent = "...";
-            name.parentElement.insertBefore(up, name);
-        }
-
-        up.innerHTML = "<h1 style='margin: 0 0 5px 0; color: orange;'>" + name.textContent + "'s Profile</h1>" + up.innerHTML;
-        TSL.removeNode(name);
 
         var el = document.getElementById("user-script-sets");
         if (el) el.parentElement.className = "white-panel";
@@ -703,7 +707,11 @@ script-list-set
 
         //Get discussions
         el = document.querySelector("#user-discussions-on-scripts-written");
-        if (el) return;
+        if (el)
+        {
+            document.querySelector("body > .width-constraint").appendChild(el);
+            return;
+        }
         //https://greasyfork.org/en/forum/discussions.json?script_author=1455
         var userId = document.URL.match(/\/users\/(\d+)/)[1],
             localURL = document.URL.replace(/\/users\/.+/, ""),
@@ -724,7 +732,7 @@ script-list-set
                     var discussions = document.createElement("section");
                     discussions.id = "user-discussions-on-scripts-written";
                     discussions.innerHTML = '<h3>Discussions on scripts <a href="/en/forum/discussions/feed.rss?script_author="' + userId + '"><img src="/assets/feed-icon-14x14-ea341336588040dc7046d3423511d63d.png" alt="RSS Feed" rel="nofollow"></a></h3><ul class="discussion-list"></ul>';
-                    document.body.insertBefore(discussions, document.querySelector("#script-table"));
+                    document.querySelector("body > .width-constraint").appendChild(discussions);
 
                     var list = discussions.querySelector("ul");
 
@@ -799,7 +807,7 @@ script-list-set
                 script.authorID = li.getAttribute("data-script-author-id");
                 script.description = li.getElementsByClassName("description")[0].textContent.trim();
                 script.rating = li.getAttribute("data-script-rating-score");
-                script.ratings = li.querySelector("dd.script-list-ratings").innerHTML;
+                script.ratings = (li.querySelector("dd.script-list-ratings")) ? li.querySelector("dd.script-list-ratings").innerHTML : "";
                 script.installsDaily = li.getAttribute("data-script-daily-installs");
                 script.installsTotal = li.getAttribute("data-script-total-installs");
                 script.dateCreated = li.getAttribute("data-script-created-date") + "|" + li.querySelector(".script-list-created-date time").textContent;
@@ -856,12 +864,16 @@ script-list-set
         scriptTable.appendChild(document.createElement("tbody"));
         document.body.appendChild(scriptTable);
 
-        TSL.addStyle("CitrusGS_Table", "#script-table {display: block; margin: 0 5px 5px 5px;} body {background-color: #EFEFB1; margin: 0;}"
-            + "#script-table thead td {background-color: orange; border-radius: 0 0 5px 5px; box-shadow: 3px 3px 2px #888888;}"
+        TSL.addStyle("CitrusGS_Table", "body {background-color: #EFEFB1; margin: 0;} body {background-color:whitesmoke;}"
+            //+ "#script-table {display: block; margin: 0 5px 5px 5px; }"
+            + "pagination {text-align:center;}"
+            + "#script-table thead td {background-color: orange; border-radius: 0 0 5px 5px; box-shadow: 3px 3px 2px #888888;position:relative;}"
+            + "#user-discussions-on-scripts-written > h3 {margin-bottom: 3px;}"
             + "#script-table thead td:hover {cursor:pointer; background-color: yellow;}"
             + "#script-table thead td:first-child:hover {cursor:default; background-color: orange;}"
-            + "#script-table td {width: auto; padding: 2px 5px; text-align:center;}"
-            + "#script-table thead tr td:nth-child(3) {width: 120px; display: block;}"
+            + "#script-table td {white-space: nowrap;width: auto; padding: 2px 5px; text-align:center;}"
+            + "#script-table td:nth-child(0), #script-table td:nth-child(1), #script-table td:nth-child(2)  {white-space: normal;}"
+            //+ "#script-table thead tr td:nth-child(3) {width: 120px; display: block;}"
             //+ ".total-rating-count {display: inline-block; min-width: 1em; text-align: center; padding: 0px 0.25em; border-radius: 10px;}"
             + ".total-rating-count, .good-rating-count, .ok-rating-count, .bad-rating-count {display: inline-block; min-width: 1em; padding: 1px 3px; border-radius: 3px;}"
             + ".total-rating-count {background-color: rgba(0, 0, 255, 0.1);}"
@@ -872,6 +884,7 @@ script-list-set
             + ".loadingSort {background-color: #FDFDC3 !important;}"
             + ".type-library, .type-unlisted, .type-deleted, .type-defunct {font-size:smaller; display: inline-block; border-radius: 3px; padding: 0 5px; border: 1px solid black;}"
             + ".type-library, .type-unlisted, .type-deleted, .type-defunct {box-shadow: 2px 2px 1px #888888; margin: 2px 5px 3px 0;}"
+            + "#script-table tbody [library] td:nth-of-type(3) {background-color:lightgray;}"
             + ".type-library {background-color: #CEFD8A;}"
             + ".type-deleted {background-color: #F77A7A;}"
             + ".type-defunct {background-color: #FF8600;}"
@@ -886,9 +899,9 @@ script-list-set
 
         TSL.addStyle("Al28dj21", ".thetitle a {margin-right: 2px !important;}");
         TSL.addStyle("Al28dj23", ".theversion {font-size: xsmall; margin-right: 4px;}");
-        TSL.addStyle("Al28dj24", "tr[library] td:nth-child(2) {background-color: #DFF9C6 !important;}");
-        TSL.addStyle("Al28dj25", "tr[unlisted] td:nth-child(2) {background-color: #E8F7FF !important;}");
-        TSL.addStyle("Al28dj27", "tr[deleted] td:nth-child(2) {background-color: #F9E8E8 !important;}");
+        TSL.addStyle("Al28dj24", "tr[library] td:nth-child(2) {background-color: #F2FBEA !important;}");
+        TSL.addStyle("Al28dj25", "tr[unlisted] td:nth-child(2) {background-color: #F4FBFF !important;}");
+        TSL.addStyle("Al28dj27", "tr[deleted] td:nth-child(2) {background-color: #FDF7F7 !important;}");
     }
 
     /* Populate the table with scripts
@@ -936,8 +949,11 @@ script-list-set
             el.textContent = script.description;
             cell.appendChild(el);
             cell = row.insertCell(-1);
-            cell.innerHTML = script.ratings + '<span class="total-rating-count">' + script.rating + '</span>';
-            cell.title = "Favoured plus Good Feedback, OK Feedback, Bad Feedback, Total Score (" + script.rating + ")";
+            if (script.type != "library")
+            {
+                cell.innerHTML = script.ratings + '<span class="total-rating-count">' + script.rating + '</span>';
+                cell.title = "Favoured plus Good Feedback, OK Feedback, Bad Feedback, Total Score (" + script.rating + ")";
+            }
             row.insertCell(-1).textContent = script.installsDaily;
             row.insertCell(-1).textContent = script.installsTotal;
             row.insertCell(-1).textContent = GM_getValue("Use Standard Date Format", false) ? script.dateCreated.split("|")[0] : script.dateCreated.split("|")[1];
