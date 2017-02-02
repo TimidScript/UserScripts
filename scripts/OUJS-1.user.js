@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    [TS] OUJS-1
 // @namespace               TimidScript
-// @version                 1.0.29.1
+// @version                 1.0.29.2
 // @description             New post/issue notification, adds install and ratings history stats, improves table view, list all user scripts in one page, improves library page... [UnSupported]
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -46,6 +46,8 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.29.2 (2017-02-02)
+ - Uploaded latest version
 1.0.28 (2016-05-27)
  - Altered Licence
  - Added latest scripts column to the front page to give more coverage to new scripts
@@ -522,7 +524,7 @@ function SortScriptTable(e)
 
 (function ()
 {
-    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="/users/TimidScript" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
+    if (document.getElementsByClassName("navbar-brand").length) document.getElementsByClassName("navbar-brand")[0].innerHTML = 'OpenUserJS-1 <sub><a href="https://greasyfork.org/en/users/1455" style="font-size:0.6em; color: cyan;">TimidScript</a></sub>';
     var timestamp = Date.now();
     var loggedUsername = "";
 
