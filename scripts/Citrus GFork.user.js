@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                [TS] Citrus GFork
 // @namespace           TimidScript
-// @version             1.1.46
-// @date                2017-01-07
+// @version             1.1.47
+// @date                2017-02-03
 // @description         NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -69,6 +69,8 @@ TODO: Clean up the code
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.47 2017-02-03
+ - Quickfix: Correctly handle libraries page
 1.1.46 2017-02-02
  - Changed the styling and layout
  - Added library link
@@ -407,8 +409,9 @@ script-list-set
             if (el) el.appendChild(notice);
         }
     }
-    else if (pathname.match(/\/[\w-]+\/scripts/)) //Script Listing
+    else if (!/\/scripts\/libraries/.test(location.pathname) && pathname.match(/\/[\w-]+\/scripts/)) //Script Listing
     {
+        console.info("Script Listing");
         document.body.setAttribute("PageType", "ListingPage");
         getScripts();
 
@@ -583,7 +586,7 @@ script-list-set
             document.body.appendChild(settings);
             var lbls = settings.querySelectorAll("label");
 
-            lbls[0].onclick = lbls[1].onclick =  lbls[2].onclick  = function (e) { this.previousElementSibling.click(); };
+            lbls[0].onclick = lbls[1].onclick = lbls[2].onclick = function (e) { this.previousElementSibling.click(); };
 
             var ipts = settings.querySelectorAll("input"), btn = settings.querySelector("button");
 
