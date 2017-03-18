@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                [TS] Citrus GFork
 // @namespace           TimidScript
-// @version             1.1.47
-// @date                2017-02-03
+// @version             1.1.48
+// @date                2017-03-18
 // @description         NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -69,6 +69,9 @@ TODO: Clean up the code
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.48 2017-03-18
+ - Bugfix: Fixed code that got broken due Changes in layout
+ - Add Code search support
 1.1.47 2017-02-03
  - Quickfix: Correctly handle libraries page
 1.1.46 2017-02-02
@@ -443,11 +446,28 @@ script-list-set
                     TSL.addStyle("RelativeSearchCSS", '#RelativeSearch {display: inline-block; background-color:orange; border-radius: 3px; padding: 3px 20px; text-align: center; width: 300px;cursor:pointer;}');
                 }
 
-                TSL.addStyle("TheBlackLagoon", "#UserSets {position: absolute !important;display: inline-table !important;float: none !important;left: 30px !important;top: 68px!important;padding: 2px 5px;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility: hidden!important;opacity: 1!important;}"
-                           + "#UserSets:hover {visibility: visible!important;opacity: 1!important;}"
-                           + '#UserSets:before {content: "Sets ▼" !important; position: absolute !important;display: inline-block !important;left: 40px !important;top: -20px!important;margin: 2px 10px;padding: 1px 10px!important;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility:visible!important;opacity: 1!important;}'
-                           + "#UserSets li {position: relative !important;display: inline !important;float: left!important;clear: both!important;min-width: 200px!important;margin-bottom: 2px!important;padding: 2px 8px;background-color: white;border-radius: 2px; text-align:left;}"
-                           );
+                if (document.getElementById("UserSets"))
+                {
+                    TSL.addStyle("TheBlackLagoon", "#UserSets {position: absolute !important;display: inline-table !important;float: none !important;left: 30px !important;top: 68px!important;padding: 2px 5px;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility: hidden!important;opacity: 1!important;}"
+                               + "#UserSets:hover {visibility: visible!important;opacity: 1!important;}"
+                               + '#UserSets:before {content: "Sets ▼" !important; position: absolute !important;display: inline-block !important;left: 40px !important;top: -20px!important;margin: 2px 10px;padding: 1px 10px!important;background-color: yellow;border-radius: 5px;z-index: 200!important;visibility:visible!important;opacity: 1!important;}'
+                               + "#UserSets li {position: relative !important;display: inline !important;float: left!important;clear: both!important;min-width: 200px!important;margin-bottom: 2px!important;padding: 2px 8px;background-color: white;border-radius: 2px; text-align:left;}"
+                               );
+
+                    TSL.addStyle("TheBlackLagoon", "#UserSets, #UserSets:before {position: absolute;top: 4px;float: left;background-color: #FFC763;border-radius: 5px;z-index: 200;opacity:1;}"
+                    + "#UserSets {display: inline-table;left:10px;padding: 2px 5px;visibility: hidden;}"
+                    + "#UserSets:hover {visibility: visible;opacity: 1;}"
+                    + '#UserSets:before {display: inline-block;left: 40px;top:-18px;content: "Sets ▼";padding: 1px 10px;visibility: visible;}'
+                    + "#UserSets li {position: relative;display: inline;float: left;clear: both;min-width: 200px;margin-bottom: 2px;padding: 2px 8px;background-color: white;border-radius: 2px; text-align:left;}"
+                    );
+
+                    try
+                    {
+                        document.querySelector("[tag=name]").appendChild(document.getElementById("UserSets"));
+                    } catch(e) {};
+                }
+
+
 
                 //TODO: Need to fix the Sets filter in listing search
                 //var header = document.querySelectorAll("#script-table thead td")[1],
@@ -495,7 +515,7 @@ script-list-set
     function OrangifyPage()
     {
         //#region Adding CSS Styles E3E2E2
-        TSL.addStyle("CitrusGF_Main", "body {font-size: 14px;}"
+        TSL.addStyle("CitrusGF_Main", "body {font-size: 14px;} .pagination {text-align:center;}"
                       + "#main-header, #Head {background-color: orange !important; background-image: none !important;} #Head a, #site-nav a {color: yellow !important;}"
                       + ".current, .HomepageTitle, .Active a {border-color: orange !important;}"
                       + "#site-name {text-decoration: underline; color: white;}"
@@ -514,7 +534,7 @@ script-list-set
                       + ".preview-result {background-color: white; border-top: 10px ridge black;}"
                       + ".preview-result img {max-width: 98%;}"
                       + "#script-table, [ProfilePage] > .width-constraint {display: block; margin: 5px auto; max-width:1000px;min-width:700px;border-radius: 0;box-shadow: 0 0 2px gray;}"
-                      + "#script-search > input[type=submit] {background-color:rgba(255,255,255,1) !important;position:relative !important;cursor:pointer;}"
+                      + "#script-search > input[type=submit], .sidebar-search > input[type=submit] {cursor:pointer;}"
                       );
 
         TSL.addStyle("CitrusGF_ScriptPage", "#additional-info img {max-width: 98%; border: 1px solid orange; box-shadow: 5px 5px 2px #888888; margin: 5px 0; padding: 2px; color: yellow; }");
@@ -531,6 +551,16 @@ script-list-set
                 );
         }
         //#endregion
+
+
+        var el = document.querySelector(".sidebar-search");
+        if (el)
+        {
+            TSL.addStyle("SSSearch", ".sidebar-search {display:inline-block;vertical-align: unset;} .sidebar-search input[name=q] {width:164px; margin:0 !important; width: 164px !important;}"
+                + ".sidebar-search > input {line-height:16px;font-size:14px;} .sidebar-search [value='✱'] {right:20px !important;}");
+
+            document.querySelector("#site-nav nav").appendChild(el);
+        }
 
         var sname = document.getElementById("site-name");
         sname.innerHTML = "";
@@ -551,7 +581,7 @@ script-list-set
         li.appendChild(link);
         document.querySelector("nav").insertBefore(li, document.querySelector("nav").firstElementChild);
 
-        var scriptsearch = document.getElementById("script-search");
+        var scriptsearch = document.querySelector("#script-search, .sidebar-search");
         if (scriptsearch)
         {
             var el = document.createElement("input");
@@ -560,7 +590,7 @@ script-list-set
             el.title = "Partial Search";
             el.onclick = function ()
             {
-                var search = document.querySelector("#script-search [type=search]");
+                var search = document.querySelector("#script-search [type=search], .sidebar-search, [type=search]");
                 search.value = search.value.replace(/\b([^ ]+)\b/g, "*$1*");
                 search.value = search.value.replace(/\*+/g, "*");
             }
@@ -1098,7 +1128,8 @@ script-list-set
     {
         var isListingPage = (document.body.getAttribute("PageType") == "ListingPage");
 
-        if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/[\w-]+\/scripts(\/by-site\/[\w\.\-_]+|\/search)?/)[0] + "?per_page=100";
+        if (/\/code-search\?/i.test(document.URL)) url = document.URL.match(/.+\/code-search\?/)[0] + "per_page=100";
+        else if (isListingPage) url = document.URL.match(/https:\/\/greasyfork.org\/[\w-]+\/scripts(\/by-site\/[\w\.\-_]+|\/search)?/)[0] + "?per_page=100";
         else url = document.URL.replace(/\?.+/, "?");
 
         var m = document.URL.match(/[^=\?&]+=[^&]+/g);
