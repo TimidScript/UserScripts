@@ -753,6 +753,8 @@ var ControlHQ =
             h = img.clientHeight;
         console.log(w / h, h / w);
         img.style.position = "absolute";
+        img.style.left = 0;
+        img.style.top = 0;
         if (reverse)
         {
             var offsetW = ((h - w) / 2);
