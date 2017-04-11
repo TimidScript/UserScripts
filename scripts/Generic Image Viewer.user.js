@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] Generic Image Viewer
 // @namespace       TimidScript
-// @version         2.2.46 Beta
+// @version         2.2.47
 // @description     A more Powerful Image Viewer with info panel support for Pixiv, deviantArt, imgur, Seiga Nico and nijie.info. Support numpad keys now.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -71,6 +71,8 @@ TODO: Replace the video controls
 ------------------------------------
  Version History
 ------------------------------------
+2.2.47 (2017-04-11)
+ - Bugfix for Chrome support
 2.2.46 Beta (2016-11-22)
  - BugFix: imgur link fix
  - Better support for videos
