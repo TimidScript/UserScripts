@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                [TS] Pixiv++
 // @namespace           TimidScript
-// @version             3.3.97 Beta
+// @version             3.3.98
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
@@ -14,7 +14,6 @@
 // @require             https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require             https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
 // @homeURL             https://greasyfork.org/en/scripts/4685
-// @updateURL           https://greasyfork.org/scripts/4685/code/4685.meta.js
 // @grant               GM_info
 // @grant               GM_getMetadata
 // @grant               GM_registerMenuCommand
@@ -60,6 +59,8 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.98 (2017-04-11)
+ - Bugfix for changes in Pixiv rating system
 3.3.97 Beta (2017-02-10)
  - Account added
 3.3.96 Beta (2017-01-07)
@@ -498,7 +499,7 @@ Close to being a major release due to the amount of changes done.
 
                metadata.viewCount = parseInt(doc.querySelector(".view-count").textContent);
                metadata.ratings = parseInt(doc.querySelector(".rated-count").textContent);
-               metadata.totalRatings = parseInt(doc.querySelector(".score-count").textContent);
+               //metadata.totalRatings = parseInt(doc.querySelector(".score-count").textContent);
 
                el = doc.querySelector(".response-in-work-more");
                metadata.responseCount = (el) ? parseInt(el.textContent.match(/\d+/)[0]) : 0;
@@ -3052,27 +3053,3 @@ Close to being a major release due to the amount of changes done.
         }
     })();
 }());
-
-
-/*
-<script>
-pixiv.context.illustId         = '44305721';
-pixiv.context.illustTitle      = 'フランスパンこいしちゃんgif';
-pixiv.context.userId           = '42949';
-pixiv.context.userName         = 'ゆぬき うた';
-pixiv.context.hasQuestionnaire = false;
-pixiv.context.embedId          = '44305721_0286523bc768bf54bbc69e3163d75256';
-pixiv.context.explicit         = false;
-pixiv.context.illustSize       = [514, 487];
-pixiv.context.ugokuIllustData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira600x600.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
-pixiv.context.ugokuIllustFullscreenData  = {"src":"http:\/\/i2.pixiv.net\/img-zip-ugoira\/img\/2014\/06\/25\/21\/24\/51\/44305721_ugoira1920x1080.zip","mime_type":"image\/jpeg","frames":[{"file":"000000.jpg","delay":100},{"file":"000001.jpg","delay":100},{"file":"000002.jpg","delay":100},{"file":"000003.jpg","delay":100},{"file":"000004.jpg","delay":100},{"file":"000005.jpg","delay":100},{"file":"000006.jpg","delay":100},{"file":"000007.jpg","delay":100},{"file":"000008.jpg","delay":100},{"file":"000009.jpg","delay":100},{"file":"000010.jpg","delay":100},{"file":"000011.jpg","delay":100}]};
-</script>
-
-http://pixiv.me/<userID>
-
-
-Single Paged Mangas
-http://www.pixiv.net/member_illust.php?mode=medium&illust_id=46543872
-http://www.pixiv.net/member_illust.php?mode=medium&illust_id=52415438
-http://www.pixiv.net/member_illust.php?mode=big&illust_id=
-*/
