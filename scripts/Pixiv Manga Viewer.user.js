@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name            [TS] Pixiv Manga Viewer
 // @namespace       TimidScript
-// @version         2.2.30
+// @version         2.2.31
 // @description     A more Powerful Pixiv Manga Viewer with no lazy loading (loads all images) and better interface. Works with Pixiv++ & Generic Image Viewer ロードし、すべての画像|いいえ遅延読み込み|マンガビューア|ダイレクトリンク|ベターインタフェース
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
 // @copyright       © 2013+ TimidScript, Some Rights Reserved.
 // @license         https://github.com/TimidScript/UserScripts/blob/master/license.txt
-// @include         http://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
+// @match           *://www.pixiv.net/member_illust.php?mode=manga&illust_id=*
 // @require         https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require         https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
 // @homeURL         https://greasyfork.org/en/scripts/4684
@@ -64,6 +64,8 @@ Hotkeys:
 ----------------------------------------------
     Version History
 ----------------------------------------------
+2.2.31 (2017-04-18)
+ - Quickfix to support https protocol
 2.2.30 (2016-05-27)
  - Altered license
 2.2.29 (2016-05-25)
@@ -331,10 +333,10 @@ function DisplayThumbGallery()
         thumbgallery.appendChild(infopanel);
 
 
-        var panel = CreatePanelControl(Illust.title, "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + Illust.id);
+        var panel = CreatePanelControl(Illust.title, "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + Illust.id);
         infopanel.appendChild(panel);
 
-        panel = CreatePanelControlImage("http://www.pixiv.net/member.php?id=" + Illust.userID, Illust.userIcon);
+        panel = CreatePanelControlImage("https://www.pixiv.net/member.php?id=" + Illust.userID, Illust.userIcon);
         infopanel.appendChild(panel);
         var image = panel.getElementsByTagName("IMG")[0];
         image.style.margin = "0 5px 0 10px";
@@ -343,7 +345,7 @@ function DisplayThumbGallery()
         infopanel.appendChild(panel);
 
 
-        panel = CreatePanelControl(Illust.username, "http://www.pixiv.net/member_illust.php?id=" + Illust.userID);
+        panel = CreatePanelControl(Illust.username, "https://www.pixiv.net/member_illust.php?id=" + Illust.userID);
         infopanel.appendChild(panel);
 
         //var seperator = document.createElement("span");
@@ -716,10 +718,10 @@ var MainHQ =
         linkPanel.setAttribute("style", "visibility:hidden;  position: fixed; left: 10px; top: 10px; z-index:100; border: 1px ridge gray; padding: 5px;");
         linkPanel.id = "LinkPanel"
 
-        var panel = CreatePanelControl(Illust.title, "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + Illust.id);
+        var panel = CreatePanelControl(Illust.title, "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + Illust.id);
         linkPanel.appendChild(panel);
 
-        panel = CreatePanelControlImage("http://www.pixiv.net/member.php?id=" + Illust.userID, Illust.userIcon);
+        panel = CreatePanelControlImage("https://www.pixiv.net/member.php?id=" + Illust.userID, Illust.userIcon);
         linkPanel.appendChild(panel);
         var image = panel.getElementsByTagName("IMG")[0];
         image.style.margin = "0 5px 0 10px";
@@ -727,7 +729,7 @@ var MainHQ =
         image.style.width = "20px";
         linkPanel.appendChild(panel);
 
-        panel = CreatePanelControl(Illust.username, "http://www.pixiv.net/member_illust.php?id=" + Illust.userID);
+        panel = CreatePanelControl(Illust.username, "https://www.pixiv.net/member_illust.php?id=" + Illust.userID);
         linkPanel.appendChild(panel);
 
         document.body.appendChild(linkPanel);
@@ -845,7 +847,7 @@ var MainHQ =
                 var links = floatingPanel.getElementsByTagName("a");
                 links[0].textContent = img.getAttribute("page") + "/" + Illust.pageCount;
                 links[1].href = img.src;
-                links[2].href = "http://" + ((IQDBType == 0) ? "www" : IQDBTypes[IQDBType]) + ".iqdb.org/?url=" + Illust.thumbnail.replace("_p0", "_p" + (img.getAttribute("page") - 1)) + "&"; //& at the end so as not to get picked up by download managers
+                links[2].href = "https://" + ((IQDBType == 0) ? "www" : IQDBTypes[IQDBType]) + ".iqdb.org/?url=" + Illust.thumbnail.replace("_p0", "_p" + (img.getAttribute("page") - 1)) + "&"; //& at the end so as not to get picked up by download managers
                 floatingPanel.setAttribute("page", img.getAttribute("page"));
             }
         };
@@ -902,7 +904,7 @@ document.
     else //New format. We do not know the extension of the large size so we have to get information on it.
     {
         var oReq = new XMLHttpRequest();
-        oReq.open("GET", "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + Illust.id + "&page=0", true);
+        oReq.open("GET", "https://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + Illust.id + "&page=0", true);
         oReq.responseType = "text";
         oReq.timeout = 15000;
         oReq.onload = function (e)
