@@ -1,16 +1,16 @@
 // ==UserScript==
-// @name                [TS] Pixiv++
+// @name                [TS] Pixiv++ V3
 // @namespace           TimidScript
-// @version             3.3.98
+// @version             3.3.99
 // @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
 // @copyright           © 2012+ TimidScript, Some Rights Reserved.
 // @license             https://github.com/TimidScript/UserScripts/blob/master/license.txt
-// @include             http://www.pixiv.net/*
-// @exclude             http://www.pixiv.net/*mode=manga&illust_id*
-// @exclude             http://www.pixiv.net/*mode=big&illust_id*
-// @exclude             http://www.pixiv.net/*mode=manga_big*
+// @match               *://www.pixiv.net/*
+// @exclude             https://www.pixiv.net/*mode=manga&illust_id*
+// @exclude             https://www.pixiv.net/*mode=big&illust_id*
+// @exclude             https://www.pixiv.net/*mode=manga_big*
 // @require             https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require             https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
 // @homeURL             https://greasyfork.org/en/scripts/4685
@@ -59,6 +59,8 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.3.99 (2017-04-18)
+ - Quickfix for changes to support HTTPS
 3.3.98 (2017-04-11)
  - Bugfix for changes in Pixiv rating system
 3.3.97 Beta (2017-02-10)
@@ -177,11 +179,11 @@ Close to being a major release due to the amount of changes done.
     if (window.self !== window.top) return;
 
     if (/^\/whitecube/i.test(location.pathname))
-    {
+{
         if (GM_getValue("NONONONONO", false)) return;
 
         setTimeout(function ()
-        {
+{
             if (document.getElementById("SideMenuBar")) return;
             var h = document.createElement("div");
             h.setAttribute("style", "z-index: 5000; position: fixed; top: 10px; left: 40px; display:inline-block;");
@@ -196,7 +198,7 @@ Close to being a major release due to the amount of changes done.
             el.textContent = "Do not show this again";
             el.setAttribute("style", "display:inline-block;padding: 3px 6px; background-color:white;border: 1px black solid; margin-left: 5px;color: red;font-weight:900;cursor:pointer;");
             el.onclick = function ()
-            {
+{
                 GM_setValue("NONONONONO", true);
                 TSL.removeNode(this);
             };
@@ -206,9 +208,9 @@ Close to being a major release due to the amount of changes done.
 
 
             if (GM_getValue("MessageNotSeen", true))
-            {
+{
                 if (confirm("Please install Pixiv Whitecube (Alpha). In time it will be integrated with Pixiv++."))
-                {
+{
                     GM_setValue("MessageNotSeen", false);
                 }
             }
@@ -217,7 +219,7 @@ Close to being a major release due to the amount of changes done.
         return;
     }
 
-    var IsIllustrationPage = (document.URL.indexOf("http://www.pixiv.net/member_illust.php?") != -1 && document.URL.match(/mode=medium/i) != null);
+    var IsIllustrationPage = (document.URL.indexOf("https://www.pixiv.net/member_illust.php?") != -1 && document.URL.match(/mode=medium/i) != null);
     var Illustrations = {};
 
     /*
@@ -232,19 +234,19 @@ Close to being a major release due to the amount of changes done.
         09 Search
         10 Bookmark recommendations */
     var PAGETYPE = (function ()
-    {
+{
         var pathname = document.location.pathname;
         if (IsIllustrationPage) return 0;
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/((cate_r18|mypage|member)\.php|$)/i)) return 1;
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php\?id/i)) return 3; //Artist Work Page
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/member_illust\.php/i)) return 4; //Personal Work Page
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark\.php/i)) return 5;  //Personal Bookmarks, Added new bookmarks
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark\.php\?id=/i)) return 6; //Artist Bookmark
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/bookmark_new_illust(_r18)?\.php/i)) return 7; //Works from favourite artists
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/new_illust(_r18)?\.php/i)) return 8; //New illustrations
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/((cate_r18|mypage|member)\.php|$)/i)) return 1;
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/member_illust\.php\?id/i)) return 3; //Artist Work Page
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/member_illust\.php/i)) return 4; //Personal Work Page
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/bookmark\.php/i)) return 5;  //Personal Bookmarks, Added new bookmarks
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/bookmark\.php\?id=/i)) return 6; //Artist Bookmark
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/bookmark_new_illust(_r18)?\.php/i)) return 7; //Works from favourite artists
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/new_illust(_r18)?\.php/i)) return 8; //New illustrations
         else if (pathname == "/bookmark_detail.php") return 10;
-        else if (document.URL.match(/http:\/\/www\.pixiv\.net\/search\.php\?/i)) return 9; //Search
-
+        else if (document.URL.match(/https:\/\/www\.pixiv\.net\/search\.php\?/i)) return 9; //Search
+        console.log("PAGETYPE: ", PAGETYPE);
         return -1;
     })();
 
@@ -252,7 +254,7 @@ Close to being a major release due to the amount of changes done.
     console.info("Pixiv++ (" + PAGETYPE + ")");
 
     if (!(typeof GM_getValue === "function" && GM_getValue("", "?") === "?"))
-    {
+{
         GM_setValue = function (key, val) { localStorage.setItem(key, val); };
         GM_getValue = function (key, def) { return (localStorage.getItem(key) ? localStorage.getItem(key) : def); }
     }
@@ -282,19 +284,19 @@ Close to being a major release due to the amount of changes done.
 
 
            getIllustID: function (url)
-           {
+{
                var id = url.replace(/.+www\.pixiv\.net\/member_illust\.php(\?.+&|\?)illust_id=(\d+)(&.+)?/, "$2");
                id = id.replace(/.+i\d+\.pixiv\.net\/(img|c\/).+\/(\d+)(_.+)?\.\w+(\?.+)?/, "$2");
                return id;
            },
 
            getIllust: function (id)
-           {
+{
                var properties = "getExtension userID userName userProfileImageURL illustType illustID illustTitle illust128URL illust150URL illust240URL illust480URL illust600URL illust1200URL illustURL illustSize pageCount description time tags tools ratings totalRatings viewCount bookmarkCount responseCount R18 date";
                var illust = Illustrations["i" + id];
 
                if (!illust)
-               {
+{
                    illust = {};
                    Illustrations["i" + id] = illust;
                }
@@ -303,7 +305,7 @@ Close to being a major release due to the amount of changes done.
            },
 
            addToProcessList: function (id)
-           {
+{
                for (var i = 0; i < IllustrationLinker.processList.length; i++) if (IllustrationLinker.processList[i] == id) return;
                IllustrationLinker.processList.push(id);
            },
@@ -313,7 +315,7 @@ Close to being a major release due to the amount of changes done.
             Parses through all the image links and add full image link
            -------------------------------------------------------------------------------------------*/
            getContainerLinks: function (containers, pageNumber)
-           {
+{
                if (!containers) return;
 
                if (IsIllustrationPage) ////Illustration Page that excludes Novels
@@ -323,10 +325,10 @@ Close to being a major release due to the amount of changes done.
                }
 
                for (var i = 0, i; container = containers[i], i < containers.length; i++)
-               {
+{
                    var link, id, thumbnail, thumbnails = container.querySelectorAll(".image-item");
                    for (var j = 0; thumbnail = thumbnails[j], j < thumbnails.length; j++)
-                   {
+{
                        link = thumbnail.querySelector("a");
 
                        if (!link) continue;
@@ -336,13 +338,13 @@ Close to being a major release due to the amount of changes done.
                        thumbnail.setAttribute("pppThumb", ++IllustrationLinker.thumbcounter);
 
                        if (pageNumber > 0)
-                       {
+{
                            TSL.addClass(thumbnail, "pppPage" + (pageNumber % 4));
                            thumbnail.setAttribute("page", pageNumber);
                        }
 
                        if (IllustrationLinker.getIllust(id).illustID)
-                       {
+{
                            PaginatorHQ.tidyThumbnail(id);
                            IllustrationLinker.createLinksBox(id);
                        }
@@ -363,19 +365,19 @@ Close to being a major release due to the amount of changes done.
             Contains the interval that requests image information
            -------------------------------------------------------------------------------------------*/
            runIntevalThumbnailParser: function ()
-           {
+{
                IllustrationLinker.TIMESTART = new Date();
 
                if (!IllustrationLinker.msgHandle) IllustrationLinker.msgHandle = DisplayMessage("Getting metadata for [" + IllustrationLinker.processList.length + "] illustrations...");
                if (IllustrationLinker.intervalID == null && IllustrationLinker.enabled) IllustrationLinker.intervalID = setInterval(processNextID, 100);
 
                function processNextID()
-               {
+{
                    //shortPause used when removing session cookie for safe page search
                    if (IllustrationLinker.shortPause || IllustrationLinker.simultaneousCalls >= IllustrationLinker.simultaneousCallsMAX) return;
 
                    if (IllustrationLinker.processList.length == 0 && IllustrationLinker.simultaneousCalls == 0)
-                   {
+{
                        IllustrationLinker.TIMEEND = new Date();
                        //console.log(IllustrationLinker.TIMEEND - IllustrationLinker.TIMESTART);
                        clearInterval(IllustrationLinker.intervalID);
@@ -385,14 +387,14 @@ Close to being a major release due to the amount of changes done.
                        DisplayMessage("Illustration metadata acquired", 1000);
                    }
                    else if (IllustrationLinker.processList.length % 5 == 0)
-                   {
+{
                        IllustrationLinker.msgHandle.textContent = "Getting metadata for [" + (IllustrationLinker.simultaneousCalls + IllustrationLinker.processList.length) + "] illustrations...";
                        PaginatorHQ.displayResultInfo();
                    }
 
                    //Last check
                    if (IllustrationLinker.enabled && IllustrationLinker.processList.length > 0)
-                   {
+{
                        IllustrationLinker.simultaneousCalls++;
                        IllustrationLinker.getDataHTML(IllustrationLinker.processList.shift());
                    }
@@ -405,7 +407,7 @@ Close to being a major release due to the amount of changes done.
             term pausing. switchOff is used for longer pausing method.
            -------------------------------------------------------------------------------------------*/
            pause: function (value)
-           {
+{
                IllustrationLinker.shortPause = value;
                if (value && msgHandle) msgHandle.textContent = "";
            },
@@ -416,7 +418,7 @@ Close to being a major release due to the amount of changes done.
             is called.
            -------------------------------------------------------------------------------------------*/
            switchOff: function ()
-           {
+{
                IllustrationLinker.enabled = false;
                clearInterval(IllustrationLinker.intervalID);
                IllustrationLinker.intervalID = null;
@@ -425,7 +427,7 @@ Close to being a major release due to the amount of changes done.
            },
 
            switchOn: function ()
-           {
+{
                IllustrationLinker.enabled = true;
                IllustrationLinker.runIntevalThumbnailParser();
            },
@@ -435,7 +437,7 @@ Close to being a major release due to the amount of changes done.
             Extracts data from illustration page
            -------------------------------------------------------------------------------------------*/
            setMetadata: function (id, doc)
-           {
+{
                var el, m, context
                metadata = IllustrationLinker.getIllust(id),
                script = doc.evaluate("//div[@id='wrapper']//script[contains(text(),'pixiv.context.illustId')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -450,7 +452,7 @@ Close to being a major release due to the amount of changes done.
                metadata.account = doc.querySelector(".tab-feed").href.replace(/.+\/stacc\//, "");
                el = doc.querySelector(".user-image");
                if (el)
-               {
+{
                    metadata.userProfileImageURL = el.src;
                    if (el.src.match("/profile/")) metadata.userLoginName = el.src.match(/\/profile\/([^\/])+\//i)[1];
                }
@@ -473,7 +475,7 @@ Close to being a major release due to the amount of changes done.
                //for (var i = 0; i < els.length; i++) metadata.tags += " " + els[i].getAttribute("data-tooltip").match(/「(.+)」/)[1];
 
                metadata.tags = [].map.call(doc.querySelectorAll('li.tag a.text'), function (v, i)
-               {
+{
                    return v.childNodes[0].textContent;
                }).join(' ');
 
@@ -504,12 +506,12 @@ Close to being a major release due to the amount of changes done.
                el = doc.querySelector(".response-in-work-more");
                metadata.responseCount = (el) ? parseInt(el.textContent.match(/\d+/)[0]) : 0;
                if (context.ugokuIllustFullscreenData)
-               {
+{
                    metadata.illustType = 3;
                    metadata.illustURL = context.ugokuIllustFullscreenData.src;
                }
                else
-               {
+{
                    el = doc.querySelector(".works_display ._layout-thumbnail img");
 
                    el = doc.querySelector(".original-image");
@@ -526,7 +528,7 @@ Close to being a major release due to the amount of changes done.
                        el = doc.querySelectorAll(".work-info .meta li")[1];
                        m = el.textContent.match(/(\d+)P$/i);
                        if (m)
-                       {
+{
                            metadata.pageCount = parseInt(m[1]);
                        }
                        else //Single paged manga
@@ -546,11 +548,11 @@ Close to being a major release due to the amount of changes done.
             Gets bookmark count from thumbnail if one exists
            -------------------------------------------------------------------------------------------*/
            getBookmarkCount: function (id)
-           {
+{
                var thumbnail = document.getElementById("i" + id);
 
                if (thumbnail)
-               {
+{
                    var bm = thumbnail.querySelector(".bookmark-count");
                    if (bm) return parseInt(bm.textContent);
                    if (PAGETYPE <= 1 || PAGETYPE == 3 || PAGETYPE == 7 || PAGETYPE == 8 || PAGETYPE == 10) return "?"; //Pages that do not contain bookmark information
@@ -566,7 +568,7 @@ Close to being a major release due to the amount of changes done.
             creates calls the creation of the hotbox.
            -------------------------------------------------------------------------------------------*/
            createLinksBox: function (id)
-           {
+{
                var thumbnails = document.querySelectorAll('[illustration-id="' + id + '"], #i' + id);
                metadata = IllustrationLinker.getIllust(id);
 
@@ -579,7 +581,7 @@ Close to being a major release due to the amount of changes done.
 
 
                function clb(thumbnail)
-               {
+{
                    var linksBox = document.createElement("div");
                    linksBox.className = "pppLinksBox";
 
@@ -587,20 +589,20 @@ Close to being a major release due to the amount of changes done.
                    linksBox.setAttribute("data-base", metadata.illustURL.replace(/.+img-(master|original|zip-ugoira)\/img\/(.+)\/\d+(_p\d+)?_.+/, "$2"));
 
                    if (IsIllustrationPage && IllustrationLinker.getIllustID(document.URL) == id)
-                   {
+{
                        TSL.addStyle("LINXBOX", ".pppLinksBox {margin: 0 50px; text-align: center;}");
                        var el = document.querySelector(".works_display");
                        el.parentNode.insertBefore(linksBox, el.nextSibling);
                    }
                    else
-                   {
+{
                        PaginatorHQ.tidyThumbnail(id);
                        if (!thumbnail.hasAttribute("pppThumb")) return;
                        thumbnail.querySelector(".illustmeta").insertBefore(linksBox, thumbnail.querySelector(".count-list"));
                    }
 
                    if (PAGETYPE > 1)
-                   {
+{
                        var evaluator = new XPathEvaluator(); //document.evaluate
                        var sortButton = evaluator.evaluate("//a[@name='Sort']", SideBar.iDoc.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                        if (sortButton.firstElementChild.style.borderColor == "rgb(0, 255, 0)") sortButton.firstElementChild.style.borderColor = "#F00";
@@ -620,7 +622,7 @@ Close to being a major release due to the amount of changes done.
                        var mangaLinks = '[ ';
 
                        for (var i = 0, href; i < metadata.pageCount; i++)
-                       {
+{
                            href = metadata.illustURL.replace(/_p\d+/, "_p" + i);
 
                            if (IsIllustrationPage) mangaLinks += '<a title ="Page #' + i + '" href="' + href + '">' + i + '</a> | ';
@@ -635,7 +637,7 @@ Close to being a major release due to the amount of changes done.
 
 
                    if (IsIllustrationPage)
-                   {
+{
                        TSL.addStyle("AddBorder", ".work-tags, .works_display  {margin-bottom: 0px;}");
                        //TSL.addStyle("VLB", "#VisibleLinkBox {background-color: red; height: 40px; margin: 5px 20px 10px 20px;}");
                        TSL.addStyle("VLB", "#VisibleLinkBox {margin: 1px 20px 0px 20px; background-color: gray;}");
@@ -647,11 +649,11 @@ Close to being a major release due to the amount of changes done.
                        var metaname = ["★", "Views", "Rating", "Total", "Response"];
 
                        if (metadata.illustSize) linkbox.innerHTML = "<a class='meta-box'>" + metadata.illustSize[0] + "x" + metadata.illustSize[1] + "</a>";
-                       linkbox.innerHTML += "<a class='meta-box iqdb-link' href='http://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>"
+                       linkbox.innerHTML += "<a class='meta-box iqdb-link' href='https://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>"
                        + '<a href="/response.php?type=illust&amp;id=' + metadata.illustID + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metascore[4] + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metascore[4] + '</a>'
                        + '<a href="/bookmark_detail.php?illust_id=' + metadata.illustID + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metascore[0] + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metascore[0] + '</a>';
 
-                       if (metadata.pageCount > 1) linkbox.innerHTML = "<a class='meta-box page-count' href='http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID + "'>P" + metadata.pageCount + "</a>" + linkbox.innerHTML;
+                       if (metadata.pageCount > 1) linkbox.innerHTML = "<a class='meta-box page-count' href='https://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID + "'>P" + metadata.pageCount + "</a>" + linkbox.innerHTML;
 
                        for (var i = 1; i < 4; i++) linkbox.innerHTML += "<span class='meta-box'>" + metaname[i] + " " + metascore[i] + "</span>";
 
@@ -673,26 +675,26 @@ Close to being a major release due to the amount of changes done.
                            TSL.addStyle("MangaT2", "#MangaThumbnails img {margin: 3px 3px; box-shadow: 3px 3px #9292E7}");
 
                            ShowThumbs.onclick = function ()
-                           {
+{
                                if (this.shown)
-                               {
+{
                                    ShowThumbs.textContent = "Show Thumbnails";
                                    document.getElementById("MangaThumbnails").style.display = "none";
                                    this.shown = false;
                                }
                                else
-                               {
+{
                                    metadata = IllustrationLinker.getIllust(IllustrationLinker.getIllustID(document.URL));
                                    ShowThumbs.textContent = "Hide Thumbnails";
                                    this.shown = true;
                                    if (document.getElementById("MangaThumbnails")) document.getElementById("MangaThumbnails").style.display = "block";
                                    else
-                                   {
+{
                                        var thumbs = document.createElement("section");
                                        thumbs.id = "MangaThumbnails";
                                        linksBox.parentElement.insertBefore(thumbs, previewThumbs.nextElementSibling);
                                        for (var i = 0; i < metadata.pageCount; i++)
-                                       {
+{
                                            el = document.createElement("a");
                                            el.href = metadata.illustURL.replace(/(_p)0/i, "$1" + i);
                                            el.innerHTML = "<img src='" + metadata.illust240URL.replace(/_p\d+/i, "_p" + i) + "'/>";
@@ -705,7 +707,7 @@ Close to being a major release due to the amount of changes done.
                        }
                    }
                    else
-                   {
+{
                        var IQDBLink = document.createElement("a");
                        IQDBLink.textContent = "IQDB";
                        IQDBLink.className = "meta-box iqdb-link";
@@ -735,7 +737,7 @@ Close to being a major release due to the amount of changes done.
                el.setAttribute("style", "width:100%;")
                el.textContent = "Add above images";
                el.onclick = function (e)
-               {
+{
                    var els = document.querySelectorAll(".test_image");
                    for (var i = 0; i < els.length; i++) TSL.removeNode(els[i]);
                    displayAllSizes(this.previousElementSibling.value);
@@ -743,7 +745,7 @@ Close to being a major release due to the amount of changes done.
                previews.appendChild(el);
 
                function displayAllSizes(base)
-               {
+{
                    console.info(base);
                    base = base.replace(/.+img-(master|original|zip-ugoira)\/img(\/.+\/\d+)(_p\d+)?_.+/, "$2");
                    console.log(base);
@@ -755,14 +757,14 @@ Close to being a major release due to the amount of changes done.
                    };
 
 
-                   addImage("http://i3.pixiv.net/c/128x128/img-master/img" + base + ((metadata.illustType == 3) ? "" : "_p0") + "_square1200.jpg");
+                   addImage("https://i3.pixiv.net/c/128x128/img-master/img" + base + ((metadata.illustType == 3) ? "" : "_p0") + "_square1200.jpg");
                    addImage("https://i.pximg.net/c/250x250_80_a2/img-master/img" + base + ((metadata.illustType == 3) ? "" : "_p0") + "_square1200.jpg");
 
                    previews.appendChild(document.createElement("hr"));
 
                    base = "/img-master/img" + base;
                    var ar = ["128x128", "150x150", "240x480", "480x960", "600x600", "1200x1200"];
-                   for (var i = 0; i < ar.length; i++) addImage("http://i4.pixiv.net/c/" + ar[i] + base + ((metadata.illustType == 3) ? "" : "_p0") + "_master1200.jpg");
+                   for (var i = 0; i < ar.length; i++) addImage("https://i4.pixiv.net/c/" + ar[i] + base + ((metadata.illustType == 3) ? "" : "_p0") + "_master1200.jpg");
 
                    previews.appendChild(document.createElement("hr"));
 
@@ -771,7 +773,7 @@ Close to being a major release due to the amount of changes done.
                }
 
                function addImage(source)
-               {
+{
                    console.log(source);
                    var con = document.createElement("div");
                    con.className = "test_image"
@@ -790,7 +792,7 @@ Close to being a major release due to the amount of changes done.
             noincrement is used when mouse hover. It does not increment simultaneousCalls
            -------------------------------------------------------------------------------------------*/
            getDataHTML: function (id, noincrement)
-           {
+{
                var illust = IllustrationLinker.getIllust(id), START = new Date();
 
                var marks = document.querySelectorAll('.marked4linker[illustration-id="' + id + '"]');
@@ -805,15 +807,15 @@ Close to being a major release due to the amount of changes done.
                }
                else if (IllustrationLinker.getIllust(id).illustID) finalise();
                else if (Settings.requestMethod & 4)
-               {
+{
                    //BUG: Potential loop as the get can fail
                    GM_xmlhttpRequest({
-                       url: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id,
+                       url: "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id,
                        method: "GET",
                        timeout: 15000,
-                       headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
+                       headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "https://www.pixiv.net" },
                        onload: function (response)
-                       {
+{
                            if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
                            {
                                var END = new Date();
@@ -827,13 +829,13 @@ Close to being a major release due to the amount of changes done.
                    });
                }
                else
-               {
+{
                    var oReq = new XMLHttpRequest();
-                   oReq.open("GET", "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id, true);
+                   oReq.open("GET", "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id, true);
                    oReq.responseType = "text";
                    oReq.timeout = 15000;
                    oReq.onload = function (e)
-                   {
+{
                        if (oReq.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
                        {
                            var END = new Date();
@@ -847,19 +849,19 @@ Close to being a major release due to the amount of changes done.
                    oReq.send();
                }
                function finalise()
-               {
+{
                    if (illust.bookmarkCount == "?" &&
                        (IllustrationLinker.requestBookmarkCount == 2 || (IllustrationLinker.requestBookmarkCount == 1 && !IsIllustrationPage)))
-                   {
+{
                        getBookmarkCount();
                    }
                    else if (illust.getExtension)
-                   {
+{
                        illust.getExtension = false;
                        getMangaExtension();
                    }
                    else
-                   {
+{
                        IllustrationLinker.createLinksBox(id);
                        if (!noincrement && IllustrationLinker.simultaneousCalls > 0) IllustrationLinker.simultaneousCalls--;
                        if (IllustrationLinker.processList.length < 5) PaginatorHQ.displayResultInfo();
@@ -867,17 +869,17 @@ Close to being a major release due to the amount of changes done.
                }
 
                function getBookmarkCount()
-               {
+{
                    if ((IsIllustrationPage && (Settings.requestMethod & 8)) ||
                        (!IsIllustrationPage && (Settings.requestMethod & 4)))
-                   {
+{
                        GM_xmlhttpRequest({
-                           url: "http://www.pixiv.net/bookmark_detail.php?illust_id=" + id,
+                           url: "https://www.pixiv.net/bookmark_detail.php?illust_id=" + id,
                            method: "GET",
                            timeout: 15000,
-                           headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net" },
+                           headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "https://www.pixiv.net" },
                            onload: function (response)
-                           {
+{
                                if (response.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
                                {
                                    var doc = new DOMParser().parseFromString(response.responseText, "text/html");
@@ -890,13 +892,13 @@ Close to being a major release due to the amount of changes done.
                        });
                    }
                    else
-                   {
+{
                        var oReq = new XMLHttpRequest();
-                       oReq.open("GET", "http://www.pixiv.net/bookmark_detail.php?illust_id=" + id, true);
+                       oReq.open("GET", "https://www.pixiv.net/bookmark_detail.php?illust_id=" + id, true);
                        oReq.responseType = "text";
                        oReq.timeout = 15000;
                        oReq.onload = function (e)
-                       {
+{
                            if (oReq.status == 200) //Response 200 implies that link exist and then most likely a Manga (or an Error XD)
                            {
                                var doc = new DOMParser().parseFromString(oReq.response, "text/html");
@@ -915,25 +917,25 @@ Close to being a major release due to the amount of changes done.
                 the illustration page. We need to make another http request.
                 -------------------------------------------------------------------------------------------*/
                function getMangaExtension()
-               {
-                   var url = (illust.pageCount > 1) ? "http://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0" : "http://www.pixiv.net/member_illust.php?mode=big&illust_id=" + id;
+{
+                   var url = (illust.pageCount > 1) ? "https://www.pixiv.net/member_illust.php?mode=manga_big&illust_id=" + id + "&page=0" : "https://www.pixiv.net/member_illust.php?mode=big&illust_id=" + id;
 
                    if (illust.pageCount == 1 || (IsIllustrationPage && (Settings.requestMethod & 8)) ||
                     (!IsIllustrationPage && (Settings.requestMethod & 4)))
-                   {
+{
                        GM_xmlhttpRequest({
                            url: url,
                            method: "GET",
                            timeout: 15000,
-                           headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id },
+                           headers: { "User-agent": navigator.userAgent, "Accept": "text/html", Referer: "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + id },
                            onload: function (response)
-                           {
+{
                                console.log(response.responseText);
                                if (response.status == 200)
-                               {
+{
                                    var doc = new DOMParser().parseFromString(response.responseText, "text/html");
                                    try
-                                   {
+{
                                        illust.illustURL = doc.getElementsByTagName("img")[0].src;
                                    }
                                    catch (err) { }
@@ -943,18 +945,18 @@ Close to being a major release due to the amount of changes done.
                        });
                    }
                    else
-                   {
+{
                        var oReq = new XMLHttpRequest();
                        oReq.open("GET", url, true);
                        oReq.responseType = "text";
                        oReq.timeout = 15000;
                        oReq.onload = function (e)
-                       {
+{
                            if (oReq.status == 200)
-                           {
+{
                                var doc = new DOMParser().parseFromString(oReq.response, "text/html");
                                try
-                               {
+{
                                    illust.illustURL = doc.getElementsByTagName("img")[0].src;
                                }
                                catch (err) { }
@@ -995,7 +997,7 @@ Close to being a major release due to the amount of changes done.
              container. Used to calculate when to load next page.
             ------------------------------------------------------------------------------*/
             initalise: function (pageLoadEventHandler, funcScrollOffset)
-            {
+{
                 this.scrollOffset = funcScrollOffset;
                 this.onPageLoad = pageLoadEventHandler;
                 this.getNextPageURL(document.body);
@@ -1005,10 +1007,10 @@ Close to being a major release due to the amount of changes done.
             },
 
             checkScrollPosition: function ()
-            {
+{
                 if (Pager.ageRatingChanged || !Settings.fetch.nextPage) return;
                 if ((Pager.scrollOffset() - window.scrollY - window.innerHeight) < Settings.pagingOffset)
-                {
+{
                     Pager.getNextPage();
                 }
             },
@@ -1019,7 +1021,7 @@ Close to being a major release due to the amount of changes done.
              if there isn't a next page other the url.
             ------------------------------------------------------------------------------*/
             getNextPageURL: function (xml)
-            {
+{
                 this.nextPageURL = null;
                 var evaluator = new XPathEvaluator(); //document.evaluate
                 var btnNext = evaluator.evaluate(".//a[@rel='next' and @class='_button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -1031,17 +1033,17 @@ Close to being a major release due to the amount of changes done.
             },
 
             NextPageReceived: function (doc, pageNumber)
-            {
+{
                 DisplayMessage("Page [" + pageNumber + "] received", 1500);
 
                 if (Pager.onPageLoad) Pager.onPageLoad(doc, Pager.nextPageURL);
 
                 Pager.getNextPageURL(doc.body);
                 if (Pager.nextPageURL)
-                {
+{
                     setTimeout(
                         function ()
-                        {
+{
                             Pager.intervalID = setInterval(Pager.checkScrollPosition, 500);
                         }
                         , Pager.timeOutLength);
@@ -1053,7 +1055,7 @@ Close to being a major release due to the amount of changes done.
              Gets the next page asynchronously.
             ------------------------------------------------------------------------------*/
             getNextPage: function (callback)
-            {
+{
                 if (Pager.requestingPage || !Pager.nextPageURL) return;
                 Pager.requestingPage = true;
 
@@ -1062,19 +1064,19 @@ Close to being a major release due to the amount of changes done.
                 var msg = DisplayMessage("Requesting page [" + pageNumber + "] ...");
 
                 if (Settings.requestMethod & 2)
-                {
+{
                     GM_xmlhttpRequest({
                         url: Pager.nextPageURL,
                         method: "GET",
                         headers: { "User-agent": navigator.userAgent, "Accept": "document" }, //"Accept": "text/html"
                         timeout: 20000,
                         onload: function (response)
-                        {
+{
                             Pager.requestingPage = false;
                             //Change age rate, so no need to process return result as new content will be loaded
                             if (Pager.ageRatingChanged) return;
                             if (response.status == 200)
-                            {
+{
                                 RemoveMessage(msg);
                                 var doc = document.implementation.createHTMLDocument("P++");
                                 doc.documentElement.innerHTML = response.responseText;
@@ -1091,19 +1093,19 @@ Close to being a major release due to the amount of changes done.
                     });
                 }
                 else
-                {
+{
                     var oReq = new XMLHttpRequest();
                     oReq.open("GET", Pager.nextPageURL, true);
                     oReq.responseType = "document";
                     oReq.timeout = 20000;
                     oReq.onload = function (e)
-                    {
+{
                         {
                             Pager.requestingPage = false;
                             //Change age rate, so no need to process return result as new content will be loaded
                             if (Pager.ageRatingChanged) return;
                             if (oReq.status == 200)
-                            {
+{
                                 RemoveMessage(msg);
                                 Pager.NextPageReceived(oReq.response, pageNumber);
                             }
@@ -1118,12 +1120,12 @@ Close to being a major release due to the amount of changes done.
             },
 
             pageErrorTimeout: function (msg, response)
-            {
+{
                 console.error("Failed to get next page: (" + response.status + ") : " + response.statusText);
                 DisplayMessage(msg, 5000);
                 setTimeout(
                             function ()
-                            {
+{
                                 Pager.intervalID = setInterval(Pager.checkScrollPosition, 500);
                             }
                             , Pager.timeOutLength);
@@ -1146,7 +1148,7 @@ Close to being a major release due to the amount of changes done.
               Prepares current page for pagination
             -------------------------------------------------------------------------------------------*/
             intialise: function ()
-            {
+{
                 PaginatorHQ.removeUnwantedElements(document);
 
                 var paged = (Pager.getNextPageURL(document) != null);
@@ -1157,14 +1159,14 @@ Close to being a major release due to the amount of changes done.
                 if (!paged) //Either has no pages or it is the last page
                 {
                     if (PAGETYPE > 1 && containers)
-                    {
+{
                         PaginatorHQ.pageTable = containers[0].parentElement;
                         containers[0].setAttribute("name", "pageContainer"); //Done for age rating issues.
                     }
                     IllustrationLinker.getContainerLinks(containers, pageNumber);
                 }
                 else
-                {
+{
                     var paginator = document.getElementsByClassName("column-order-menu");
                     while (paginator.length > 1) paginator[1].parentNode.removeChild(paginator[1]);
                     paginator = paginator[0];
@@ -1182,7 +1184,7 @@ Close to being a major release due to the amount of changes done.
                         pageContainer = pageContainer.firstElementChild;
                     }
                     else
-                    {
+{
                         pageContainer.parentElement.insertBefore(paginator, pageContainer);
                         //pageContainer.insertBefore(paginator, pageContainer.firstElementChild);
                     }
@@ -1206,13 +1208,13 @@ Close to being a major release due to the amount of changes done.
              Gets bottom of page table, used to calculate when the next page is going to be loaded
            -------------------------------------------------------------------------------------------*/
             getMainTableBottom: function ()
-            {
+{
                 var pos = TSL.getAbsolutePosition(PaginatorHQ.pageTable);
                 return pos.top + PaginatorHQ.pageTable.offsetHeight;
             },
 
             addStyles: function ()
-            {
+{
                 if (PaginatorHQ.styled) return;
                 PaginatorHQ.styled = true;
 
@@ -1271,7 +1273,7 @@ Close to being a major release due to the amount of changes done.
             },
 
             getPageNumber: function (url)
-            {
+{
                 var pageNumber = url.replace(/.+(&|\?)p=(\d+)$/gi, "$2");
                 if (isNaN(pageNumber)) pageNumber = 1;
                 return parseInt(pageNumber);
@@ -1282,7 +1284,7 @@ Close to being a major release due to the amount of changes done.
              Adds new content.
            -------------------------------------------------------------------------------------------*/
             addNewPage: function (doc, url)
-            {
+{
                 PaginatorHQ.removeUnwantedElements(doc);
 
                 var pageNumber = PaginatorHQ.getPageNumber(url);
@@ -1311,7 +1313,7 @@ Close to being a major release due to the amount of changes done.
                 IllustrationLinker.getContainerLinks([pageContainer], pageNumber);
                 PaginatorHQ.updateVisibilityOfAllElements(pageContainer);
                 if (Settings.filterSwitchFlag > 0)
-                {
+{
                     pageContainer.style.display = "none";
                     paginator.style.display = "none";
                     PaginatorHQ.filterContainer(pageContainer);
@@ -1325,7 +1327,7 @@ Close to being a major release due to the amount of changes done.
              illustrations whose content are auto-updated by Pixiv.
             -----------------------------------------------------------------------------------------*/
             getContainers: function (doc)
-            {
+{
                 if (!doc) doc = document;
                 //if (PAGETYPE == 10) nodes = doc.querySelectorAll("#illust-recommend ._image-items");
                 var nodes = doc.querySelectorAll('#item-container, .worksListOthers'); //None paged
@@ -1335,7 +1337,7 @@ Close to being a major release due to the amount of changes done.
             },
 
             filterThumbnail: function (thumbnail)
-            {
+{
                 if (Settings.filterSwitchFlag == 0) return;
 
                 var metadata = IllustrationLinker.getIllust(thumbnail.getAttribute("illustration-id"));
@@ -1350,11 +1352,11 @@ Close to being a major release due to the amount of changes done.
 
 
                 if (!filterOut && (Settings.filterSwitchFlag & 2) == 2)
-                {
+{
                     var flag = Settings.filter.flag;
                     var values = Settings.filters[Settings.filter.set];
                     try
-                    {
+{
                         if ((flag & 2) == 2 && metadata.illustType == 1) filterOut = true; //Filtering out Illustrations
                         else if ((flag & 4) == 4 && metadata.illustType == 2) filterOut = true; //Filtering out Manga
                         else if ((flag & 8) == 8 && metadata.bookmarkCount < values[0]) filterOut = true; //Bookmarks
@@ -1365,7 +1367,7 @@ Close to being a major release due to the amount of changes done.
                 }
 
                 if (!filterOut)
-                {
+{
                     var found;
                     var tags = metadata.tags;
 
@@ -1373,7 +1375,7 @@ Close to being a major release due to the amount of changes done.
                     tags = tags.split(" ");
 
                     if ((Settings.filterSwitchFlag & 4) == 4)
-                    {
+{
                         var tagsF = Settings.filter.tagsInclude;
                         while (tagsF.indexOf("  ") >= 0) tagsF = tagsF.replace("  ", " ");
                         tagsF = tagsF.split(" ");
@@ -1382,12 +1384,12 @@ Close to being a major release due to the amount of changes done.
 
                         found = true;
                         for (var i = 0; i < tagsF.length; i++)
-                        {
+{
                             found = false
                             for (var j = 0; j < tags.length; j++)
-                            {
+{
                                 if (tagsF[i].trim().toLowerCase() == tags[j].trim().toLowerCase())
-                                {
+{
                                     found = true;
                                     break;
                                 }
@@ -1400,18 +1402,18 @@ Close to being a major release due to the amount of changes done.
                     }
 
                     if (!filterOut && (Settings.filterSwitchFlag & 8) == 8)
-                    {
+{
                         var tagsF = Settings.filter.tagsExclude;
                         while (tagsF.indexOf("  ") >= 0) tagsF = tagsF.replace("  ", " ");
                         tagsF = tagsF.split(" ");
 
                         found = false;
                         for (var i = 0; i < tagsF.length; i++)
-                        {
+{
                             for (var j = 0; j < tags.length; j++)
-                            {
+{
                                 if (tagsF[i].trim().toLowerCase() == tags[j].trim().toLowerCase())
-                                {
+{
                                     found = true;
                                     break;
                                 }
@@ -1426,32 +1428,32 @@ Close to being a major release due to the amount of changes done.
 
                 //Illustration metadata has yet to be retrieved
                 if (filterOut)
-                {
+{
                     PaginatorHQ.filterThumbnailLinks(thumbnail, true);
                     thumbnail.style.display = "none";
                 }
                 else
-                {
+{
                     PaginatorHQ.filterThumbnailLinks(thumbnail, false);
                     thumbnail.style.display = null;
                 }
             },
 
             filterThumbnailLinks: function (thumbnail, remove)
-            {
+{
                 var links = thumbnail.querySelectorAll(".pppLinksBox > a");
                 //var links = thumbnail.querySelectorAll("a");
                 if (!links) return;
 
                 for (var i = 0; i < links.length; i++)
-                {
+{
                     if (remove)
-                    {
+{
                         if (!links[i].getAttribute("data-href")) links[i].setAttribute("data-href", links[i].href);
                         links[i].removeAttribute("href");
                     }
                     else if (!links[i].href && links[i].getAttribute("data-href"))
-                    {
+{
                         links[i].href = links[i].getAttribute("data-href");
                     }
                 }
@@ -1459,14 +1461,14 @@ Close to being a major release due to the amount of changes done.
 
 
             filterContainer: function (container)
-            {
+{
                 if (Settings.filterSwitchFlag == 0) return;
 
                 var mainContainer = document.getElementsByName("pageContainer")[0],
                     thumbnails = container.querySelectorAll("[pppThumb]");
 
                 for (var i = 0, thumb; i < thumbnails.length, thumb = thumbnails[i]; i++)
-                {
+{
                     PaginatorHQ.filterThumbnail(thumb);
                     if (thumb.parentElement != mainContainer) mainContainer.appendChild(thumb);
                 }
@@ -1480,15 +1482,15 @@ Close to being a major release due to the amount of changes done.
             Goes through all thumbnail containers and filters the result accordingly
            -------------------------------------------------------------------------------------------*/
             filterResult: function ()
-            {
+{
                 if (PaginatorHQ.status == 0)
-                {
+{
                     PaginatorHQ.status = 1;
                     setTimeout(PaginatorHQ.filterResult, 0);
                     return true;
                 }
                 if (PaginatorHQ.status == 2)
-                {
+{
                     return false;
                 }
                 PaginatorHQ.status = 2;
@@ -1502,7 +1504,7 @@ Close to being a major release due to the amount of changes done.
                 var mainContainerPage = mainContainer.getAttribute("page");
                 //Parse through page containers and paginators and set visibility according to filter
                 for (var i = 1; container = containers[i], i < containers.length; i++)
-                {
+{
                     containers[i].style.display = (filtering) ? "none" : null;
                     paginators[i].style.display = (filtering) ? "none" : null;
                 }
@@ -1511,7 +1513,7 @@ Close to being a major release due to the amount of changes done.
                 {
                     mainContainer.style.backgroundColor = "transparent";
                     for (var i = 0; i < containers.length; i++)
-                    {
+{
                         msg.textContent = ("Filtering Page " + (i + 2) + "/" + containers.length);
                         PaginatorHQ.filterContainer(containers[i]);
                     }
@@ -1522,7 +1524,7 @@ Close to being a major release due to the amount of changes done.
                     var thumbnails = mainContainer.querySelectorAll("[pppThumb]");
 
                     for (var i = 0, thumb; i < thumbnails.length, thumb = thumbnails[i]; i++)
-                    {
+{
                         //msg.textContent = ("Filtering thumbnail " + (i + 1) + "/" + nodesSnapshot.snapshotLength);
                         thumbPage = thumb.getAttribute("page");
                         if (thumbPage > mainContainerPage) containers[thumbPage - mainContainerPage].appendChild(thumb);
@@ -1532,12 +1534,12 @@ Close to being a major release due to the amount of changes done.
                 }
 
                 if (filtering)
-                {
+{
                     DisplayMessage("Filtering completed", 2000);
                     // (totalCount - PaginatorHQ.filteredCount) + " (" + totalCount + ")";
                 }
                 else
-                {
+{
                     DisplayMessage("Filter disabled", 2000);
                 }
 
@@ -1547,7 +1549,7 @@ Close to being a major release due to the amount of changes done.
             },
 
             getResultCount: function (doc)
-            {
+{
                 if (!doc) doc = document;
 
                 var evaluator = new XPathEvaluator(); //document.evaluate
@@ -1564,9 +1566,9 @@ Close to being a major release due to the amount of changes done.
             Displays the amount of thumbnails listed
            -------------------------------------------------------------------------------------------*/
             displayResultInfo: function ()
-            {
+{
                 if (SideBar.iDoc == null)
-                {
+{
                     setTimeout(function () { PaginatorHQ.displayResultInfo(); }, 250); //Sidebar has yet to load
                     return;
                 }
@@ -1594,18 +1596,18 @@ Close to being a major release due to the amount of changes done.
                     }
                 }
                 else if (thumbs.length == 0 || resultCount == 0)
-                {
+{
                     it.rows[0].cells[1].textContent = 0;
                     it.rows[1].cells[1].textContent = 0;
                 }
                 else
-                {
+{
                     var visibleCount = thumbs.length;
                     if (Settings.filterSwitchFlag > 0)
-                    {
+{
                         visibleCount = 0;
                         for (var i = 0; i < thumbs.length; i++)
-                        {
+{
                             if (!thumbs[i].style.display) visibleCount++;
                         }
                     }
@@ -1631,15 +1633,15 @@ Close to being a major release due to the amount of changes done.
             Sorts the thumbnails according to filter type
            -------------------------------------------------------------------------------------------*/
             sortByScore: function (sort)
-            {
+{
                 if (PaginatorHQ.status == 0)
-                {
+{
                     PaginatorHQ.status = 1;
                     setTimeout(PaginatorHQ.sortByScore, 0, sort);
                     return true;
                 }
                 if (PaginatorHQ.status == 2)
-                {
+{
                     return false;
                 }
                 PaginatorHQ.status = 2;
@@ -1653,7 +1655,7 @@ Close to being a major release due to the amount of changes done.
                 var thumbnails = PaginatorHQ.pageTable.querySelectorAll("[pppThumb]"),
                     arr = new Array();
                 for (var i = 0, thumb; i < thumbnails.length, thumb = thumbnails[i]; i++)
-                {
+{
                     //console.log(getMetaScore(thumb)[sortType], thumb.getAttribute("pppThumb"));
                     var value = (sort) ? parseInt(getMetaScore(thumb)[sortType]) : parseInt(thumb.getAttribute("pppThumb"));
                     arr.push({ "index": i, "value": value });
@@ -1661,7 +1663,7 @@ Close to being a major release due to the amount of changes done.
 
                 //The value is either original position or score value
                 arr.sort(function (a, b)
-                {
+{
                     if (sort) return b.value - a.value;
                     else return a.value - b.value;
                     //if ((sort && a.value < b.value) || (!sort && a.value > b.value)) return 1;
@@ -1669,7 +1671,7 @@ Close to being a major release due to the amount of changes done.
 
                 //Apply sorted array to thumbnails
                 for (var i = 0 ; i < arr.length; i++)
-                {
+{
                     if (Settings.filterSwitchFlag > 0 || containers.length == 1) container = containers[0]; //Items are all in one container as filter is enabled
                     else container = containers[Math.floor(i / 20)];
 
@@ -1680,12 +1682,12 @@ Close to being a major release due to the amount of changes done.
                 var evaluator = new XPathEvaluator(); //document.evaluate
                 var sortButton = evaluator.evaluate("//a[@name='Sort']", SideBar.iDoc.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if (sort)
-                {
+{
                     DisplayMessage("Sorted by " + FilterTypeToString(sortType), 3000);
                     sortButton.firstElementChild.style.borderColor = "#0F0";
                 }
                 else
-                {
+{
                     DisplayMessage("Removed sorting", 3000);
                     sortButton.firstElementChild.style.borderColor = "#000";
                 }
@@ -1694,7 +1696,7 @@ Close to being a major release due to the amount of changes done.
                 PaginatorHQ.status = 0;
 
                 function getMetaScore(thumbnail)
-                {
+{
                     var illust = IllustrationLinker.getIllust(thumbnail.getAttribute("illustration-id"))
                     return [illust.bookmarkCount, illust.viewCount, illust.ratings, illust.totalRatings];
                 }
@@ -1702,15 +1704,15 @@ Close to being a major release due to the amount of changes done.
 
 
             updateIQDBLink: function (thumbnail)
-            {
+{
                 var IQDBLink = thumbnail.querySelector(".iqdb-link"),
                     metadata = IllustrationLinker.getIllust(thumbnail.getAttribute("illustration-id"));
 
-                if (IQDBLink) IQDBLink.href = "http://" + Settings.IQDBType + ".IQDB.org/?url=" + metadata.illust240URL + "&";
+                if (IQDBLink) IQDBLink.href = "https://" + Settings.IQDBType + ".IQDB.org/?url=" + metadata.illust240URL + "&";
             },
 
             updateAllIQDBLinks: function ()
-            {
+{
                 var thumbs = document.querySelectorAll('[pppThumb]');
                 for (var i = 0; i < thumbs.length; i++) PaginatorHQ.updateIQDBLink(thumbs[i]);
             },
@@ -1721,13 +1723,13 @@ Close to being a major release due to the amount of changes done.
              IllustrationLinker.createLinkBox function when the metadata has been recieved.
             ----------------------------------------------------------------------------------------*/
             tidyThumbnail: function (id)
-            {
+{
                 //Do this as paging can cause duplicate images
                 var thumbnails = document.querySelectorAll('[illustration-id="' + id + '"]'),
                     metadata = IllustrationLinker.getIllust(id);
 
                 for (var i = 0, thumbnail; i < thumbnails.length; i++)
-                {
+{
                     thumbnail = thumbnails[i];
                     TSL.removeClass(thumbnail, "linking");
                     TSL.addClass(thumbnail, "linked");
@@ -1773,7 +1775,7 @@ Close to being a major release due to the amount of changes done.
                     //Counters
                     el = document.createElement("ul");
                     el.className = "count-list";
-                    el.innerHTML = (metadata.pageCount > 1 ? '<a class="meta-box page-count" href="http://www.pixiv.net/member_illust.php?mode=manga&illust_id=' + metadata.illustID + '">P' + metadata.pageCount + '</a>' : '')
+                    el.innerHTML = (metadata.pageCount > 1 ? '<a class="meta-box page-count" href="https://www.pixiv.net/member_illust.php?mode=manga&illust_id=' + metadata.illustID + '">P' + metadata.pageCount + '</a>' : '')
                             + '<a href="/bookmark_detail.php?illust_id=' + metadata.illustID + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metadata.bookmarkCount + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metadata.bookmarkCount + '</a>'
                             + '<a href="/response.php?type=illust&amp;id=' + metadata.illustID + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metadata.responseCount + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metadata.responseCount + '</a>';
                     meta.appendChild(el);
@@ -1785,7 +1787,7 @@ Close to being a major release due to the amount of changes done.
              Sets the visibility of the elements according to sidebar settings.
             ----------------------------------------------------------------------------------------*/
             updateVisibilityOfAllElements: function (container)
-            {
+{
                 if (Settings.display.illustTitle) TSL.removeNode("VisTitle");
                 else TSL.addStyle("VisTitle", ".illustmeta .title {display:none;}");
 
@@ -1809,18 +1811,18 @@ Close to being a major release due to the amount of changes done.
             },
 
             removeUnwantedElements: function (doc)
-            {
+{
                 var classes = ["popular-introduction", "user-ad-container"];
                 var ids = ["header-banner"];
 
                 for (var i = 0; i < classes.length; i++)
-                {
+{
                     var els = doc.getElementsByClassName(classes[i]);
                     while (els.length > 0) els[0].parentNode.removeChild(els[0]);
                 }
 
                 for (var i = 0; i < ids.length; i++)
-                {
+{
                     var el = doc.getElementById(ids[i]);
                     if (el) el.parentNode.removeChild(el);
                 }
@@ -1834,12 +1836,12 @@ Close to being a major release due to the amount of changes done.
     var PreviewHQ =
     {
         registerForPreviewWindow: function ()
-        {
+{
             if (PAGETYPE > 9)
-            {
+{
                 var items = document.querySelectorAll(".image-item");
                 if (document.itemscount != items.length)
-                {
+{
                     document.itemscount = items.length;
                     var containers = PaginatorHQ.getContainers();
                     console.log(containers);
@@ -1858,11 +1860,11 @@ Close to being a major release due to the amount of changes done.
             document.thecount = thumbs.length;
 
             for (var i = 0, thumbnail, id, link, marked; i < thumbs.length; i++)
-            {
+{
                 thumbnail = thumbs[i];
 
                 if (!TSL.hasClass(thumbnail, "marked4linker"))
-                {
+{
                     TSL.addClass(thumbnail, "marked4linker");
                     link = thumbnail.querySelector("a");
                     if (!link) continue;
@@ -1878,17 +1880,17 @@ Close to being a major release due to the amount of changes done.
         },
 
         mouseEvents: function (e)
-        {
+{
             var me = this,
                 thumbnail = me.parentElement;
             //while (!thumbnail.hasAttribute("illustration-id")) thumbnail = thumbnail.parentElement;
             if (TSL.hasClass(thumbnail, "linked"))
-            {
+{
                 if (e.type == "mousemove")
-                {
+{
                     if (document.pwiid) return;
                     document.pwiid = setTimeout(function ()
-                    {
+{
                         PreviewHQ.showPreviewWindow(me);
                         document.pwiid = null;
                     }, 750);
@@ -1900,23 +1902,23 @@ Close to being a major release due to the amount of changes done.
                 }
             }
             else if (!TSL.hasClass(thumbnail, "linked"))
-            {
+{
                 if (e.type == "mouseleave")
-                {
+{
                     clearTimeout(me.timeout);
                     clearInterval(me.interval);
                     delete me.timeout;
                     delete me.interval
                 }
                 else if (!TSL.hasClass(thumbnail, "linking"))
-                {
+{
                     if (me.timeout) return;
                     me.timeout = setTimeout(function ()
-                    {
+{
                         me.interval = setInterval(function ()
-                        {
+{
                             if (TSL.hasClass(thumbnail, "linked"))
-                            {
+{
                                 clearInterval(me.interval);
                                 delete me.interval
                                 PreviewHQ.showPreviewWindow(me);
@@ -1931,7 +1933,7 @@ Close to being a major release due to the amount of changes done.
         },
 
         showPreviewWindow: function (thumbnail)
-        {
+{
             while (!thumbnail.hasAttribute("illustration-id")) thumbnail = thumbnail.parentElement;
             var id = thumbnail.getAttribute("illustration-id"),
                 metadata = IllustrationLinker.getIllust(id);
@@ -1946,16 +1948,16 @@ Close to being a major release due to the amount of changes done.
             previewWindow.setAttribute("illustration-id", id);
 
             previewWindow.onmouseenter = previewWindow.onmouseleave = function (e)
-            {
+{
                 var me = this;
                 if (e.type == "mouseenter")
-                {
+{
                     clearInterval(me.iid);
                 }
                 else
-                {
+{
                     me.iid = setTimeout(function ()
-                    {
+{
                         TSL.removeNode(me);
                     }, 500);
                 }
@@ -1971,18 +1973,18 @@ Close to being a major release due to the amount of changes done.
             var el = document.createElement("div"),
                 a = document.createElement("a");
             if (metadata.illustType == 1)
-            {
+{
                 a.href = metadata.illustURL;
                 a.textContent = "IMAGE";
             }
             else if (metadata.illustType == 2)
-            {
-                a.href = "http://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID;
+{
+                a.href = "https://www.pixiv.net/member_illust.php?mode=manga&illust_id=" + metadata.illustID;
                 a.textContent = "MANGA";
             }
             else
-            {
-                a.href = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
+{
+                a.href = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
                 a.textContent = "Ugoira";
             }
             a.className = "pppType";
@@ -1990,7 +1992,7 @@ Close to being a major release due to the amount of changes done.
             a = document.createElement("a");
             a.textContent = metadata.illustTitle;
             a.setAttribute("style", "display:inline-block;min-width:50px;");
-            a.href = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
+            a.href = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
             el.appendChild(a);
             el.innerHTML += '<span style="color:orange;"> (' + metadata.date.replace(/(\d+)\/(\d+)\/(\d+)/, "$3-$1-$2") + ')</span>';
             data.appendChild(el);
@@ -2004,23 +2006,23 @@ Close to being a major release due to the amount of changes done.
             a.setAttribute("style", "color:#DDDCDC;margin-right:4px;");
             el.appendChild(a);
             a = document.createElement("a");
-            a.href = "http://www.pixiv.net/member.php?id=" + metadata.userID
+            a.href = "https://www.pixiv.net/member.php?id=" + metadata.userID
             a.innerHTML = '<img alt="" src="' + homeWhite + '"/>';
             a.style.marginRight = "4px";
             el.appendChild(a);
             a = document.createElement("a");
-            a.href = "http://www.pixiv.net/member_illust.php?id=" + metadata.userID;
+            a.href = "https://www.pixiv.net/member_illust.php?id=" + metadata.userID;
             a.textContent = metadata.userName;
             el.appendChild(a);
             data.appendChild(el);
 
             //Scores
-            var IQDBPrefix = "http://" + Settings.IQDBType + ".IQDB.org/?url=";
+            var IQDBPrefix = "https://" + Settings.IQDBType + ".IQDB.org/?url=";
             el = document.createElement("div");
             console.log(metadata.illustSize);
             if (metadata.illustSize) el.innerHTML = "<a class='meta-box'>" + metadata.illustSize[0] + "x" + metadata.illustSize[1] + "</a>";
             if (metadata.pageCount > 1) el.innerHTML += "<a class='meta-box page-count'>P" + metadata.pageCount + "</a>";
-            el.innerHTML += "<a class='meta-box iqdb-link' href='http://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>";
+            el.innerHTML += "<a class='meta-box iqdb-link' href='https://" + Settings.IQDBType + ".IQDB.org/?url=" + ((metadata.illustType == 3) ? metadata.illust480URL : metadata.illust150URL) + "&NULL'>IQDB<a>";
             //el.setAttribute("style", "padding: 2px 5px 2px 5px; text-decoration: none; color: #FFF; font-weight:bold;");
             el.innerHTML += '<a href="/response.php?type=illust&amp;id=' + id + '" class="image-response-count ui-tooltip" data-tooltip="Received ' + metascore[4] + ' image responses"><i class="_icon sprites-image-response-badge"></i>' + metascore[4] + '</a>';
             el.innerHTML += '<a href="/bookmark_detail.php?illust_id=' + id + '" class="bookmark-count ui-tooltip" data-tooltip="Received ' + metascore[0] + ' bookmarks"><i class="_icon sprites-bookmark-badge"></i>' + metascore[0] + '</a>';
@@ -2032,7 +2034,7 @@ Close to being a major release due to the amount of changes done.
                 var thumbContainer = document.createElement("div");
                 thumbContainer.id = "ThumbContainer";
                 for (var i = 0, thumb; i < metadata.pageCount; i++)
-                {
+{
                     thumb = document.createElement("img");
                     var link = document.createElement("a");
                     //thumb.src = metadata.illust150URL.replace(/_p\d+/, "_p" + i);
@@ -2049,7 +2051,7 @@ Close to being a major release due to the amount of changes done.
                 previewWindow.appendChild(thumbContainer);
             }
             else if (Settings.display.autoPreview)
-            {
+{
                 //TODO: Adjust dimension and not height. Landscapes sometimes are too big
                 var preview = document.createElement("div"),
                     link = document.createElement("a"),
@@ -2057,7 +2059,7 @@ Close to being a major release due to the amount of changes done.
 
                 preview.id = "PreviewImage";
                 preview.setAttribute("style", "text-align:center;");
-                link.href = "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
+                link.href = "https://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + metadata.illustID;
                 link.setAttribute("data-fullsize", metadata.illustURL);
                 img.setAttribute("style", "margin: auto auto; height: " + Settings.previewDimensions + "px;text-align:center;");
                 if (Settings.previewDimensions > 600) img.src = metadata.illust1200URL;
@@ -2071,7 +2073,7 @@ Close to being a major release due to the amount of changes done.
             }
 
             function adjustPreviewWindow(image)
-            {
+{
                 var thumb = thumbnail.querySelector("a"),
                     position = TSL.getAbsolutePosition(thumb),
                     iiid;
@@ -2080,7 +2082,7 @@ Close to being a major release due to the amount of changes done.
                 if (image) iiid = setInterval(readjust, 50);
 
                 function readjust()
-                {
+{
                     if (image && (image.complete || image.naturalWidth > 0)) clearInterval(iiid);
                     previewWindow.style.top = ((position.top + thumb.clientHeight / 2) - (previewWindow.clientHeight / 2)) + "px";
                     previewWindow.style.left = ((position.left + thumb.clientWidth / 2) - (previewWindow.clientWidth / 2)) + "px";
@@ -2108,7 +2110,7 @@ Close to being a major release due to the amount of changes done.
     iDoc: null,
     interval: null,
     scrollWidth: (function getScrollBarWidth()
-    {
+{
         var inner = document.createElement('p');
         inner.style.width = "100%";
         inner.style.height = "200px";
@@ -2135,7 +2137,7 @@ Close to being a major release due to the amount of changes done.
     })(),
 
     initalise: function ()
-    {
+{
         if (PAGETYPE < 1) return;
         var img = document.createElement("img");
         img.setAttribute("style", "position:fixed; z-index: 100; top: 15px; left: 10px;");
@@ -2143,7 +2145,7 @@ Close to being a major release due to the amount of changes done.
         document.body.appendChild(img);
         img.style.cursor = "pointer";
         img.onmousedown = function ()
-        {
+{
             SideBar.iframe.style.visibility = null;
             Settings.display.sidebar = true;
             SideBar.adjustFrameSize();
@@ -2152,7 +2154,7 @@ Close to being a major release due to the amount of changes done.
 
         var iframe = document.createElement("iframe");
         iframe.onload = function ()
-        {
+{
             var iDoc = iframe.contentDocument || iframe.contentWindow.document;
 
             iDoc.head.innerHTML = '<meta charset="utf-8" />';
@@ -2176,7 +2178,7 @@ Close to being a major release due to the amount of changes done.
 
             var TimidScript = GM_getValue("TimidScript", false) === true;
             if (PAGETYPE > 1 && TimidScript)
-            {
+{
                 var hc = iDoc.getElementById("hiddenCtrl");
                 hc.style.display = null;
                 hc.style.textAlign = "left";
@@ -2190,20 +2192,20 @@ Close to being a major release due to the amount of changes done.
                 var els = iDoc.getElementById("gbm");
                 els.selectedIndex = GM_getValue("RequestBookmarkCount", 0);
                 els.onchange = function ()
-                {
+{
                     GM_setValue("RequestBookmarkCount", this.selectedIndex);
                 };
 
                 var els = hc.querySelectorAll("input[type=checkbox]");
                 for (var i = 0; i < els.length; i++)
-                {
+{
                     els[i].checked = (Settings.requestMethod & Math.pow(2, i + 1));
                     els[i].onclick = function ()
-                    {
+{
                         Settings.requestMethod = 0;
                         var chk = iDoc.querySelectorAll("#hiddenCtrl input[type=checkbox]");
                         for (var j = 0; j < chk.length; j++)
-                        {
+{
                             Settings.requestMethod += (chk[j].checked) ? Math.pow(2, j + 1) : 0;
                         }
                         console.log("New Request Method: " + Settings.requestMethod);
@@ -2215,7 +2217,7 @@ Close to being a major release due to the amount of changes done.
                 offset.value = Settings.pagingOffset;
                 offset.onfocus = function (e) { e.target.select(); }
                 offset.oninput = function (e)
-                {
+{
                     var el = e.target;
                     if (el.value.length > 5 || isNaN(el.value[el.value.length - 1])) el.value = el.value.substring(0, el.value.length - 1);
                     if (isNaN(el.value) || el.value < 100) Settings.pagingOffset = 100;
@@ -2224,24 +2226,24 @@ Close to being a major release due to the amount of changes done.
                 };
             }
             else
-            {
+{
                 iDoc.getElementById("pagingOffset").style.display = "none";
                 iDoc.getElementById("pageFetchMethod").style.display = "none";
             }
 
             if (PAGETYPE < 2)
-            {
+{
                 iDoc.getElementById("FilterOptions").parentElement.style.display = "none";
             }
             else
-            {
+{
                 iDoc.getElementById("FilterOptions").style.display = (Settings.display.filterOptions) ? null : "none";
                 //How to handle AgeRating functions
                 if (PAGETYPE != 8)
-                {
+{
                     var ars = iDoc.getElementsByName("ageRating");
                     for (var i = 0; i < ars.length; i++)
-                    {
+{
                         ars[i].onclick = SideBar.onAgeRatingFilter;
                     }
                 }
@@ -2252,11 +2254,11 @@ Close to being a major release due to the amount of changes done.
 
             var switchLinks = sidebar.getElementsByTagName("a");
             for (var i = 0; s = switchLinks[i], i < switchLinks.length; i++)
-            {
+{
                 if (s.id == "SidebarClose") //No toggling here
                 {
                     s.onclick = function ()
-                    {
+{
                         SideBar.iframe.style.visibility = "hidden";
                         document.getElementById("wrapper").style.margin = null;
                         Settings.display.sidebar = false;
@@ -2264,9 +2266,9 @@ Close to being a major release due to the amount of changes done.
                     }
                 }
                 else if (s.name)
-                {
+{
                     switch (s.name)
-                    {
+{
                         case "filterSwitch":
                             SideBar.switchSet(s, false);
                             break;
@@ -2294,7 +2296,7 @@ Close to being a major release due to the amount of changes done.
             //Checking filters
             var filters = iDoc.getElementsByName("filterType");
             for (var i = 0; i < filters.length; i++)
-            {
+{
                 var bitValue = Math.pow(2, i + 1);
                 filters[i].checked = (bitValue & Settings.filter.flag) ? true : false;
                 filters[i].onclick = SideBar.onToggledFilter;
@@ -2310,7 +2312,7 @@ Close to being a major release due to the amount of changes done.
 
             var els = sidebar.getElementsByClassName("filterValue");
             for (var i = 0; i < els.length; i++)
-            {
+{
                 els[i].oninput = SideBar.onInputFilterValue;
                 els[i].onfocus = function (e) { e.target.select(); };
             }
@@ -2328,7 +2330,7 @@ Close to being a major release due to the amount of changes done.
             var sel = iDoc.getElementById("IQDBOptions");
             sel.innerHTML = "";
             for (i = 0; i < IQDBTypes.length; i++)
-            {
+{
                 var opt = iDoc.createElement("option");
                 opt.textContent = IQDBTypes[i];
                 sel.add(opt);
@@ -2336,7 +2338,7 @@ Close to being a major release due to the amount of changes done.
             }
             if (Settings.IQDBType == "www") sel.selectedIndex = 0;
             sel.onchange = function (e)
-            {
+{
                 var sel = e.target;
                 if (sel.selectedIndex == 0) Settings.IQDBType = "www";
                 else Settings.IQDBType = sel.options[sel.selectedIndex].textContent;
@@ -2350,7 +2352,7 @@ Close to being a major release due to the amount of changes done.
             sel = iDoc.getElementById("previewDimensions");
             sel.innerHTML = "";
             for (i = 0; i <= 10; i++)
-            {
+{
                 var size = i * 50 + 200;
                 var opt = iDoc.createElement("option");
                 opt.textContent = size + "px";
@@ -2375,13 +2377,13 @@ Close to being a major release due to the amount of changes done.
 
 
     switchMain: function (s)
-    {
+{
         if (s.className) return s;
         if (s.firstElementChild && s.firstElementChild.className) return s.firstElementChild;
 
         var depth = 0;
         while (!s.className)
-        {
+{
             s = s.parentElement;
             if (s.className) return s;
             if (++depth == 2) return s;
@@ -2389,13 +2391,13 @@ Close to being a major release due to the amount of changes done.
     },
 
     switchSet: function (s, enable)
-    {
+{
         var m = SideBar.switchMain(s);
         m.className = (enable) ? m.className.replace("Off", "On") : m.className.replace("On", "Off");
     },
 
     switchToggle: function (s)
-    {
+{
         var m = SideBar.switchMain(s);
         var enabled = !(SideBar.switchMain(m).className.indexOf("On") >= 0);
         SideBar.switchSet(m, enabled);
@@ -2403,14 +2405,14 @@ Close to being a major release due to the amount of changes done.
     },
 
     adjustFrameSize: function (e)
-    {
+{
         if (SideBar.sidebar.offsetHeight > window.innerHeight)
-        {
+{
             SideBar.iframe.style.height = (window.innerHeight + 5) + "px";
             SideBar.iframe.style.width = (SideBar.sidebar.offsetWidth + SideBar.scrollWidth + 2) + "px";
         }
         else
-        {
+{
             SideBar.iframe.style.height = (SideBar.sidebar.offsetHeight + 5) + "px";
             SideBar.iframe.style.width = (SideBar.sidebar.offsetWidth + 2) + "px";
         }
@@ -2425,7 +2427,7 @@ Close to being a major release due to the amount of changes done.
      Handles all link elements that behave like a button
     ------------------------------------------------------*/
     onSwitchPressed: function (e)
-    {
+{
         e.stopPropagation();
         //e.preventDefault(); //Stops propagating to parent
         var s = e.target;
@@ -2435,50 +2437,50 @@ Close to being a major release due to the amount of changes done.
         if (s.name != "Sort" && s.name != "Unsort") enabled = SideBar.switchToggle(s);
         if (Settings.display[s.name] != undefined) Settings.display[s.name] = enabled;
         if (Settings.fetch[s.name] != undefined)
-        {
+{
             Settings.fetch[s.name] = enabled;
         }
 
         switch (s.name)
-        {
+{
             case "Sort":
             case "Unsort":
             case "tagsInclude":
             case "tagsExclude":
             case "filterSwitch":
                 if (PaginatorHQ.status != 0)
-                {
+{
                     alert("Sort/Filter is already in progress.");
                 }
                 else if (s.name == "filterSwitch")
-                {
+{
                     if (enabled) Settings.filterSwitchFlag = (Settings.filterSwitchFlag | 2);
                     else Settings.filterSwitchFlag -= (Settings.filterSwitchFlag & 2);
                     PaginatorHQ.filterResult();
                 }
                 else if (s.name == "tagsInclude" || s.name == "tagsExclude")
-                {
+{
                     var btn = e.target;
                     if (btn.className == "bgiL" && btn.style.borderColor == "rgb(0, 0, 0)")
-                    {
+{
                         btn.className = "bgiG";
                         enabled = false;
                     }
                     else
-                    {
+{
                         btn.style.borderColor = "rgb(0, 0, 0)";
                         btn.className = "bgiL";
                         enabled = true;
                     }
 
                     if (s.name == "tagsInclude")
-                    {
+{
                         if (enabled) Settings.filterSwitchFlag = (Settings.filterSwitchFlag | 4);
                         else Settings.filterSwitchFlag -= (Settings.filterSwitchFlag & 4);
                     }
 
                     if (s.name == "tagsExclude")
-                    {
+{
                         if (enabled) Settings.filterSwitchFlag = (Settings.filterSwitchFlag | 8);
                         else Settings.filterSwitchFlag -= (Settings.filterSwitchFlag & 8);
                     }
@@ -2486,7 +2488,7 @@ Close to being a major release due to the amount of changes done.
                     PaginatorHQ.filterResult();
                 }
                 else
-                {
+{
                     PaginatorHQ.sortingMethod = (PaginatorHQ.sortingMethod != 0) ? 0 : 1;
                     PaginatorHQ.sortByScore((s.name == "Sort"));
                 }
@@ -2508,11 +2510,11 @@ Close to being a major release due to the amount of changes done.
     },
 
     onToggledFilter: function (e)
-    {
+{
         Settings.filter.flag = 0;
         var filters = SideBar.iDoc.getElementsByName("filterType");
         for (var i = 0; i < filters.length; i++)
-        {
+{
             var bitValue = Math.pow(2, i + 1);
             Settings.filter.flag += (filters[i].checked) ? bitValue : 0;
         }
@@ -2522,10 +2524,10 @@ Close to being a major release due to the amount of changes done.
     },
 
     onAgeRatingFilter: function (e)
-    {
+{
         var ars = SideBar.iDoc.getElementsByName("ageRating");
         for (var i = 0; i < ars.length; i++)
-        {
+{
             var val = Math.pow(2, i + 4);
             Settings.filterSwitchFlag -= (Settings.filterSwitchFlag & val); //Remove the bit switch
             if (ars[i].checked) Settings.filterSwitchFlag += val;
@@ -2534,9 +2536,9 @@ Close to being a major release due to the amount of changes done.
     },
 
     onRadioClick: function (e)
-    {
+{
         switch (e.target.name)
-        {
+{
             case "filterSet":
                 Settings.filter.set = e.target.value;
                 SideBar.loadFilterSet();
@@ -2551,7 +2553,7 @@ Close to being a major release due to the amount of changes done.
     },
 
     onInputFilterValue: function (e)
-    {
+{
         e.target.value = parseInt(e.target.value);
         if (e.target.value.length > 6) e.target.value = e.target.value.substring(0, 6);
 
@@ -2562,12 +2564,12 @@ Close to being a major release due to the amount of changes done.
     },
 
     onInputTagFilter: function (e)
-    {
+{
         var name = e.target.id;
         var btn = SideBar.iDoc.getElementsByName(name)[0].firstElementChild;
 
         if (btn.className == "bgiL" && btn.style.borderColor == "rgb(0, 0, 0)")
-        {
+{
             btn.style.borderColor = "rgb(255, 0, 0)";
         }
 
@@ -2576,7 +2578,7 @@ Close to being a major release due to the amount of changes done.
     },
 
     loadFilterSet: function ()
-    {
+{
         var values = Settings.filters[Settings.filter.set];
         var filters = SideBar.sidebar.getElementsByClassName("filterValue");
         for (var i = 0; i < filters.length; i++) filters[i].value = values[i];
@@ -2587,19 +2589,19 @@ Close to being a major release due to the amount of changes done.
     var Observe =
     {
         bodyChanges: function ()
-        {
+{
             Observe.callback(); //Just in case it gets missed. Happens occasionally
 
             var mo = window.MutationObserver || window.MozMutationObserver || window.WebKitMutationObserver;
             if (mo)
-            {
+{
                 Observe.observer = new mo(Observe.callback);
                 Observe.observer.observe(document.body, { childList: true, subtree: true });
             }
         },
 
         callback: function (mutations)
-        {
+{
             PreviewHQ.registerForPreviewWindow();
         }
     };
@@ -2614,7 +2616,7 @@ Close to being a major release due to the amount of changes done.
         sortType: 0,
 
         versionCheck: function (current)
-        {
+{
             var saved = GM_getValue("Version", "0.0").toString();
 
             var v1 = saved.split(".");
@@ -2623,11 +2625,11 @@ Close to being a major release due to the amount of changes done.
             if (saved != current) alert("(Some) Pixiv++ settings will be reset due to major changes in the update.");
 
             if (v1[0] != v2[0])
-            {
+{
                 var names = GM_listValues();
 
                 for (var i = 0; name = names[i], i < names.length; i++)
-                {
+{
                     var skipNames = ["Filters", "TimidScript", "RequestBookmarkCount", "RequestMethod"];
                     var found = false;
                     for (var j = 0; j < skipNames.length; j++) found = found || (name.indexOf(skipNames[j]) == 0);
@@ -2636,11 +2638,11 @@ Close to being a major release due to the amount of changes done.
             }
 
             if (v1[1] != v2[1])
-            {
+{
                 var names = GM_listValues();
 
                 for (var i = 0; name = names[i], i < names.length; i++)
-                {
+{
                     var deleteNames = ["Filters"];
                     if ("Filters" == name) GM_deleteValue(name);
                 }
@@ -2650,7 +2652,7 @@ Close to being a major release due to the amount of changes done.
         },
 
         loadSettings: function ()
-        {
+{
             Settings.versionCheck("129.125");
             Settings.requestMethod = GM_getValue("RequestMethod", 0);
 
@@ -2691,12 +2693,12 @@ Close to being a major release due to the amount of changes done.
 
 
         setObjectPropertiesByFlag: function (obj, flag)
-        {
+{
             var i = 0;
             for (var key in obj)
-            {
+{
                 if (obj.hasOwnProperty(key))
-                {
+{
                     i++;
                     obj[key] = (flag & Math.pow(2, i)) > 0;
                 }
@@ -2706,13 +2708,13 @@ Close to being a major release due to the amount of changes done.
         },
 
         getObjectPropertiesFlag: function (obj)
-        {
+{
             var i = 0;
             var flag = 0;
             for (var key in obj)
-            {
+{
                 if (obj.hasOwnProperty(key))
-                {
+{
                     i++;
                     if (obj[key]) flag += Math.pow(2, i);
                 }
@@ -2722,12 +2724,12 @@ Close to being a major release due to the amount of changes done.
         },
 
         setObjectPropertiesValues: function (obj, arr)
-        {
+{
             var i = 0;
             for (var key in obj)
-            {
+{
                 if (obj.hasOwnProperty(key))
-                {
+{
                     obj[key] = arr[i];
                     i++;
                 }
@@ -2738,7 +2740,7 @@ Close to being a major release due to the amount of changes done.
 
 
         getObjectPropertiesValues: function (obj)
-        {
+{
             var arr = new Array();
 
             for (var key in obj) if (obj.hasOwnProperty(key)) arr.push(obj[key]);
@@ -2748,7 +2750,7 @@ Close to being a major release due to the amount of changes done.
 
 
         saveSettings: function ()
-        {
+{
             GM_setValue(Settings.valueName("Generic"), Settings.getObjectPropertiesFlag(Settings.display) + "|"
                     + Settings.getObjectPropertiesFlag(Settings.fetch) + "|"
                     + Settings.pagingOffset + "|"
@@ -2762,7 +2764,7 @@ Close to being a major release due to the amount of changes done.
 
             GM_setValue("Filters",
                 (function ()
-                {
+{
                     var val = "";
                     for (var i = 0; i < 5; i++) val += Settings.filters[i].toString() + ((i < 4) ? "|" : "");
                     return val;
@@ -2771,22 +2773,22 @@ Close to being a major release due to the amount of changes done.
 
 
         valueName: function (name, saveset)
-        {
+{
             if (!saveset) saveset = PAGETYPE;
             return "[" + saveset + "] " + name;
         }
     }
 
     function FilterTypeToString(type)
-    {
+{
         var names = ["Bookmarks", "Views", "Ratings", "Total"];
         return names[type];
     }
 
     function RemoveMessage(msg)
-    {
+{
         if (msg)
-        {
+{
             var msgBox = msg.parentElement;
             msgBox.removeChild(msg);
             if (msgBox.children.length == 0) msgBox.style.visibility = "hidden";
@@ -2794,11 +2796,11 @@ Close to being a major release due to the amount of changes done.
     }
 
     function DisplayMessage(msgTxt, timeout)
-    {
+{
         //text-align: center; display:inline-block; width: 100px; background-color: #D3D3D3; border: 1;
         var msgBox = document.getElementById("pppMsgBox");
         if (!msgBox)
-        {
+{
             msgBox = document.createElement("span");
             msgBox.id = "pppMsgBox";
             document.body.appendChild(msgBox);
@@ -2819,12 +2821,12 @@ Close to being a major release due to the amount of changes done.
 
 
     function makeStruct(keys, obj)
-    {
+{
         if (!obj) obj = {};
 
         var names = keys.split(" ").sort();
         for (var i = 0; i < names.length; i++)
-        {
+{
             obj[names[i]] = obj[names[i]];
         }
 
@@ -2859,11 +2861,11 @@ Close to being a major release due to the amount of changes done.
     =================================================================================================*/
     //Removes pop dialog that appears when there isn't a cookie
     (function ()
-    {
+{
         console.info("Pixiv Main");
         var counter = 0;
         var id = setInterval(function ()
-        {
+{
             var pop = document.getElementById("register-introduction-modal");
             if (pop) pop.getElementsByClassName("close")[0].click();
 
@@ -2879,11 +2881,11 @@ Close to being a major release due to the amount of changes done.
         Observe.bodyChanges();
 
         if (PAGETYPE >= 0)
-        {
+{
             console.info("Pixiv++ Initalising");
             var els = document.querySelectorAll("a[href^='/jump']");
             for (var i = 0; i < els.length; i++)
-            {
+{
                 els[i].href = decodeURIComponent(els[i].href.replace(/.+\/jump\.php\?/, ""));
                 console.log("Direct URL: " + els[i].href);
             }
@@ -2913,9 +2915,9 @@ Close to being a major release due to the amount of changes done.
 
 
         if (PAGETYPE > 0)
-        {
+{
             if (PAGETYPE > 1 && PAGETYPE < 10)
-            {
+{
                 el = document.createElement("div");
                 el.id = "AutoPager";
                 el.className = "switch sred";
@@ -2924,7 +2926,7 @@ Close to being a major release due to the amount of changes done.
                 else el.setAttribute("enabled", false);
                 quickcontrol.appendChild(el);
                 el.onclick = function ()
-                {
+{
                     Settings.fetch.nextPage = !Settings.fetch.nextPage;
                     Settings.saveSettings();
                     if (Settings.fetch.nextPage) this.setAttribute("enabled", true);
@@ -2944,10 +2946,10 @@ Close to being a major release due to the amount of changes done.
                 el.id = "XPager";
                 el.title = "Fetch the next # pages";
                 el.onclick = function ()
-                {
+{
                     if (this.hasAttribute("enabled")) this.removeAttribute("enabled");
                     else if (Pager.nextPageURL)
-                    {
+{
                         var sec = document.getElementById("XPageLoader");
                         sec.style.display = (sec.style.display) ? null : "none";
                     }
@@ -2962,7 +2964,7 @@ Close to being a major release due to the amount of changes done.
                 document.body.appendChild(el);
                 el = document.querySelectorAll("#XPageLoader li");
                 for (var i = 0; i < el.length; i++)
-                {
+{
                     el[i].onclick = loadPages;
                 }
             }
@@ -2974,16 +2976,16 @@ Close to being a major release due to the amount of changes done.
             if (Settings.fetch.metadata) el.setAttribute("enabled", true);
             else el.setAttribute("enabled", false);
             el.onclick = function ()
-            {
+{
                 Settings.fetch.metadata = !Settings.fetch.metadata;
                 Settings.saveSettings();
                 if (Settings.fetch.metadata)
-                {
+{
                     this.setAttribute("enabled", true);
                     IllustrationLinker.switchOn();
                 }
                 else
-                {
+{
                     this.setAttribute("enabled", false);
                     IllustrationLinker.switchOff();
                 }
@@ -2996,11 +2998,11 @@ Close to being a major release due to the amount of changes done.
         el.title = "Fetch all image metadata";
         el.src = download_arrow;
         el.onclick = function ()
-        {
+{
             var me = this;
 
             if (me.isbusy)
-            {
+{
                 if (document.querySelector(".switch.sgreen[enabled=true]")) document.querySelector(".switch.sgreen[enabled=true]").click();
                 else IllustrationLinker.switchOff();
                 me.removeAttribute("enabled");
@@ -3014,9 +3016,9 @@ Close to being a major release due to the amount of changes done.
             me.setAttribute("enabled", "");
 
             var iid = setInterval(function ()
-            {
+{
                 if (IllustrationLinker.processList.length == 0 || !IllustrationLinker.enabled)
-                {
+{
                     IllustrationLinker.switchOff();
                     me.removeAttribute("enabled");
                     clearInterval(iid);
@@ -3028,7 +3030,7 @@ Close to being a major release due to the amount of changes done.
         document.body.appendChild(quickcontrol);
 
         function loadPages(e)
-        {
+{
             var xpager = document.getElementById("XPager")
             xpager.setAttribute("enabled", true);
 
@@ -3037,13 +3039,13 @@ Close to being a major release due to the amount of changes done.
             if (isNaN(count)) count = 50;
             loadNextPage();
             function loadNextPage()
-            {
+{
                 if (!xpager.hasAttribute("enabled")) return;
                 if (!Pager.nextPageURL) document.getElementById("XPager").click();
                 Pager.getNextPage(function (n)
-                {
+{
                     if (--count > 0)
-                    {
+{
                         setTimeout(loadNextPage, 1500);
                         console.log("Pixiv++: " + count + " left to load");
                     }
