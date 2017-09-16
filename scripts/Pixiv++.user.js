@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name                [TS] Pixiv++ V3
 // @namespace           TimidScript
-// @version             3.3.100
-// @description         Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
+// @version             3.4.101 alpha
+// @description         Development has halted until I have more time. Pixiv uses async page loading, which broke some aspects of this script. Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
 // @copyright           © 2012+ TimidScript, Some Rights Reserved.
@@ -59,6 +59,9 @@ TODO: Add auto filter to remove private/blocked and deleted illustrations from b
 
  Version History
 ------------------------------------
+3.4.101 Alpha (2017-09-16)
+ - Fixed paginator issue. The script has dropped to alpha as changes in Pixiv make the script useless in search. It uses asyn page loading, making it hard to have multiple pages.
+ - Pre-release as I do not have the time to work on it at the moment.
 3.3.100 (2017-06-11)
  - Does not relign if low resolution when opening up the menu
 3.3.99 (2017-04-18)
@@ -1063,6 +1066,7 @@ Close to being a major release due to the amount of changes done.
 
                 clearInterval(Pager.intervalID);
                 var pageNumber = PaginatorHQ.getPageNumber(Pager.nextPageURL);
+                console.info("Next Page: ", Pager.nextPageURL);
                 var msg = DisplayMessage("Requesting page [" + pageNumber + "] ...");
 
                 if (Settings.requestMethod & 2)
@@ -1158,6 +1162,7 @@ Close to being a major release due to the amount of changes done.
                 var pageNumber = (paged) ? PaginatorHQ.getPageNumber(document.URL) : 0;
 
                 var containers = PaginatorHQ.getContainers(document);
+                console.log("Containers: ", containers)
                 if (!paged) //Either has no pages or it is the last page
                 {
                     if (PAGETYPE > 1 && containers)
@@ -1168,16 +1173,15 @@ Close to being a major release due to the amount of changes done.
                     IllustrationLinker.getContainerLinks(containers, pageNumber);
                 }
                 else
-                {
+                {                    
                     var paginator = document.getElementsByClassName("column-order-menu");
-                    while (paginator.length > 1) paginator[1].parentNode.removeChild(paginator[1]);
+                    //while (paginator.length > 1) paginator[1].parentNode.removeChild(paginator[1]);
                     paginator = paginator[0];
-                    paginator.className += " paginator";
-
-
+                    paginator.className += " paginator";                 
+                    
                     var pageContainer = containers[0];
                     if (pageContainer.className == "display_works linkStyleWorks") //display_works linkStyleWorks breaks sets UL style
-                    {
+                    {                        
                         //You need to add this otherwise "DIV._unit action-unit" element does not expand and will end up with transparent background.
                         var divider = document.createElement("div");
                         divider.className = "clear";
@@ -1186,17 +1190,17 @@ Close to being a major release due to the amount of changes done.
                         pageContainer = pageContainer.firstElementChild;
                     }
                     else
-                    {
-                        pageContainer.parentElement.insertBefore(paginator, pageContainer);
+                    {                        
+                        //pageContainer.parentElement.insertBefore(paginator, pageContainer);
                         //pageContainer.insertBefore(paginator, pageContainer.firstElementChild);
                     }
+                    
                     pageContainer.style.marginBottom = "0";
                     pageContainer.style.marginTop = "0";
                     pageContainer.setAttribute("name", "pageContainer");
                     pageContainer.setAttribute("page", pageNumber);
                     PaginatorHQ.pageTable = pageContainer.parentElement;
-
-
+                    
                     IllustrationLinker.getContainerLinks([pageContainer], pageNumber);
                     pageContainer.className += " pppPage" + (pageNumber % 2);
                     Pager.initalise(PaginatorHQ.addNewPage, PaginatorHQ.getMainTableBottom);
@@ -1293,6 +1297,8 @@ Close to being a major release due to the amount of changes done.
 
                 //PageContainer
                 var pageContainer = PaginatorHQ.getContainers(doc)[0];
+                console.log("---->", pageContainer.innerHTML);
+
                 pageContainer.setAttribute("name", "pageContainer");
                 pageContainer.setAttribute("page", pageNumber);
                 pageContainer.style.marginBottom = "0";
@@ -1310,6 +1316,7 @@ Close to being a major release due to the amount of changes done.
                 PaginatorHQ.pageTable.appendChild(paginator);
                 PaginatorHQ.pageTable.appendChild(pageContainer);
 
+                console.log(2)
 
                 //IllustrationLinker.getContainerLinks should always after page is added.
                 IllustrationLinker.getContainerLinks([pageContainer], pageNumber);
@@ -1320,6 +1327,8 @@ Close to being a major release due to the amount of changes done.
                     paginator.style.display = "none";
                     PaginatorHQ.filterContainer(pageContainer);
                 }
+
+                console.log(3)
             },
 
             /*
@@ -1329,12 +1338,15 @@ Close to being a major release due to the amount of changes done.
              illustrations whose content are auto-updated by Pixiv.
             -----------------------------------------------------------------------------------------*/
             getContainers: function (doc)
-            {
+            {                                                
                 if (!doc) doc = document;
                 //if (PAGETYPE == 10) nodes = doc.querySelectorAll("#illust-recommend ._image-items");
                 var nodes = doc.querySelectorAll('#item-container, .worksListOthers'); //None paged
+
                 if (PAGETYPE == 10) return doc.querySelectorAll(".layout-body #illust-recommend ._image-items");
-                if (nodes.length == 0) nodes = doc.querySelectorAll("._image-items, .display_editable_works"); //Paged
+                if (PAGETYPE == 9) return doc.querySelectorAll(".column-search-result")                
+                    
+                if (nodes.length == 0) nodes = doc.querySelectorAll("._image-items, .display_editable_works"); //Paged                
                 return nodes;
             },
 
@@ -1814,6 +1826,8 @@ Close to being a major release due to the amount of changes done.
 
             removeUnwantedElements: function (doc)
             {
+                TSL.removeNode(doc.querySelector("._popular-introduction"))
+
                 var classes = ["popular-introduction", "user-ad-container"];
                 var ids = ["header-banner"];
 
