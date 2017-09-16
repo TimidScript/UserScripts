@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name                [TS] Pixiv++ V3
+// @name                [TS] Pixiv++ V3 alpha
 // @namespace           TimidScript
 // @version             3.4.101 alpha
 // @description         Development has halted until I have more time. Pixiv uses async page loading, which broke some aspects of this script. Ultimate Pixiv Script: Direct Links, Auto-Paging, Preview, IQDB/Danbooru, Filter/Sort using Bookmark,views,rating,total score. | Safe Search | plus more. Works best with "Pixiv++ Manga Viewer" and "Generic Image Viewer". 自動ページング|ポケベル|ロード次ページ|フィルター|並べ替え|注文|ダイレクトリンク
