@@ -1040,9 +1040,12 @@ Close to being a major release due to the amount of changes done.
             getNextPageURL: function (xml)
             {
                 this.nextPageURL = null;
+                var btnNext = false;
                 var evaluator = new XPathEvaluator(); //document.evaluate
-                var btnNext = evaluator.evaluate(".//a[@rel='next' and @class='_button']", xml, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                if(btnNext.snapshotLength>0) btnNext = btnNext.snapshotItem(btnNext.snapshotLength-1)
+                var spanNext = evaluator.evaluate(".//span[@class='next']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                var spanNext = spanNext.snapshotItem(spanNext.snapshotLength-1);
+                if(spanNext.hasChildNodes())
+                    btnNext = spanNext.children[0];
                 if (btnNext) this.nextPageURL = btnNext.href;
                 //else btnNext = evaluator.evaluate(".//a[@rel='next' and @class='button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 //if (btnNext) this.nextPageURL = btnNext.href;
