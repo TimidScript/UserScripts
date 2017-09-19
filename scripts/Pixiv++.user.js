@@ -1044,7 +1044,7 @@ Close to being a major release due to the amount of changes done.
                 var evaluator = new XPathEvaluator(); //document.evaluate
                 var spanNext = evaluator.evaluate(".//span[@class='next']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
                 var spanNext = spanNext.snapshotItem(spanNext.snapshotLength-1);
-                if(spanNext.hasChildNodes())
+                if(spanNext!=null && spanNext.hasChildNodes())
                     btnNext = spanNext.children[0];
                 if (btnNext) this.nextPageURL = btnNext.href;
                 //else btnNext = evaluator.evaluate(".//a[@rel='next' and @class='button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
