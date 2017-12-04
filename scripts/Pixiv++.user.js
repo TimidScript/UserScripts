@@ -993,6 +993,18 @@ Close to being a major release due to the amount of changes done.
             requestingPage: false,
             scrollOffset: null,
 
+            nextPageURLf: function(callback){
+              if(this.nextPageURL!=null)
+                return callback();
+              var interval = setInterval(function(){ 
+                  this.getNextPageURL(document.body);
+                  if(this.nextPageURL!=null)
+                {
+                  callback();
+                  clearInterval(interval);
+                }
+              }.bind(this), 1000);
+            },
             /*
             ------------------------------------------------------------------------------
              Initialises the pager.
@@ -1028,8 +1040,12 @@ Close to being a major release due to the amount of changes done.
             getNextPageURL: function (xml)
             {
                 this.nextPageURL = null;
+                var btnNext = false;
                 var evaluator = new XPathEvaluator(); //document.evaluate
-                var btnNext = evaluator.evaluate(".//a[@rel='next' and @class='_button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                var spanNext = evaluator.evaluate(".//span[@class='next']", document.body, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                var spanNext = spanNext.snapshotItem(spanNext.snapshotLength-1);
+                if(spanNext!=null && spanNext.hasChildNodes())
+                    btnNext = spanNext.children[0];
                 if (btnNext) this.nextPageURL = btnNext.href;
                 //else btnNext = evaluator.evaluate(".//a[@rel='next' and @class='button']", xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 //if (btnNext) this.nextPageURL = btnNext.href;
@@ -1044,15 +1060,18 @@ Close to being a major release due to the amount of changes done.
                 if (Pager.onPageLoad) Pager.onPageLoad(doc, Pager.nextPageURL);
 
                 Pager.getNextPageURL(doc.body);
-                if (Pager.nextPageURL)
-                {
-                    setTimeout(
-                        function ()
-                        {
-                            Pager.intervalID = setInterval(Pager.checkScrollPosition, 500);
-                        }
-                        , Pager.timeOutLength);
-                }
+                Pager.nextPageURLf(function(){
+                  if (Pager.nextPageURL)
+                  {
+                      setTimeout(
+                          function ()
+                          {
+                              Pager.intervalID = setInterval(Pager.checkScrollPosition, 500);
+                          }
+                          , Pager.timeOutLength);
+                  }
+                });
+                
             },
 
             /*
@@ -1173,15 +1192,17 @@ Close to being a major release due to the amount of changes done.
                     IllustrationLinker.getContainerLinks(containers, pageNumber);
                 }
                 else
-                {                    
+                {
                     var paginator = document.getElementsByClassName("column-order-menu");
-                    //while (paginator.length > 1) paginator[1].parentNode.removeChild(paginator[1]);
+
+                    while (paginator.length > 1) paginator[0].parentNode.removeChild(paginator[0]);
                     paginator = paginator[0];
-                    paginator.className += " paginator";                 
-                    
+                    paginator.className += " paginator";
+
+
                     var pageContainer = containers[0];
                     if (pageContainer.className == "display_works linkStyleWorks") //display_works linkStyleWorks breaks sets UL style
-                    {                        
+                    {
                         //You need to add this otherwise "DIV._unit action-unit" element does not expand and will end up with transparent background.
                         var divider = document.createElement("div");
                         divider.className = "clear";
@@ -1190,9 +1211,8 @@ Close to being a major release due to the amount of changes done.
                         pageContainer = pageContainer.firstElementChild;
                     }
                     else
-                    {                        
-                        //pageContainer.parentElement.insertBefore(paginator, pageContainer);
-                        //pageContainer.insertBefore(paginator, pageContainer.firstElementChild);
+                    {
+                        pageContainer.parentElement.insertBefore(paginator, pageContainer);
                     }
                     
                     pageContainer.style.marginBottom = "0";
@@ -1297,15 +1317,15 @@ Close to being a major release due to the amount of changes done.
 
                 //PageContainer
                 var pageContainer = PaginatorHQ.getContainers(doc)[0];
-                console.log("---->", pageContainer.innerHTML);
-
                 pageContainer.setAttribute("name", "pageContainer");
                 pageContainer.setAttribute("page", pageNumber);
                 pageContainer.style.marginBottom = "0";
                 pageContainer.style.marginTop = "0";
 
                 //Navigation Bar
-                var paginator = doc.getElementsByClassName("column-order-menu")[0];
+                var paginator = doc.getElementsByClassName("column-order-menu")[1];
+                if(paginator==null)
+                    paginator = doc.getElementsByClassName("column-order-menu")[0];
                 paginator.className += " paginator pppPagedChild";
                 for (var i = paginator.children.length - 1; child = paginator.children[i], i >= 0; i--)
                     if (child.className != "pager-container") paginator.removeChild(child);
@@ -1316,7 +1336,6 @@ Close to being a major release due to the amount of changes done.
                 PaginatorHQ.pageTable.appendChild(paginator);
                 PaginatorHQ.pageTable.appendChild(pageContainer);
 
-                console.log(2)
 
                 //IllustrationLinker.getContainerLinks should always after page is added.
                 IllustrationLinker.getContainerLinks([pageContainer], pageNumber);
@@ -1327,8 +1346,6 @@ Close to being a major release due to the amount of changes done.
                     paginator.style.display = "none";
                     PaginatorHQ.filterContainer(pageContainer);
                 }
-
-                console.log(3)
             },
 
             /*
