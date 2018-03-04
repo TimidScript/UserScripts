@@ -181,6 +181,17 @@ Close to being a major release due to the amount of changes done.
 *************************************************************************************************/
 (function ()
 {
+  if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
     if (window.self !== window.top) return;
 
     if (/^\/whitecube/i.test(location.pathname))
@@ -337,7 +348,11 @@ Close to being a major release due to the amount of changes done.
                        link = thumbnail.querySelector("a");
 
                        if (!link) continue;
-                       id = IllustrationLinker.getIllustID(link.href);
+                       id = thumbnail.getAttribute("id");
+                       if(id==null)
+                          id = IllustrationLinker.getIllustID(link.href);
+                        else 
+                          id = id.replace("i","");
                        thumbnail.id = "i" + id;
                        thumbnail.setAttribute("illustration-id", id);
                        thumbnail.setAttribute("pppThumb", ++IllustrationLinker.thumbcounter);
@@ -454,7 +469,7 @@ Close to being a major release due to the amount of changes done.
 
                metadata.userID = context.userId; //el.parentElement.href.match(/member\.php\?id=(\d+)/i)[1];
                metadata.userName = context.userName; //el.nextElementSibling.textContent;
-               metadata.account = doc.querySelector(".tab-feed").href.replace(/.+\/stacc\//, "");
+               metadata.account = doc.querySelector("ul.tabs > li > a[href*='/stacc/']").href.replace(/.+\/stacc\//, "");
                el = doc.querySelector(".user-image");
                if (el)
                {
@@ -1347,7 +1362,31 @@ Close to being a major release due to the amount of changes done.
                     PaginatorHQ.filterContainer(pageContainer);
                 }
             },
+            ConvertToThumbnailContainer: function(jsonData)
+            {
+                //Need to create some of elements manually (weird behaviour)
+                var template1 = "<div class=\"_layout-thumbnail\"><img src=\"{5}\" alt=\"\" class=\"_thumbnail ui-scroll-view\" data-filter=\"thumbnail-filter lazy-image\" data-src=\"{5}\" data-type=\"illust\" data-id=\"{0}\" data-tags=\"{3}\" data-user-id=\"{1}\" style=\"opacity: 1;height:auto;width:auto;max-width:150px;max-height:150px;\">            <div class=\"_one-click-bookmark js-click-trackable  \" data-click-category=\"abtest_www_one_click_bookmark\" data-click-action=\"illust\" data-click-label=\"{0}\" data-type=\"illust\" data-id=\"{0}\" title=\"Add to Bookmarks\"></div>            <div class=\"thumbnail-menu\">                <div class=\"_balloon-menu-opener\">                    <div class=\"opener\"></div>                    <section class=\"_balloon-menu-popup\">                        <ul class=\"_balloon-menu-closer menu\">                            <li class=\"mute-setting-opener\" data-type=\"illust\" data-id=\"{0}\"><span class=\"item\">Mute settings</span></li>                            <li><a class=\"item\" target=\"_blank\" href=\"/illust_infomsg.php?illust_id={0}\">Report</a></li>                        </ul>                    </section>                </div>            </div>        </div>        <div class=\"page-count\">            <div class=\"icon\"></div><span>{6}</span></div>";
+                var template2 = " <a href=\"/member_illust.php?mode=medium&amp;illust_id={0}\"><h1 class=\"title\" title=\"{4}\">{4}</h1></a><a href=\"/member_illust.php?id={1}\" class=\"user ui-profile-popup \" title=\"{2}\" data-user_id=\"{1}\" data-user_name=\"{2}\">{2}</a>";
+                var el = document.createElement("li");
+                el.setAttribute("class","image-item");
+                el.setAttribute("id",jsonData["illustId"]);
+                var a = document.createElement("a");
+                a.setAttribute("href","/member_illust.php?mode=medium&amp;illust_id="+jsonData["illustId"]);
+                a.setAttribute("class","work  _work multiple")
+                var formatedTemplate1 = template1.format(jsonData["illustId"],
+                  jsonData["userId"],jsonData["userName"],
+                  jsonData["tags"].join(" "),jsonData["illustTitle"],jsonData["url"],
+                  jsonData["pageCount"]);
+                 var formatedTemplate2 = template2.format(jsonData["illustId"],
+                  jsonData["userId"],jsonData["userName"],
+                  jsonData["tags"].join(" "),jsonData["illustTitle"],jsonData["url"],
+                  jsonData["pageCount"]);
 
+                el.innerHTML += formatedTemplate2;
+                a.innerHTML += formatedTemplate1;
+                el.insertBefore(a,el.firstChild);
+                return el;
+            },
             /*
             -----------------------------------------------------------------------------------------
              Returns containers that contain thumbnails. If doc is left out it uses current
@@ -1355,16 +1394,59 @@ Close to being a major release due to the amount of changes done.
              illustrations whose content are auto-updated by Pixiv.
             -----------------------------------------------------------------------------------------*/
             getContainers: function (doc)
-            {                                                
+            {
                 if (!doc) doc = document;
                 //if (PAGETYPE == 10) nodes = doc.querySelectorAll("#illust-recommend ._image-items");
                 var nodes = doc.querySelectorAll('#item-container, .worksListOthers'); //None paged
 
                 if (PAGETYPE == 10) return doc.querySelectorAll(".layout-body #illust-recommend ._image-items");
-                if (PAGETYPE == 9) return doc.querySelectorAll(".column-search-result")                
+                //if (PAGETYPE == 9) return doc.querySelectorAll(".column-search-result")
+
+                if (nodes.length == 0) nodes = doc.querySelectorAll("._image-items, .display_editable_works"); //Paged
+
+                if(nodes.length == 0) {
+                    nodes = doc.querySelectorAll("[data-items]");//React-powered results?
+                    if(nodes.length==0) return nodes; 
+
+                    for (var i = nodes.length - 1; i >= 0; i--) {
+                      var node = nodes[i];
+                      if(node.hasAttribute("pppConverted")) continue;
+
+                      if(node.nodeName=="INPUT")
+                      {//Need to change node tag to div instead of input
+                        var div = document.createElement('div');
+                        div.innerHTML = node.outerHTML.replace("input","div");
+                        node.replaceWith(div.firstChild);
+                      }
+                    }
+                    nodes = doc.querySelectorAll("[data-items]");
+
+                    for (var i = nodes.length - 1; i >= 0; i--) 
+                    {
+                      var node = nodes[i];
+                      if(node.hasAttribute("pppConverted")) continue;
+                      node.setAttribute("pppConverted",1);
+                      
+                      var jsonData = JSON.parse(node.getAttribute("data-items")).reverse();
+
+                      node.removeAttribute("data-items");
+                      node.style.removeProperty("min-height");//fix page height
+                      node.style.removeProperty("hidden")//make results visible
+                      node.style.removeProperty("type")//make results visible 2 (search page)
+                      node.innerHTML = "";
+                      for (var i = jsonData.length - 1; i >= 0; i--) {
+                        var el = PaginatorHQ.ConvertToThumbnailContainer(jsonData[i]);
+                        node.appendChild(el);
+                      }
+                    }
+                    searchNode = document.querySelectorAll('section#js-react-search-mid');
+                    if(searchNode.length !=0){
+                      searchNode[0].replaceWith(node);
+                    }
                     
-                if (nodes.length == 0) nodes = doc.querySelectorAll("._image-items, .display_editable_works"); //Paged                
-                return nodes;
+                } 
+              //throw new FatalError("Something went badly wrong!");                
+              return nodes;
             },
 
             filterThumbnail: function (thumbnail)
@@ -1872,7 +1954,7 @@ Close to being a major release due to the amount of changes done.
         {
             if (PAGETYPE > 9)
             {
-                var items = document.querySelectorAll(".image-item");
+                var items = document.querySelectorAll("[data-reactroot]")[1].children;
                 if (document.itemscount != items.length)
                 {
                     document.itemscount = items.length;
@@ -1882,12 +1964,12 @@ Close to being a major release due to the amount of changes done.
                 }
             }
 
-            var imgs = document.querySelectorAll('[src$="transparent.gif"]');
+            var imgs = document.querySelectorAll('img[data-filter$="lazy-image"]');
             for (var i = 0; i < imgs.length; i++) imgs[i].src = imgs[i].getAttribute("data-src");
 
             //TODO: Change the code here
             //var thumbs = document.querySelectorAll(".image-item, li ._work,  .with-thumbnail li.after a, .with-thumbnail li.before a, .work_wrapper ._work, .ranking-image-item ._work, .image-item .work, .stacc_ref_illust_img, .response .linkStyleWorks a, .thumbnail-container > a._work, .cool-work .works .work");
-            var thumbs = document.querySelectorAll(".image-item, .rank-image-container, .ranking-item > .work_wrapper, .ranking-items-container .ranking-image-item, .with-thumbnail li.after, .with-thumbnail li.before, .hotimages .hotimage, .stacc_ref_illust_img, .thumbnail-container, .cool-work .works .work");
+            var thumbs = document.querySelectorAll(".image-item, .rank-image-container, .ranking-item > .work_wrapper, .ranking-items-container .ranking-image-item, .with-thumbnail li.after, .with-thumbnail li.before, .hotimages .hotimage, .stacc_ref_illust_img, .thumbnail-container, .cool-work .works .work, div[data-reactroot] > div > figure");
 
             if (thumbs.length == document.thecount) return;
             document.thecount = thumbs.length;
@@ -1901,7 +1983,12 @@ Close to being a major release due to the amount of changes done.
                     TSL.addClass(thumbnail, "marked4linker");
                     link = thumbnail.querySelector("a");
                     if (!link) continue;
-                    id = IllustrationLinker.getIllustID(link.href);
+
+                    id = thumbnail.getAttribute("id");
+                    if(id==null)
+                      id = IllustrationLinker.getIllustID(link.href);
+                    else 
+                      id = id.replace("i","");
                     thumbnail.id = "i" + id;
                     thumbnail.setAttribute("illustration-id", id);
                     marked = document.createElement("span");
