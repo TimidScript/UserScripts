@@ -1,3 +1,5 @@
+#Development has been halted till further notice, due to personal issues. Thank you for your understanding.
+
 ###Copyright © TimidScript, Some Rights Reserved.
 
 Repository for my UserScripts for GreaseMonkey. For script information and installation place please visit my [Greasy Fork](https://greasyfork.org/en/users/1455). 
