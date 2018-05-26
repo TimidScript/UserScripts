@@ -1896,7 +1896,7 @@ Close to being a major release due to the amount of changes done.
             {
                 TSL.removeNode(doc.querySelector("._popular-introduction"))
 
-                var classes = ["popular-introduction", "user-ad-container"];
+                var classes = ["popular-introduction", "user-ad-container", "popular-introduction-overlay","_premium-lead-popular-d-body"];
                 var ids = ["header-banner"];
 
                 for (var i = 0; i < classes.length; i++)
