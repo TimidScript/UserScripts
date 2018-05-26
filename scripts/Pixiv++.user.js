@@ -1402,7 +1402,7 @@ Close to being a major release due to the amount of changes done.
                 if (PAGETYPE == 10) return doc.querySelectorAll(".layout-body #illust-recommend ._image-items");
                 //if (PAGETYPE == 9) return doc.querySelectorAll(".column-search-result")
 
-                if (nodes.length == 0) nodes = doc.querySelectorAll("._image-items, .display_editable_works"); //Paged
+                if (nodes.length == 0 && PAGETYPE != 9) nodes = doc.querySelectorAll("._image-items, .display_editable_works"); //Paged
 
                 if(nodes.length == 0) {
                     nodes = doc.querySelectorAll("[data-items]");//React-powered results?
