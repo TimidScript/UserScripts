@@ -499,7 +499,7 @@ Close to being a major release due to the amount of changes done.
 
                metadata.illust128URL = baseURL.replace("DIMENSIONS", "128x128");
                metadata.illust150URL = baseURL.replace("DIMENSIONS", "150x150");
-               metadata.illust240URL = ilustData.urls.thumb;
+               metadata.illust240URL = baseURL.replace("DIMENSIONS", "240x480");
                metadata.illust480URL = baseURL.replace("DIMENSIONS", "480x960");
                metadata.illust600URL = baseURL.replace("DIMENSIONS", "600x600");
                metadata.illust1200URL = ilustData.urls.regular;
