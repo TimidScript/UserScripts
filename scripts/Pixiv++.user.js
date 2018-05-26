@@ -460,105 +460,74 @@ Close to being a major release due to the amount of changes done.
            {
                var el, m, context
                metadata = IllustrationLinker.getIllust(id),
-               script = doc.evaluate("//div[@id='wrapper']//script[contains(text(),'pixiv.context.illustId')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+               script = doc.evaluate("//head//script[contains(text(),'illustId')]", doc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-               unsafeWindow.eval("pixiv" + id + "= {}; pixiv" + id + ".context= {};");
-               script.innerHTML = script.innerHTML.replace(/pixiv\.context/g, "pixiv" + id + ".context");
-               unsafeWindow.eval(script.innerHTML);
-               context = unsafeWindow["pixiv" + id].context;
+               unsafeWindow.eval(script.innerHTML.replace('use strict',''));
 
-               metadata.userID = context.userId; //el.parentElement.href.match(/member\.php\?id=(\d+)/i)[1];
-               metadata.userName = context.userName; //el.nextElementSibling.textContent;
-               metadata.account = doc.querySelector("ul.tabs > li > a[href*='/stacc/']").href.replace(/.+\/stacc\//, "");
-               el = doc.querySelector(".user-image");
-               if (el)
-               {
-                   metadata.userProfileImageURL = el.src;
-                   if (el.src.match("/profile/")) metadata.userLoginName = el.src.match(/\/profile\/([^\/])+\//i)[1];
-               }
+               context = unsafeWindow["globalInitData"];
 
-               metadata.illustID = id;
-               metadata.illustTitle = context.illustTitle; //doc.querySelector('meta[property="og:title"]'); //Translation scripts mess with the title
-               metadata.R18 = 0;
-               if (doc.querySelector(".r-18")) metadata.R18 = 1;
-               if (doc.querySelector(".r-18g")) metadata.R18 = 2;
-               metadata.pageCount = 1;
-               metadata.illustSize = context.illustSize;
-               metadata.date = doc.querySelector(".work-info .meta li").textContent;
+               metadata.userID = Object.keys(context.preload.user)[0]; //el.parentElement.href.match(/member\.php\?id=(\d+)/i)[1];
+               userData = context.preload.user[metadata.userID];
+               metadata.userName = userData.name; //el.nextElementSibling.textContent;
+               metadata.account = "https://google.com/";//TODO: no idea what this refers to //doc.querySelector("ul.tabs > li > a[href*='/stacc/']").href.replace(/.+\/stacc\//, "");
+               metadata.userProfileImageURL = userData.image;
+               metadata.userLoginName = metadata.userName
 
+               metadata.illustID = Object.keys(context.preload.illust)[0];
+               ilustData =  context.preload.illust[metadata.illustID];
+               metadata.illustTitle = ilustData.illustTitle; //doc.querySelector('meta[property="og:title"]'); //Translation scripts mess with the title
+               metadata.pageCount = ilustData.pageCount;
+               metadata.illustSize = 0;//context.illustSize; TODO: no idea what this refers to
+               metadata.date = ilustData.uploadDate;
 
-               if (doc.querySelector(".tools")) metadata.tools = doc.querySelector(".tools").textContent;
+               //TODO: tools
+               //if (doc.querySelector(".tools")) metadata.tools = doc.querySelector(".tools").textContent;
 
                //metadata.tags = doc.querySelector('meta[name="keywords"]').getAttribute("content");
                //metadata.tags = "";
                //els = doc.querySelectorAll(".tags-container .tags .tag .icon-pixpedia");
                //for (var i = 0; i < els.length; i++) metadata.tags += " " + els[i].getAttribute("data-tooltip").match(/「(.+)」/)[1];
-
-               metadata.tags = [].map.call(doc.querySelectorAll('li.tag a.text'), function (v, i)
-               {
-                   return v.childNodes[0].textContent;
-               }).join(' ');
-
+               tags = ilustData.tags.tags.map(x=>x.tag).join(' ');
+               metadata.tags = tags;
+               //safe=0 r-18=1 r-18g=2 
+               metadata.R18 = tags.indexOf('R-18G')>-1 ? 2 : (tags.indexOf('R-18')>-1 ? 1 : 0);
                metadata.tags = metadata.tags.trim();
 
 
-               var baseURL = doc.querySelector('meta[property="og:image"]');
-               if (baseURL) baseURL = baseURL.getAttribute("content").replace(/\/img-inf\/(.+)_s/, "/c/DIMENSIONS/img-master/$1_master1200");
-               baseURL = baseURL.replace(/128x128|150x150/, "DIMENSIONS");
+               var baseURL = ilustData.urls.thumb;
+               baseURL = baseURL.replace(/240x240/, "DIMENSIONS");
 
                metadata.illust128URL = baseURL.replace("DIMENSIONS", "128x128");
                metadata.illust150URL = baseURL.replace("DIMENSIONS", "150x150");
-               metadata.illust240URL = baseURL.replace("DIMENSIONS", "240x480");
+               metadata.illust240URL = ilustData.urls.thumb;
                metadata.illust480URL = baseURL.replace("DIMENSIONS", "480x960");
                metadata.illust600URL = baseURL.replace("DIMENSIONS", "600x600");
-               metadata.illust1200URL = baseURL.replace("DIMENSIONS", "1200x1200");
-               metadata.illustURL = baseURL.replace(/c\/DIMENSIONS\/img-master(.+)\/.+/, "img-original$1/" + metadata.illustID + "_p0.jpg");
+               metadata.illust1200URL = ilustData.urls.regular;
+               metadata.illustURL = ilustData.urls.original;
 
-               metadata.description = doc.querySelector('meta[property="og:description"]');
-               metadata.description = (metadata.description) ? metadata.description.getAttribute("content") : doc.querySelector("._unit .caption").innerHTML;
+               metadata.description = ilustData.illustComment;
 
-               metadata.bookmarkCount = "?";
+               metadata.bookmarkCount = ilustData.bookmarkCount;
 
-               metadata.viewCount = parseInt(doc.querySelector(".view-count").textContent);
-               metadata.ratings = parseInt(doc.querySelector(".rated-count").textContent);
+               metadata.viewCount = ilustData.viewCount;
+               //TODO: ratings
+               metadata.ratings = 0;//parseInt(doc.querySelector(".rated-count").textContent);
                //metadata.totalRatings = parseInt(doc.querySelector(".score-count").textContent);
 
                el = doc.querySelector(".response-in-work-more");
-               metadata.responseCount = (el) ? parseInt(el.textContent.match(/\d+/)[0]) : 0;
-               if (context.ugokuIllustFullscreenData)
-               {
-                   metadata.illustType = 3;
-                   metadata.illustURL = context.ugokuIllustFullscreenData.src;
-               }
-               else
-               {
-                   el = doc.querySelector(".works_display ._layout-thumbnail img");
+               metadata.responseCount = ilustData.commentCount;
 
-                   el = doc.querySelector(".original-image");
-                   if (el) //Single Image
-                   {
-                       metadata.illustType = 1;
-                       metadata.illustURL = el.getAttribute("data-src").replace(/\?.+/, "");
-                   }
-                   else //Manga
-                   {
+               if(ilustData.pageCount >1){
+                   metadata.illustType=2;//manga
                        metadata.getExtension = true;
-                       metadata.illustType = 2;
-
-                       el = doc.querySelectorAll(".work-info .meta li")[1];
-                       m = el.textContent.match(/(\d+)P$/i);
-                       if (m)
-                       {
-                           metadata.pageCount = parseInt(m[1]);
                        }
-                       else //Single paged manga
-                       {
-                           metadata.pageCount = 1;
+               else if(ilustData.illustType==2)//uigora
+                   metadata.illustType=3;
+               else 
                            metadata.illustType = 1;
-                       }
-                   }
-               }
-               metadata.bookmarkCount = IllustrationLinker.getBookmarkCount(id);
+
+               
+               //metadata.bookmarkCount = IllustrationLinker.getBookmarkCount(id);
                //if (IsIllustrationPage) console.log(metadata);
                return metadata;
            },
