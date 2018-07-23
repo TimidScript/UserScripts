@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            [TS] deviantART Download Link
 // @namespace       TimidScript
-// @version         1.1.19.1
+// @version         1.1.20
 // @description     Toggle ability to redirect to image file. Adds "Download" button on illustration page if missing. Show's if available download image is max-size. Adds copy button for fav.me and other meta-data. Removes open in new tab.
 // @author          TimidScript
 // @homepageURL     https://github.com/TimidScript
@@ -48,6 +48,8 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 **************************************************************************************************
  Version History
 ------------------------------------
+1.0.20 (2018-07-23)
+ - Fix RegEx due to URL sytax changes           
 1.0.19 (2016-10-10)
  - Implemented a better system of cleaning illustration download button redirection
 1.0.18 (2016-05-27)
@@ -341,8 +343,9 @@ var MO =
 
     callback: function (mutations)
     {
-        AddReDirectButton();
-        if (!document.URL.match(/\.deviantart\.com\/(#\/)?art/i)) return;
+        AddReDirectButton();        
+        if (!document.URL.match(/\.deviantart\.com\/(.)*\/(#\/)?art/i)) return;
+        //if (!document.URL.match(/\.deviantart\.com\/(#\/)?art/i)) return;
 
         if (document.querySelector('body > div:not([style*="none"]) .dev-view-deviation #flashed-in iframe')) //Illustration contains a frame with flash content
         {
