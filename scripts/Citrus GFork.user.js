@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name                [TS] Citrus GFork
 // @namespace           TimidScript
-// @version             1.1.48.1
-// @date                2017-11-29
+// @version             1.1.49
+// @date                2019-04-18
 // @description         NOW with version number in Listing!! Advance table view for Greasy Fork. Fixes display bugs. 100 scripts display at a time, favoured user count, remembers last sort order used on Script Listing, "My" Profile Listing, and third Party Listing. Able to distinguish between, Library, Unlisted and Deleted scripts using text icons. Beside FireFox, it now supports Opera and Chrome.
 // @author              TimidScript
 // @homepageURL         https://github.com/TimidScript
 // @copyright           © 2014+ TimidScript, Some Rights Reserved.
 // @license             https://github.com/TimidScript/UserScripts/blob/master/license.txt
 // @include             https://greasyfork.org/*
-// @include             https://sleazyfork.org/*
 // @require             https://greasyfork.org/scripts/19967/code/TSL - GM_update.js
 // @require             https://greasyfork.org/scripts/19968/code/TSLibrary - Generic.js
 // @resource MonkeyIcon https://i.imgur.com/RqikjW1.jpg
@@ -70,6 +69,9 @@ TODO: Clean up the code
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.1.49 2019-04-18
+ - Bugfix for Author data-script-author-name -->  data-script-authors.
+ - Bugfix in search 
 1.1.48 2017-03-18
  - Bugfix: Fixed code that got broken due Changes in layout
  - Add Code search support
@@ -589,11 +591,14 @@ script-list-set
             el.type = "submit";
             el.value = "✱";
             el.title = "Partial Search";
-            el.onclick = function ()
+            el.onclick = function (e)
             {
-                var search = document.querySelector("#script-search [type=search], .sidebar-search, [type=search]");
-                search.value = search.value.replace(/\b([^ ]+)\b/g, "*$1*");
-                search.value = search.value.replace(/\*+/g, "*");
+                
+                e.stopImmediatePropagation();
+                //var search = document.querySelector("#script-search [type=search], .sidebar-search [type=search]");
+                var search = document.querySelector("[type=search]");
+                search.value = "*" + search.value.trim() + "*";
+                search.value = search.value.replace(/^\*\*|\*\*$/g, "*");                
             }
 
             if (GM_getValue("Use Original Search")) scriptsearch.appendChild(el);
@@ -830,15 +835,17 @@ script-list-set
             if (!el) continue;
 
             deleted = ids[i].indexOf("deleted") > 0;
-            list = el.children;
+            list = el.children;            
             for (var j = 0, stamp; j < list.length; j++)
             {
                 var li = list[j];
+
                 var script = new Object();
                 script.name = li.getAttribute("data-script-name");
-                script.id = li.getAttribute("data-script-id");
-                script.author = li.getAttribute("data-script-author-name");
-                script.authorID = li.getAttribute("data-script-author-id");
+                script.id = li.getAttribute("data-script-id");                
+                script.author = li.getAttribute("data-script-authors");
+                script.authorID = script.author.match(/"(\d+)":"(.+)"/)[1];
+                script.author = script.author.match(/"(\d+)":"(.+)"/)[2];
                 script.description = li.getElementsByClassName("description")[0].textContent.trim();
                 script.rating = li.getAttribute("data-script-rating-score");
                 script.ratings = (li.querySelector("dd.script-list-ratings")) ? li.querySelector("dd.script-list-ratings").innerHTML : "";
@@ -850,7 +857,7 @@ script-list-set
                 script.defunct = /defunct|depreciated|obselete|unsupported/i.test(script.description);
                 script.deleted = deleted;
                 scripts.push(script);
-
+                
                 stamp = GM_getValue("Script:" + script.id, false);
 
                 if (stamp)
