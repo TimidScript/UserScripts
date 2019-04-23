@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.23
+// @version                 1.0.24
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -35,6 +35,10 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.0.24 (2019-04-23)
+ - Removed tsXHR.timeout, because it does not work that way.  
+ - Added tsXHR.logged for logging
+ - removeNode now accepts node object, ID or CSS Selector
 1.0.23 (2017-03-09)
  - Added randomNumber generator
 1.0.22 (2017-02-25)
@@ -112,7 +116,12 @@ var TimidScriptLibrary =
     removeNode: function (node, doc)
     {
         if (!doc) doc = document;
-        if (typeof node == "string") node = doc.getElementById(node);
+        if (typeof node == "string")
+        {            
+            node = (document.getElementById(node) || document.querySelector(node));
+        }
+        if (!node) node = doc.getElementById(node);
+
         if (node && node.parentElement) node.parentElement.removeChild(node);
     },
 
@@ -357,7 +366,7 @@ var TimidScriptLibrary =
 
 var tsXHR =
 {
-    timeout: 15000,
+    logged: false,
 
     /* callback(state, response)
         state = 0 ---> success
@@ -373,14 +382,13 @@ var tsXHR =
 
         var obj = {
             url: url,
-            method: method,
-            timeout: timeout,
+            method: method,            
             headers: headers,
             onload: function (response)
-            {
+            {                
                 if (response.status == 200)
                 {
-                    //console.log("tsXHR: Success " + response.status + " (" + url + ")");
+                    if (tsXHR.logged) console.log("tsXHR: Success " + response.status + " (" + url + ")");
                     callback(0, response);
                 }
                 else
@@ -404,8 +412,9 @@ var tsXHR =
             }
         };
 
+        if (isNaN(timeout) === false) obj.timeout = timeout;
         if (data) obj.data = data;
-
+       
         GM_xmlhttpRequest(obj);
     },
 
@@ -468,7 +477,7 @@ and auto-complete feature if available.*/
 
 var TSL = new Object();
 
-//Remove node from document. Accepts id or node object
+//Remove node from document. Accepts node object, ID or CSS Selector
 TSL.removeNode = function (node, doc) { TimidScriptLibrary.removeNode(node, doc); };
 // Creates document element. Default doc value is the document.
 TSL.createElement = function (tag, attributes, doc) { return TimidScriptLibrary.createElement(tag, attributes, doc) };
@@ -515,8 +524,6 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
 
 
 var XHR = new Object();
-// Default value is 10000ms
-XHR.timeout = tsXHR.timeout;
 // callback(state, response) --- state: 0 = success | 1 = Fail | 2 = Timeout | 3 = Error
 XHR.send = function (method, callback, url, headers, data, timeout) { tsXHR.send(method, callback, url, headers, data, timeout); };
 // callback(success, response) --- state: 0 = success | 1 = Fail | 2 = Timeout | 3 = Error
