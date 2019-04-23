@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.24
+// @version                 1.0.25
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -35,6 +35,8 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.0.25 (2019-04-23)
+ - Bugfix in removeNode 
 1.0.24 (2019-04-23)
  - Removed tsXHR.timeout, because it does not work that way.  
  - Added tsXHR.logged for logging
@@ -118,9 +120,8 @@ var TimidScriptLibrary =
         if (!doc) doc = document;
         if (typeof node == "string")
         {            
-            node = (document.getElementById(node) || document.querySelector(node));
+            node = (doc.getElementById(node) || doc.querySelector(node));
         }
-        if (!node) node = doc.getElementById(node);
 
         if (node && node.parentElement) node.parentElement.removeChild(node);
     },
