@@ -1,7 +1,7 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.25
+// @version                 1.0.26
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -35,10 +35,15 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.0.26 (2019-04-26)
+ - TimidScriptLibrary.removeNode now only excepts ID or node
+ - TimidScriptLibrary.removeNodes add that accepts CSS Selector
+ - var replaced with let
+ - cleaned the code a bit
 1.0.25 (2019-04-23)
- - Bugfix in removeNode 
+ - Bugfix in removeNode
 1.0.24 (2019-04-23)
- - Removed tsXHR.timeout, because it does not work that way.  
+ - Removed tsXHR.timeout, because it does not work that way.
  - Added tsXHR.logged for logging
  - removeNode now accepts node object, ID or CSS Selector
 1.0.23 (2017-03-09)
@@ -106,32 +111,29 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 var TimidScriptLibrary =
 {
     //http://unicode-search.net
-    altNTFSChars: [[">", "＞"],
-                   ["<", "＜"],
-                   [":", "："],
-                   ['"', "＂"],
-                   ["/", "／"],
-                   ["\\", "＼"],
-                   ["?", "？"],
-                   ["*", "＊"]],
+    altNTFSChars: [[">", "＞"], ["<", "＜"], [":", "："], ['"', "＂"], ["/", "／"], ["\\", "＼"], ["?", "？"], ["*", "＊"]],
 
     removeNode: function (node, doc)
     {
-        if (!doc) doc = document;
-        if (typeof node == "string")
-        {            
-            node = (doc.getElementById(node) || doc.querySelector(node));
-        }
+        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc.getElementById === "function" && typeof node === "string") node = doc.getElementById(node);
 
         if (node && node.parentElement) node.parentElement.removeChild(node);
     },
 
+    removeNodes: function(selector, doc)
+    {
+        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        let nodes = doc.querySelectorAll(selector);
+        for (let i = 0; i < nodes.length; i++) nodes[i].parentElement.removeChild(nodes[i]);
+    },
+
     addStyle: function (id, CSS, doc)
     {
-        if (!doc) doc = document;
-        var el = doc.createElement("style");
+        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        let el = doc.createElement("style");
 
-        if (id && doc.getElementById(id)) el = doc.getElementById(id);
+        if (doc.getElementById(id)) el = doc.getElementById(id);
         else doc.head.appendChild(el);
 
         if (id) el.id = id;
@@ -143,10 +145,10 @@ var TimidScriptLibrary =
 
     addScript: function (id, text, doc)
     {
-        if (!doc) doc = document;
-        var el = doc.createElement("script");
+        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        let el = doc.createElement("script");
 
-        if (id && doc.getElementById(id)) el = doc.getElementById(id);
+        if (doc.getElementById(id)) el = doc.getElementById(id);
         else doc.head.appendChild(el);
 
         if (id) el.id = id;
@@ -156,17 +158,17 @@ var TimidScriptLibrary =
 
     createElement: function (tag, attributes, doc)
     {
-        if (!doc) doc = document;
-        var el = doc.createElement(tag);
+        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        let el = doc.createElement(tag);
 
-        for (var x in attributes) el.setAttribute(x, attributes[x]);
+        for (let x in attributes) el.setAttribute(x, attributes[x]);
         return el;
     },
 
     createElementHTML: function (html, doc)
     {
-        if (!doc) doc = document;
-        var el = doc.createElement("e");
+        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        let el = doc.createElement("e");
 
         el.innerHTML = html;
         return el.firstElementChild;
@@ -191,19 +193,21 @@ var TimidScriptLibrary =
     padNumber: function (number, length)
     {
         //return TimidScriptLibrary.paddingLeft(number, "0", length);
-        var padding = Array(length + 1).join("0");
+        let padding = Array(length + 1).join("0");
         return (padding + number).slice(0 - length);
     },
 
     isMouseEventInClientArea: function (event, element)
     {
-        var rect = element.getBoundingClientRect();
-        var minX = rect.left + element.clientLeft;
+        let x, y, rect, minX, minY;
 
-        var x = event.clientX;
+        rect = element.getBoundingClientRect();
+        minX = rect.left + element.clientLeft;
+        x = event.clientX;
+        y = event.clientY;
+        minY = rect.top + element.clientTop;
+
         if (x < minX || x >= minX + element.clientWidth) return false;
-        var minY = rect.top + element.clientTop;
-        var y = event.clientY;
         if (y < minY || y >= minY + element.clientHeight) return false;
         return true;
     },
@@ -211,21 +215,21 @@ var TimidScriptLibrary =
 
     getScrollBarThickness: function ()
     {
-        var outer = document.createElement("div");
+        let outer = document.createElement("div");
         outer.style.visibility = "hidden";
         outer.style.width = "100px";
         document.body.appendChild(outer);
 
-        var widthNoScroll = outer.offsetWidth;
+        let widthNoScroll = outer.offsetWidth;
         // force scrollbars
         outer.style.overflow = "scroll";
 
         // add innerdiv
-        var inner = document.createElement("div");
+        let inner = document.createElement("div");
         inner.style.width = "100%";
         outer.appendChild(inner);
 
-        var widthWithScroll = inner.offsetWidth;
+        let widthWithScroll = inner.offsetWidth;
 
         // remove divs
         outer.parentNode.removeChild(outer);
@@ -242,9 +246,9 @@ var TimidScriptLibrary =
 
     replaceNTFSIllegals: function (str)
     {
-        for (var i = 0; i < TimidScriptLibrary.altNTFSChars.length; i++)
+        for (let i = 0, rx; i < TimidScriptLibrary.altNTFSChars.length; i++)
         {
-            var rx = new RegExp(TimidScriptLibrary.escapeRegExp(TimidScriptLibrary.altNTFSChars[i][0]), "gi");
+            rx = new RegExp(TimidScriptLibrary.escapeRegExp(TimidScriptLibrary.altNTFSChars[i][0]), "gi");
             str = str.replace(rx, TimidScriptLibrary.altNTFSChars[i][1]);
         }
 
@@ -253,14 +257,14 @@ var TimidScriptLibrary =
 
     addClass: function (node, names)
     {
-        var altered = false;
-        var newclass = node.className;
-        var classes = names.replace(/\s+/g, " ").trim().split(" ");
+        let altered = false,
+            newclass = node.className,
+            classes = names.replace(/\s+/g, " ").trim().split(" ");
 
-        for (var i = 0; i < classes.length; i++)
+        for (let i = 0, re; i < classes.length; i++)
         {
-            //var re = new RegExp("(^|\\s+)" + classes[i] + "(\\s+|$)");
-            var re = new RegExp("\\b" + classes[i] + "\\b");
+            //re = new RegExp("(^|\\s+)" + classes[i] + "(\\s+|$)");
+            re = new RegExp("\\b" + classes[i] + "\\b");
             if (!newclass.match(re))
             {
                 newclass += " " + classes[i];
@@ -274,14 +278,14 @@ var TimidScriptLibrary =
 
     removeClass: function (node, names)
     {
-        var altered = false;
-        var newclass = node.className;
-        var classes = names.replace(/(\s)\s+/g, " ").trim().split(" ");
+        let altered = false,
+            newclass = node.className,
+            classes = names.replace(/(\s)\s+/g, " ").trim().split(" ");
 
-        for (var i = 0; i < classes.length; i++)
+        for (let i = 0, re; i < classes.length; i++)
         {
-            //var re = new RegExp("(^|\\s+)" + classes[i] + "(\\s+|$)");
-            var re = new RegExp("\\b" + classes[i] + "\\b");
+            //re = new RegExp("(^|\\s+)" + classes[i] + "(\\s+|$)");
+            re = new RegExp("\\b" + classes[i] + "\\b");
             if (newclass.match(re))
             {
                 newclass = newclass.replace(re, " ");
@@ -295,11 +299,11 @@ var TimidScriptLibrary =
 
     hasClass: function (node, names)
     {
-        var classes = names.replace(/(\s)\s+/g, " ").trim().split(" ");
-        for (var i = 0; i < classes.length; i++)
+        let classes = names.replace(/(\s)\s+/g, " ").trim().split(" ");
+        for (let i = 0, re; i < classes.length; i++)
         {
-            //var re = new RegExp("(^|\\s+)" + classes[i] + "(\\s+|$)");
-            var re = new RegExp("\\b" + classes[i] + "\\b");
+            //re = new RegExp("(^|\\s+)" + classes[i] + "(\\s+|$)");
+            re = new RegExp("\\b" + classes[i] + "\\b");
             if (!node.className.match(re)) return false;
         }
 
@@ -308,8 +312,7 @@ var TimidScriptLibrary =
 
     getAbsolutePosition: function (element)
     {
-        var x = 0;
-        var y = 0;
+        let x = 0, y = 0;
 
         while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop))
         {
@@ -328,12 +331,11 @@ var TimidScriptLibrary =
     makeCRCTable: function ()
     {
         //Code from http://stackoverflow.com/questions/18638900/javascript-crc32
-        var c;
-        var crcTable = [];
-        for (var n = 0; n < 256; n++)
+        let crcTable = [];
+        for (let n = 0, c; n < 256; n++)
         {
             c = n;
-            for (var k = 0; k < 8; k++)
+            for (let k = 0; k < 8; k++)
             {
                 c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
             }
@@ -345,10 +347,9 @@ var TimidScriptLibrary =
     crc32: function (str)
     {
         //Code from http://stackoverflow.com/questions/18638900/javascript-crc32
-        var crcTable = unsafeWindow.crcTable || (unsafeWindow.crcTable = TimidScriptLibrary.makeCRCTable());
-        var crc = 0 ^ (-1);
+        let crc = 0 ^ (-1), crcTable = unsafeWindow.crcTable || (unsafeWindow.crcTable = TimidScriptLibrary.makeCRCTable());
 
-        for (var i = 0; i < str.length; i++)
+        for (let i = 0; i < str.length; i++)
         {
             crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
         }
@@ -381,12 +382,12 @@ var tsXHR =
 
         if (!headers) headers = {};
 
-        var obj = {
+        let obj = {
             url: url,
-            method: method,            
+            method: method,
             headers: headers,
             onload: function (response)
-            {                
+            {
                 if (response.status == 200)
                 {
                     if (tsXHR.logged) console.log("tsXHR: Success " + response.status + " (" + url + ")");
@@ -415,7 +416,7 @@ var tsXHR =
 
         if (isNaN(timeout) === false) obj.timeout = timeout;
         if (data) obj.data = data;
-       
+
         GM_xmlhttpRequest(obj);
     },
 
@@ -433,7 +434,7 @@ var tsXHR =
 
     createHeaders: function (referer, accept, userAgent, contentType, authorization)
     {
-        var headers = {};
+        let headers = {};
         setHeader("User-Agent", userAgent);
         setHeader("Accept", accept);
         setHeader("Referer", referer);
@@ -474,12 +475,13 @@ var tsXHR =
 Copy and paste the code underneath into your script for quick reference
 and auto-complete feature if available.*/
 //*********************************************************************************
-//#region //---------------- TimidScript Library Functions
-
+//#region Declaration of JS Library Functions
 var TSL = new Object();
 
-//Remove node from document. Accepts node object, ID or CSS Selector
+//Remove node from document. Accepts node object or node ID.
 TSL.removeNode = function (node, doc) { TimidScriptLibrary.removeNode(node, doc); };
+//Remove node from document. Accepts CSS Selector.
+TSL.removeNodes = function (selector, doc) { TimidScriptLibrary.removeNodes(selector, doc); };
 // Creates document element. Default doc value is the document.
 TSL.createElement = function (tag, attributes, doc) { return TimidScriptLibrary.createElement(tag, attributes, doc) };
 // Creates document element using html code. Default doc value is the document.
