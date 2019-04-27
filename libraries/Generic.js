@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.26
+// @version                 1.0.27
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -35,6 +35,9 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.0.27 (2019-04-27)
+ - Minified the declaration code
+ - Bugfix: [doc.nodeName === "#document"] should be [doc.nodeName !== "#document"]
 1.0.26 (2019-04-26)
  - TimidScriptLibrary.removeNode now only excepts ID or node
  - TimidScriptLibrary.removeNodes add that accepts CSS Selector
@@ -115,7 +118,7 @@ var TimidScriptLibrary =
 
     removeNode: function (node, doc)
     {
-        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc !== "object" || doc.nodeName !== "#document") doc = document;
         if (typeof doc.getElementById === "function" && typeof node === "string") node = doc.getElementById(node);
 
         if (node && node.parentElement) node.parentElement.removeChild(node);
@@ -123,14 +126,14 @@ var TimidScriptLibrary =
 
     removeNodes: function(selector, doc)
     {
-        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc !== "object" || doc.nodeName !== "#document") doc = document;
         let nodes = doc.querySelectorAll(selector);
         for (let i = 0; i < nodes.length; i++) nodes[i].parentElement.removeChild(nodes[i]);
     },
 
     addStyle: function (id, CSS, doc)
     {
-        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc !== "object" || doc.nodeName !== "#document") doc = document;
         let el = doc.createElement("style");
 
         if (doc.getElementById(id)) el = doc.getElementById(id);
@@ -145,7 +148,7 @@ var TimidScriptLibrary =
 
     addScript: function (id, text, doc)
     {
-        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc !== "object" || doc.nodeName !== "#document") doc = document;
         let el = doc.createElement("script");
 
         if (doc.getElementById(id)) el = doc.getElementById(id);
@@ -158,7 +161,7 @@ var TimidScriptLibrary =
 
     createElement: function (tag, attributes, doc)
     {
-        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc !== "object" || doc.nodeName !== "#document") doc = document;
         let el = doc.createElement(tag);
 
         for (let x in attributes) el.setAttribute(x, attributes[x]);
@@ -167,7 +170,7 @@ var TimidScriptLibrary =
 
     createElementHTML: function (html, doc)
     {
-        if (typeof doc !== "object" || doc.nodeName === "#document") doc = document;
+        if (typeof doc !== "object" || doc.nodeName !== "#document") doc = document;
         let el = doc.createElement("e");
 
         el.innerHTML = html;
@@ -521,11 +524,6 @@ TSL.randomNumber = function (min, max) { min = parseInt(min); max = parseInt(max
 //Simple string hashing crc32
 TSL.crc32 = function (str) { return TimidScriptLibrary.crc32(str);}
 
-//String Padding
-String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); };
-String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); };
-
-
 var XHR = new Object();
 // callback(state, response) --- state: 0 = success | 1 = Fail | 2 = Timeout | 3 = Error
 XHR.send = function (method, callback, url, headers, data, timeout) { tsXHR.send(method, callback, url, headers, data, timeout); };
@@ -539,5 +537,16 @@ XHR.get = function (callback, url, headers, timeout) { tsXHR.get(callback, url, 
 XHR.head = function (callback, url, headers, timeout) { tsXHR.head(callback, url, headers, timeout) };
 // callback(success, response)
 XHR.post = function (callback, url, headers, data, timeout) { tsXHR.post(callback, url, headers, data, timeout) };
+
+//String Padding
+String.prototype.lPad = function (chr, length) { return TimidScriptLibrary.paddingLeft(this, chr[0], length); };
+String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddingRight(this, chr[0], length); };
 //#endregion
 //*********************************************************************************
+
+/*
+//Minified Declaration of Library Functions
+var TSL=new Object;TSL.removeNode=function(r,i){TimidScriptLibrary.removeNode(r,i)},TSL.removeNodes=function(r,i){TimidScriptLibrary.removeNodes(r,i)},TSL.createElement=function(r,i,t){return TimidScriptLibrary.createElement(r,i,t)},TSL.createElementHTML=function(r,i){return TimidScriptLibrary.createElementHTML(r,i)},TSL.getScrollBarThickness=function(){return TimidScriptLibrary.getScrollBarThickness()},TSL.addStyle=function(r,i,t){return TimidScriptLibrary.addStyle(r,i,t)},TSL.addScript=function(r,i,t){return TimidScriptLibrary.addScript(r,i,t)},TSL.isMouseEventInClientArea=function(r,i){return TimidScriptLibrary.isMouseEventInClientArea(r,i)},TSL.getAbsolutePosition=function(r){return TimidScriptLibrary.getAbsolutePosition(r)},TSL.altNTFSChars=TimidScriptLibrary.altNTFSChars,TSL.replaceNTFSIllegals=function(r){return TimidScriptLibrary.replaceNTFSIllegals(r)},TSL.escapeRegExp=function(r){return TimidScriptLibrary.escapeRegExp(r)},TSL.addClass=function(r,i){return TimidScriptLibrary.addClass(r,i)},TSL.removeClass=function(r,i){return TimidScriptLibrary.removeClass(r,i)},TSL.hasClass=function(r,i){return TimidScriptLibrary.hasClass(r,i)},TSL.updateURL=function(r){TimidScriptLibrary.updateURL(r)},TSL.padNumber=function(r,i){return TimidScriptLibrary.padNumber(r,i)},TSL.randomNumber=function(r,i){return r=parseInt(r),i=parseInt(i),Math.floor(Math.random()*(i-r+1)+r)},TSL.crc32=function(r){return TimidScriptLibrary.crc32(r)};
+var XHR=new Object;XHR.send=function(r,i,t,e,n,a){tsXHR.send(r,i,t,e,n,a)},XHR.sendX=function(r,i,t,e,n,a){tsXHR.sendX(r,i,t,e,n,a)},XHR.createHeaders=function(r,i,t,e,n){tsXHR.createHeaders(r,i,t,e,n)},XHR.get=function(r,i,t,e){tsXHR.get(r,i,t,e)},XHR.head=function(r,i,t,e){tsXHR.head(r,i,t,e)},XHR.post=function(r,i,t,e,n){tsXHR.post(r,i,t,e,n)};
+String.prototype.lPad=function(r,i){return TimidScriptLibrary.paddingLeft(this,r[0],i)},String.prototype.rPad=function(r,i){return TimidScriptLibrary.paddingRight(this,r[0],i)};
+*/
