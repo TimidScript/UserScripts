@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name                    TSLibrary - Generic
 // @namespace               TimidScript
-// @version                 1.0.27
+// @version                 1.0.28
 // @description             A resource JS library file providing common useful functions to be used by other scripts
 // @author                  TimidScript
 // @homepageURL             https://github.com/TimidScript
@@ -35,6 +35,8 @@ TimidScript's Homepages:  GitHub:      https://github.com/TimidScript
 ********************************************************************************************
     Version History
 ----------------------------------------------
+1.0.28 (2019-04-30)
+ - Added delimitedNumber
 1.0.27 (2019-04-27)
  - Minified the declaration code
  - Bugfix: [doc.nodeName === "#document"] should be [doc.nodeName !== "#document"]
@@ -198,6 +200,11 @@ var TimidScriptLibrary =
         //return TimidScriptLibrary.paddingLeft(number, "0", length);
         let padding = Array(length + 1).join("0");
         return (padding + number).slice(0 - length);
+    },
+
+    delimitedNumber: function(value)
+    {
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
 
     isMouseEventInClientArea: function (event, element)
@@ -520,6 +527,7 @@ TSL.updateURL = function (url) { TimidScriptLibrary.updateURL(url); };
 TSL.padNumber = function (number, length) { return TimidScriptLibrary.padNumber(number, length); };
 //Random Whole Number Generator
 TSL.randomNumber = function (min, max) { min = parseInt(min); max = parseInt(max); return Math.floor(Math.random() * (max - min + 1) + min); };
+TSL.delimitedNumber = function (value) {return TimidScriptLibrary.delimitedNumber(value); };
 
 //Simple string hashing crc32
 TSL.crc32 = function (str) { return TimidScriptLibrary.crc32(str);}
@@ -546,7 +554,7 @@ String.prototype.rPad = function (chr, length) { return TimidScriptLibrary.paddi
 
 /*
 //Minified Declaration of Library Functions
-var TSL=new Object;TSL.removeNode=function(r,i){TimidScriptLibrary.removeNode(r,i)},TSL.removeNodes=function(r,i){TimidScriptLibrary.removeNodes(r,i)},TSL.createElement=function(r,i,t){return TimidScriptLibrary.createElement(r,i,t)},TSL.createElementHTML=function(r,i){return TimidScriptLibrary.createElementHTML(r,i)},TSL.getScrollBarThickness=function(){return TimidScriptLibrary.getScrollBarThickness()},TSL.addStyle=function(r,i,t){return TimidScriptLibrary.addStyle(r,i,t)},TSL.addScript=function(r,i,t){return TimidScriptLibrary.addScript(r,i,t)},TSL.isMouseEventInClientArea=function(r,i){return TimidScriptLibrary.isMouseEventInClientArea(r,i)},TSL.getAbsolutePosition=function(r){return TimidScriptLibrary.getAbsolutePosition(r)},TSL.altNTFSChars=TimidScriptLibrary.altNTFSChars,TSL.replaceNTFSIllegals=function(r){return TimidScriptLibrary.replaceNTFSIllegals(r)},TSL.escapeRegExp=function(r){return TimidScriptLibrary.escapeRegExp(r)},TSL.addClass=function(r,i){return TimidScriptLibrary.addClass(r,i)},TSL.removeClass=function(r,i){return TimidScriptLibrary.removeClass(r,i)},TSL.hasClass=function(r,i){return TimidScriptLibrary.hasClass(r,i)},TSL.updateURL=function(r){TimidScriptLibrary.updateURL(r)},TSL.padNumber=function(r,i){return TimidScriptLibrary.padNumber(r,i)},TSL.randomNumber=function(r,i){return r=parseInt(r),i=parseInt(i),Math.floor(Math.random()*(i-r+1)+r)},TSL.crc32=function(r){return TimidScriptLibrary.crc32(r)};
+var TSL=new Object;TSL.removeNode=function(r,i){TimidScriptLibrary.removeNode(r,i)},TSL.removeNodes=function(r,i){TimidScriptLibrary.removeNodes(r,i)},TSL.createElement=function(r,i,e){return TimidScriptLibrary.createElement(r,i,e)},TSL.createElementHTML=function(r,i){return TimidScriptLibrary.createElementHTML(r,i)},TSL.getScrollBarThickness=function(){return TimidScriptLibrary.getScrollBarThickness()},TSL.addStyle=function(r,i,e){return TimidScriptLibrary.addStyle(r,i,e)},TSL.addScript=function(r,i,e){return TimidScriptLibrary.addScript(r,i,e)},TSL.isMouseEventInClientArea=function(r,i){return TimidScriptLibrary.isMouseEventInClientArea(r,i)},TSL.getAbsolutePosition=function(r){return TimidScriptLibrary.getAbsolutePosition(r)},TSL.altNTFSChars=TimidScriptLibrary.altNTFSChars,TSL.replaceNTFSIllegals=function(r){return TimidScriptLibrary.replaceNTFSIllegals(r)},TSL.escapeRegExp=function(r){return TimidScriptLibrary.escapeRegExp(r)},TSL.addClass=function(r,i){return TimidScriptLibrary.addClass(r,i)},TSL.removeClass=function(r,i){return TimidScriptLibrary.removeClass(r,i)},TSL.hasClass=function(r,i){return TimidScriptLibrary.hasClass(r,i)},TSL.updateURL=function(r){TimidScriptLibrary.updateURL(r)},TSL.padNumber=function(r,i){return TimidScriptLibrary.padNumber(r,i)},TSL.randomNumber=function(r,i){return r=parseInt(r),i=parseInt(i),Math.floor(Math.random()*(i-r+1)+r)},TSL.delimitedNumber=function(r){return TimidScriptLibrary.delimitedNumber(r)},TSL.crc32=function(r){return TimidScriptLibrary.crc32(r)};
 var XHR=new Object;XHR.send=function(r,i,t,e,n,a){tsXHR.send(r,i,t,e,n,a)},XHR.sendX=function(r,i,t,e,n,a){tsXHR.sendX(r,i,t,e,n,a)},XHR.createHeaders=function(r,i,t,e,n){tsXHR.createHeaders(r,i,t,e,n)},XHR.get=function(r,i,t,e){tsXHR.get(r,i,t,e)},XHR.head=function(r,i,t,e){tsXHR.head(r,i,t,e)},XHR.post=function(r,i,t,e,n){tsXHR.post(r,i,t,e,n)};
 String.prototype.lPad=function(r,i){return TimidScriptLibrary.paddingLeft(this,r[0],i)},String.prototype.rPad=function(r,i){return TimidScriptLibrary.paddingRight(this,r[0],i)};
 */
